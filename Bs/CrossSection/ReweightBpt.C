@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include "uti.h"
+#include "parameters.h"
 
 //#include "his.h"
 using namespace std;
@@ -39,7 +40,7 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	tMC->AddFriend("skimanalysis/HltTree");
 
 
-	TH1D * GptMC = new TH1D("GptMC","GptMC",21,5,105);
+	TH1D * GptMC = new TH1D("GptMC","GptMC",nBinsReweight,ptBinsReweight);
 	GptMC->GetYaxis()->SetTitleOffset(1.1);
 
 	tMC->Project("GptMC","Gpt",TCut(weighpthat)*TCut(GenCut));
@@ -56,8 +57,28 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	GptMC->Draw("ep");
 
 
+	TGraphAsymmErrors* gaeBplusReference = (TGraphAsymmErrors*)finFONLL->Get("gaeSigmaBplus");
 
-	TH1D * GptFONLL = (TH1D * ) finFONLL->Get("hpt");
+	TH1D * GptFONLL = new TH1D("GptFONLL","",nBinsReweight,ptBinsReweight);
+
+	double x;
+	double y;
+	double yErr;
+	for(int i=0;i<nBinsReweight;i++){
+
+		gaeBplusReference->GetPoint(i,x,y);
+
+		cout << "i = " << i << "  x = " << x << "  y = "  << y << endl;
+
+		
+		yErr = gaeBplusReference->GetErrorY(i);
+		GptFONLL->SetBinContent(i+1,y);
+		GptFONLL->SetBinError(i+1,yErr);
+	}
+
+
+
+
 	GptFONLL->GetYaxis()->SetTitleOffset(1.1);
 	GptFONLL->GetXaxis()->SetTitle("FONLL p_{T} (GeV)");
 	GptFONLL->GetYaxis()->SetTitle("FONLL_pp, #entries ");
@@ -76,14 +97,20 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	BptRatio->Divide(GptMC);
 	c->cd(3);
 
-	TF1 * f1 = new TF1("f1","[3]*TMath::Exp(-[0]*x)+[1]/(x*x+[2]*[2])",5,105);
+
+
+	TF1 * f1 = new TF1("f1","[3]*TMath::Exp(-[0]*x)+[1]/(x*x+[4]*x+[2]*[2])",5,105);
 	f1->SetParLimits(0,0,1);
 	f1->SetParLimits(1,10,100);
 	f1->SetParLimits(2,0,0.01);
 	f1->SetParLimits(3,0,10);
+	f1->SetParLimits(4,-5,0);
+
 
 
 	BptRatio->Fit(f1,"R");
+	//BptRatio->Fit(f1,"L q m","",5,105);
+
 	BptRatio->GetXaxis()->SetTitle("B_{s}^{0} p_{T}");
 	BptRatio->GetYaxis()->SetTitle("FONLL_pp/PYTHIA");
 	BptRatio->SetMarkerStyle(20);
@@ -113,7 +140,7 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	//GptFONLL->Draw("ep");
 	//
 	//
-	TString BptReweightFunc = Form("%f*TMath::Exp(-%f*Bpt)+%f/(Bpt*Bpt+%f*%f)",f1->GetParameter(3),f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(2));
+	TString BptReweightFunc = Form("%f*TMath::Exp(-%f*Bpt)+%f/(Bpt*Bpt+ %f * Bpt + %f*%f)",f1->GetParameter(3),f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(4),f1->GetParameter(2),f1->GetParameter(2));
 
 	cout << "Bpt Func = " << BptReweightFunc.Data() << endl;
 

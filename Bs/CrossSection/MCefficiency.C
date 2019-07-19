@@ -112,15 +112,15 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 	ntMC->AddFriend("hltanalysis/HltTree");
 	ntMC->AddFriend("hiEvtAnalyzer/HiTree");
 	ntMC->AddFriend("skimanalysis/HltTree");
-	ntMC->AddFriend("BDT");
+//	ntMC->AddFriend("BDT");
 	ntMC->AddFriend("CentWeightTree");
 
-	/*
+	
 	ntMC->AddFriend("BDT_pt_15_20");
-	ntMC->AddFriend("BDT_pt_7_15");
+	ntMC->AddFriend("BDT_pt_10_15");
 	ntMC->AddFriend("BDT_pt_20_50");
-	ntMC->AddFriend("BDT_pt_5_7");
-	*/
+	ntMC->AddFriend("BDT_pt_5_10");
+	
 	ntMC->AddFriend("Bfinder/ntGen");
 	ntGen->AddFriend("hiEvtAnalyzer/HiTree");
 	ntGen->AddFriend("Bfinder/ntphi");

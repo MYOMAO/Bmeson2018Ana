@@ -56,11 +56,17 @@ void MCDataComparison(TString collsyst, TString inputdata, TString inputMC, TStr
 
 	if(WithWeights == 1)
 	{
-
+		/*
 		BptWeight="0.475953*TMath::Exp(-0.001731*Bpt)+38.069448/(Bpt*Bpt+0.001237*0.001237)";
 		CentWeight = "CentWeight";
 		//PVzWeight = "TMath::Exp(0.057104 + -0.020908 * PVz + -0.001864 * PVz * PVz)";
 		PVzWeight =	"(0.162740 * TMath::Exp(- 0.020823 * (PVz - 0.428205)*(PVz - 0.428205)))/(0.159489 * TMath::Exp(- 0.019979 * (PVz - 0.594276)*(PVz - 0.594276)))";
+		WeightType="Weighted";
+		*/
+	
+		BptWeight="0.889175+0.000791*Bgenpt+0.000015*Bgenpt*Bgenpt";
+		CentWeight = "CentWeight";
+		PVzWeight = "(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
 		WeightType="Weighted";
 	}
 

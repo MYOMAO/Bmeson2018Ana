@@ -85,6 +85,11 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	funcform = sigfunc + "+" + bkgfunc;
 	if(funcOpt == onlyBG) funcform = bkgfunc;//consider only background, for prompt fit
 	if(npfit != "1") funcform = funcform + "+[11]*(" + iNP + ")";
+	
+	cout << "isMC = " << isMC << endl;
+	
+	TString Tag = "Data";
+	if(isMC == 1) Tag = "MC";
 
 	TF1 *f = new TF1(Form("f%d",_count),funcform.Data());
 	f->SetNpx(5000);
@@ -126,14 +131,39 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	f->FixParameter(1,fixparam1);
 	hMCSignal->Fit(Form("f%d",_count),"q","",minhisto,maxhisto);
 	hMCSignal->Fit(Form("f%d",_count),"q","",minhisto,maxhisto);
+
+	ofstream fout(Form("Fit_BeforeRelease1_Info_%s_%s_pt_%d.dat",FitMethod.Data(),Tag.Data(),_count));
+	fout << "Parameter Number" << "     " << "Fit Value" << "     " << "Fit Error" << endl;
+	fout << 0 << "     " <<  f->GetParameter(0) << "     " << f->GetParError(0) << endl;
+	fout << 1 << "     " << f->GetParameter(1) << "     " << f->GetParError(1) << endl;
+	fout << 2 << "     "<<  f->GetParameter(2) << "     " << f->GetParError(2) << endl;
+	fout << 7 << "     "<<  f->GetParameter(7) << "     " << f->GetParError(7) << endl;
+	fout << 8 << "     " << f->GetParameter(8) << "     " << f->GetParError(8) << endl;
+	fout << 9 << "     " << f->GetParameter(9) << "     " << f->GetParError(9) << endl;
+	fout << 10 << "     " << f->GetParameter(10) << "     " << f->GetParError(10) << endl;
+	fout << 12 << "     " << f->GetParameter(12) << "     " << f->GetParError(12) << endl;
+	
 	f->ReleaseParameter(1);
 
-	
+
 	hMCSignal->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
 	hMCSignal->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
 	hMCSignal->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
 	hMCSignal->Fit(Form("f%d",_count),"L m","",minhisto,maxhisto);
-	
+
+
+	ofstream fout2(Form("Fit_AfterRelease1_Info_%s_%s_pt_%d.dat",FitMethod.Data(),Tag.Data(),_count));
+	fout2 << "Parameter Number" << "     " << "Fit Value" << "     " << "Fit Error" << endl;
+	fout2 << 0 << "     " <<  f->GetParameter(0) << "     " << f->GetParError(0) << endl;
+	fout2 << 1 << "     " << f->GetParameter(1) << "     " << f->GetParError(1) << endl;
+	fout2 << 2 << "     "<<  f->GetParameter(2) << "     " << f->GetParError(2) << endl;
+	fout2 << 7 << "     "<<  f->GetParameter(7) << "     " << f->GetParError(7) << endl;
+	fout2 << 8 << "     " << f->GetParameter(8) << "     " << f->GetParError(8) << endl;
+	fout2 << 9 << "     " << f->GetParameter(9) << "     " << f->GetParError(9) << endl;
+	fout2 << 10 << "     " << f->GetParameter(10) << "     " << f->GetParError(10) << endl;
+	fout2 << 12 << "     " << f->GetParameter(12) << "     " << f->GetParError(12) << endl;
+
+
 	/*
 	hMCSignal->Fit(Form("f%d",_count),"M","",minhisto,maxhisto);
 	hMCSignal->Fit(Form("f%d",_count),"M","",minhisto,maxhisto);
@@ -183,20 +213,20 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 		h->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
 	}
 	TFitResultPtr fitResult = h->Fit(Form("f%d",_count),"L m s","",minhisto,maxhisto);
-	
-	TString Tag = "Data";
-	if(isMC == 1) Tag = "MC";
 
-	ofstream fout(Form("FitInfo_%s_%s_pt_%d.dat",FitMethod.Data(),Tag.Data(),_count));
-	fout << "Parameter Number" << "     " << "Fit Value" << "     " << "Fit Error" << endl;
-	fout << 0 << "     " <<  f->GetParameter(0) << "     " << f->GetParError(0) << endl;
-	fout << 1 << "     " << f->GetParameter(1) << "     " << f->GetParError(1) << endl;
-	fout << 2 << "     "<<  f->GetParameter(2) << "     " << f->GetParError(2) << endl;
-	fout << 7 << "     "<<  f->GetParameter(7) << "     " << f->GetParError(7) << endl;
-	fout << 8 << "     " << f->GetParameter(8) << "     " << f->GetParError(8) << endl;
-	fout << 9 << "     " << f->GetParameter(9) << "     " << f->GetParError(9) << endl;
-	fout << 10 << "     " << f->GetParameter(10) << "     " << f->GetParError(10) << endl;
-	fout << 12 << "     " << f->GetParameter(12) << "     " << f->GetParError(12) << endl;
+
+
+	ofstream fout3(Form("Fit_AfterAll_Info_%s_%s_pt_%d.dat",FitMethod.Data(),Tag.Data(),_count));
+	fout3 << "Parameter Number" << "     " << "Fit Value" << "     " << "Fit Error" << endl;
+	fout3 << 0 << "     " <<  f->GetParameter(0) << "     " << f->GetParError(0) << endl;
+	fout3 << 1 << "     " << f->GetParameter(1) << "     " << f->GetParError(1) << endl;
+	fout3 << 2 << "     "<<  f->GetParameter(2) << "     " << f->GetParError(2) << endl;
+	fout3 << 7 << "     "<<  f->GetParameter(7) << "     " << f->GetParError(7) << endl;
+	fout3 << 8 << "     " << f->GetParameter(8) << "     " << f->GetParError(8) << endl;
+	fout3 << 9 << "     " << f->GetParameter(9) << "     " << f->GetParError(9) << endl;
+	fout3 << 10 << "     " << f->GetParameter(10) << "     " << f->GetParError(10) << endl;
+	fout3 << 12 << "     " << f->GetParameter(12) << "     " << f->GetParError(12) << endl;
+
 
 
 

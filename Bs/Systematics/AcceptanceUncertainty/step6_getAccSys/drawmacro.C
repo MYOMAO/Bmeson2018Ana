@@ -335,16 +335,24 @@ void drawmacro() {
 		   */
 		hf11pt[i]->GetYaxis()->SetRangeUser(0.0,1.4*maxuser);
 		if(i == 0){
-		hf11pt[i]->GetXaxis()->SetRangeUser(0,0.03);
-		hf21pt[i]->GetXaxis()->SetRangeUser(0,0.03);
+		hf11pt[i]->GetXaxis()->SetRangeUser(0,0.003);
+		hf21pt[i]->GetXaxis()->SetRangeUser(0,0.003);
 		}
 		if(i == 1){
-		hf11pt[i]->GetXaxis()->SetRangeUser(0,0.3);
-		hf21pt[i]->GetXaxis()->SetRangeUser(0,0.3);
+		hf11pt[i]->GetXaxis()->SetRangeUser(0.04,0.12);
+		hf21pt[i]->GetXaxis()->SetRangeUser(0.04,0.12);
 		}
 		if(i == 2){
-		hf11pt[i]->GetXaxis()->SetRangeUser(0.1,0.65);
-		hf21pt[i]->GetXaxis()->SetRangeUser(0.1,0.65);
+		hf11pt[i]->GetXaxis()->SetRangeUser(0.22,0.35);
+		hf21pt[i]->GetXaxis()->SetRangeUser(0.22,0.35);
+		}
+		if(i == 3){
+		hf11pt[i]->GetXaxis()->SetRangeUser(0.22,0.35);
+		hf21pt[i]->GetXaxis()->SetRangeUser(0.22,0.35);
+		}
+		if(i == 3){
+		hf11pt[i]->GetXaxis()->SetRangeUser(0.4,0.53);
+		hf21pt[i]->GetXaxis()->SetRangeUser(0.4,0.53);
 		}
 
 

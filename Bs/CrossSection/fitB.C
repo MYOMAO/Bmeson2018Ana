@@ -76,13 +76,17 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 		nt->AddFriend("hltanalysis/HltTree");
 		nt->AddFriend("hiEvtAnalyzer/HiTree");
 		nt->AddFriend("skimanalysis/HltTree");
-		/*
 		nt->AddFriend("BDT_pt_15_20");
-		nt->AddFriend("BDT_pt_7_15");
-		nt->AddFriend("BDT_pt_5_7");
-		nt->AddFriend("BDT_pt_20_50");	
-		*/
-		nt->AddFriend("BDT");	
+		nt->AddFriend("BDT_pt_5_10");
+		nt->AddFriend("BDT_pt_10_15");	
+		nt->AddFriend("BDT_pt_20_50");		
+		/*
+		   nt->AddFriend("BDT_pt_15_20");
+		   nt->AddFriend("BDT_pt_7_15");
+		   nt->AddFriend("BDT_pt_5_7");
+		   nt->AddFriend("BDT_pt_20_50");	
+		   */
+		//	nt->AddFriend("BDT");	
 
 		/*
 		   ntGen = (TTree*)infMC->Get("ntGen");
@@ -109,13 +113,17 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 		ntMC->AddFriend("hltanalysis/HltTree");
 		ntMC->AddFriend("hiEvtAnalyzer/HiTree");
 		ntMC->AddFriend("skimanalysis/HltTree");
-		/*
 		ntMC->AddFriend("BDT_pt_15_20");
-		ntMC->AddFriend("BDT_pt_7_15");
-		ntMC->AddFriend("BDT_pt_5_7");
+		ntMC->AddFriend("BDT_pt_5_10");
+		ntMC->AddFriend("BDT_pt_10_15");	
 		ntMC->AddFriend("BDT_pt_20_50");	
-		*/
-		ntMC->AddFriend("BDT");
+		/*
+		   ntMC->AddFriend("BDT_pt_15_20");
+		   ntMC->AddFriend("BDT_pt_7_15");
+		   ntMC->AddFriend("BDT_pt_5_7");
+		   ntMC->AddFriend("BDT_pt_20_50");	
+		   */
+		//	ntMC->AddFriend("BDT");
 		ntMC->AddFriend("Bfinder/ntGen");
 	}
 
@@ -157,7 +165,7 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 	   */
 	const int NCentBin = 1;
 	int CentMinBin[NCentBin] ={0};
-	int CentMaxBin[NCentBin] ={201};
+	int CentMaxBin[NCentBin] ={181};
 
 	cout << "Pass 4" << endl;
 
@@ -180,17 +188,17 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 				cout << "Pass 4.7" << endl;
 				//	ntMC->Project(Form("hMCSignal%d",_count),"Bmass",Form("%s*(%s&&%s>%f&&%s<%f)",weightmc.Data(),Form("%s&&Bgen==23333",selmc.Data()),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1]));
 				if(doStat == 1){
-				TH1D * hMCSignalStat = new TH1D(Form("hMCSignalStat%d",_count),"",nbinsmasshisto,minhisto,maxhisto);
+					TH1D * hMCSignalStat = new TH1D(Form("hMCSignalStat%d",_count),"",nbinsmasshisto,minhisto,maxhisto);
 					ntMC->Project(Form("hMCSignalStat%d",_count),"Bmass",Form("%s*((Btrk1Pt > 1 && Btrk2Pt > 1 && Bchi2cl > 0.05 && BsvpvDistance/BsvpvDisErr > 2 && Bpt > 5 && abs(Btrk1Eta-0.0) < 2.4  && abs(Btrk2Eta-0.0) < 2.4)&&%s>%f&&%s<%f && hiBin < %d && hiBin > %d)*(1/%s)",weightmc.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],CentMaxBin[j],CentMinBin[j],weightdata.Data()));
-				cout << "pt = " << _ptBins[i] << "    Statistics = " << 	hMCSignalStat->Integral() << endl;
+					cout << "pt = " << _ptBins[i] << "    Statistics = " << 	hMCSignalStat->Integral() << endl;
 				}
 				ntMC->Project(Form("hMCSignal%d",_count),"Bmass",Form("%s*(%s&&%s>%f&&%s<%f && hiBin < %d && hiBin > %d && Bgen == 23333)*(1/%s)",weightmc.Data(),seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],CentMaxBin[j],CentMinBin[j],weightdata.Data()));
 
-			
+
 
 				cout << "Pass 4.8" << endl;
 				h->SetAxisRange(0,h->GetMaximum()*1.4*1.2,"Y");
-		
+
 				if(doPhi == 1){
 					/*
 					   TCanvas *cPhi = new TCanvas("cPhi","cPhi",600,600);

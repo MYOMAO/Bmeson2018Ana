@@ -586,7 +586,7 @@ int TMVAClassification(std::string inputSname, std::string inputBname, std::stri
 
   if (Use["BDT"])  // Adaptive Boost
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDT",
-                         "!H:!V:NTrees=6000:MinNodeSize=5.0%:MaxDepth=5:BoostType=AdaBoost:AdaBoostBeta=0.65:UseBaggedBoost:BaggedSampleFraction=0.65:SeparationType=GiniIndex:nCuts=30000" );
+                         "!H:!V:NTrees=6000:MinNodeSize=5.0%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.65:UseBaggedBoost:BaggedSampleFraction=0.65:SeparationType=GiniIndex:nCuts=30000" );
 
   if (Use["BDTB"]) // Bagging
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTB",

@@ -11,21 +11,21 @@ DOANALYSISPP_ROOFITONSAVED=0
 DOANALYSISPP_MCSTUDY=0
 DOANALYSISPP_CROSS=0
 
-DOANALYSISPbPb_FIT=1
+DOANALYSISPbPb_FIT=0
 DOANALYSISPbPb_FITONSAVED=0
 DOANALYSISPbPb_ROOFIT=0
 DOANALYSISPbPb_ROOFITONSAVED=0
-DOANALYSISPbPb_MCSTUDY=1
-DOANALYSISPbPb_CROSS=1
-DORAA=1
+DOANALYSISPbPb_MCSTUDY=0
+DOANALYSISPbPb_CROSS=0
+DORAA=0
 DORAARATIO=0
 DOANALYSISPbPb_REWEIGHT=0
 
 
 #Closure Test
 
-DOCLOSUREPbPb=0
-FINCLOSUREPbPb=0
+DOCLOSUREPbPb=1
+FINCLOSUREPbPb=1
 
 
 #ONY For Acceptance Studies
@@ -266,7 +266,7 @@ SELGENPbPbACCPbPb="TMath::Abs(Gy)<2.4&&abs(GpdgId)==531&&GisSignal>0&&((TMath::A
 
 #BASECUTPbPb="TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.77-1.8*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.8))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.77-1.8*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.8))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015"
 
-BASECUTPbPb="(hiBin < 181) && Btrk1Pt > 0.9 && Btrk2Pt > 0.9 && Bchi2cl > 0.05 && BsvpvDistance/BsvpvDisErr > 2 && Bpt > 5 && abs(Btrk1Eta-0.0) < 2.4  && abs(Btrk2Eta-0.0) < 2.4 && (TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.77-1.8*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.8))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.77-1.8*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.8))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015) && (abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter) && (Btrk1PixelHit + Btrk1StripHit > 10) && (Btrk2PixelHit + Btrk2StripHit > 10) && (Btrk1PtErr/Btrk1Pt < 0.1)&& (Btrk2PtErr/Btrk2Pt < 0.1) && Btrk1Chi2ndf/(Btrk1nStripLayer+Btrk1nPixelLayer) < 0.18 && Btrk2Chi2ndf/(Btrk2nStripLayer+Btrk2nPixelLayer) < 0.18"
+BASECUTPbPb="(hiBin < 181) && Btrk1Pt > 1.0 && Btrk2Pt > 1.0 && Bchi2cl > 0.05 && BsvpvDistance/BsvpvDisErr > 2.2 && Bpt > 5 && abs(Btrk1Eta-0.0) < 2.4  && abs(Btrk2Eta-0.0) < 2.4 && (TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.77-1.8*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.8))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.77-1.8*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.8))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015) && (abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter) && (Btrk1PixelHit + Btrk1StripHit > 10) && (Btrk2PixelHit + Btrk2StripHit > 10) && (Btrk1PtErr/Btrk1Pt < 0.1)&& (Btrk2PtErr/Btrk2Pt < 0.1) && Btrk1Chi2ndf/(Btrk1nStripLayer+Btrk1nPixelLayer) < 0.18 && Btrk2Chi2ndf/(Btrk2nStripLayer+Btrk2nPixelLayer) < 0.18"
 
 
 #CUTPbPb=${BASECUTPbPb}"&&((Bpt>7&&Bpt<15&&BDTStage1_pt7to15>0.213755)||(Bpt>15&&Bpt<50&&BDTStage1_pt15to50>0.254413))"
@@ -281,7 +281,7 @@ BASECUTPbPb="(hiBin < 181) && Btrk1Pt > 0.9 && Btrk2Pt > 0.9 && Bchi2cl > 0.05 &
 #CUTPbPb=${BASECUTPbPb}"&&((Bpt>7&&Bpt<15&&BDT_pt_7_15>0.213755)||(Bpt>15&&Bpt<50&&BDT_pt_15_50>0.254413)||(Bpt>50&&Bpt<100&&BDT_pt_15_50>-0.4) )"
 
 #CUTPbPb=${BASECUTPbPb}"&&((Bpt>7&&Bpt<15&&BDT_pt_7_15>0.57)||(Bpt>15&&Bpt<30&&BDT_pt_15_30> 0.59)||(Bpt>30&&Bpt<50&&BDT_pt_30_50>0.70) )"
-CUTPbPb=${BASECUTPbPb}"&&((Bpt>5&&Bpt<10&&BDT_pt_5_10>0.20)||(Bpt>10&&Bpt<15&&BDT_pt_10_15> 0.22)||(Bpt>15&&Bpt<20&&BDT_pt_15_20>0.22)||(Bpt>20&&Bpt<50&&BDT_pt_20_50>0.28))"
+CUTPbPb=${BASECUTPbPb}"&&((Bpt>5&&Bpt<10&&BDT_pt_5_10>0.17)||(Bpt>10&&Bpt<15&&BDT_pt_10_15> 0.17)||(Bpt>15&&Bpt<20&&BDT_pt_15_20>0.26)||(Bpt>20&&Bpt<50&&BDT_pt_20_50>0.25))"
 
 CUTPbPb=${CUTPbPb}"&&abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter"
 
@@ -344,8 +344,10 @@ fi
 
 
 if [ $DOANALYSISPbPb_REWEIGHT -eq 1 ]; then      
+g++ Bplusdsigmadpt.cc $(root-config --cflags --libs) -g -o Bplusdsigmadpt.exe 
+./Bplusdsigmadpt.exe "$FONLLDATINPUT"  "$FONLLOUTPUTFILEREWEIGHT" "$LABELPP" 1
 g++ ReweightBpt.C $(root-config --cflags --libs) -g -o ReweightBpt.exe
-./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILE"
+./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILEREWEIGHT"
 rm ReweightBpt.exe
 fi
 
@@ -361,7 +363,7 @@ if [ $DOANALYSISPbPb_FITONY -eq 1 ]; then
 g++ fitB.C $(root-config --cflags --libs) -g -o fitB.exe 
 #./fitB.exe 1 0 "$INPUTDATAPbPbCANDWISE" "$INPUTMCPbPbCANDWISE" "Bpt" "$TRGPbPb" "$CUTPbPb" "$CUTPbPbData" "$SELGENPbPb" "$ISMCPbPb" 1 "$ISDOWEIGHTPbPb" "$LABELPbPb" "$OUTPUTFILEPbPbSAVEHIST" "plotFits/plotFits" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
 #./fitB.exe 1 0 "$INPUTDATAPbPbCANDWISE" "$INPUTMCPbPbCANDWISE" "Bpt" "$TRGPbPb" "$CUTPbPb" "$SELGENPbPb" "$ISMCPbPb" 1 "$ISDOWEIGHTPbPb" "$LABELPbPb" "$OUTPUTFILEPbPbSAVEHIST" "plotFits/plotFits" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
-./fitB.exe 1 0 "$INPUTDATAPbPbCANDWISE" "$INPUTMCPbPbCANDWISE" "abs(By)" "$TRGPbPb" "$CUTPbPb" "$SELGENPbPb" "$ISMCPbPb" 1 "$ISDOWEIGHTPbPb" "$LABELPbPb" "$OUTPUTFILEPbPbONY" "plotFits/plotFits" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
+./fitB.exe 1 0 "$INPUTDATAPbPbCANDWISE" "$INPUTMCPbPbCANDWISE" "abs(By)" "$TRGPbPb" "$CUTPbPb" "$SELGENPbPb" "$ISMCPbPb" 1 "$ISDOWEIGHTPbPb" "$LABELPbPb" "$OUTPUTFILEPbPbONY" "plotFits/plotFitsY" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
 rm fitB.exe
 fi 
 
@@ -392,7 +394,7 @@ fi
 
 if [ $DOANALYSISPbPb_MCSTUDYONY -eq 1 ]; then      
 g++ MCefficiency.C $(root-config --cflags --libs) -g -o MCefficiency.exe 
-./MCefficiency.exe 1 "$INPUTMCPbPbCANDWISE" "$SELGENPbPb" "$SELGENPbPbACCPbPb" "$RECOONLYPbPb" "$CUTPbPb&&$TRGPbPbMC" "abs(By)" "Gy" "$LABELPbPb" "$OUTPUTFILEMCSTUDYPbPbONY" "plotEff/plotEff" "$ISDOWEIGHTPbPb" "$CENTPbPbMIN" "$CENTPbPbMAX"
+./MCefficiency.exe 1 "$INPUTMCPbPbCANDWISE" "$SELGENPbPb" "$SELGENPbPbACCPbPb" "$RECOONLYPbPb" "$CUTPbPb&&$TRGPbPbMC" "abs(By)" "Gy" "$LABELPbPb" "$OUTPUTFILEMCSTUDYPbPbONY" "plotEff/plotEffY" "$ISDOWEIGHTPbPb" "$CENTPbPbMIN" "$CENTPbPbMAX"
 rm MCefficiency.exe
 fi
 
@@ -747,8 +749,8 @@ if [ $DOPTREWEIGHT -eq 1 ]; then
 #g++ Bplusdsigmadpt.cc $(root-config --cflags --libs) -g -o Bplusdsigmadpt.exe 
 #./Bplusdsigmadpt.exe "$FONLLDATINPUT"  "$FONLLOUTPUTFILEREWEIGHT" "$LABELPP" 1
 #rm Bplusdsigmadpt.exe
-root -b -q weightMCpp.C++
-rm weightMCpp_C.d weightMCpp_C.so weightMCpp_C_ACLiC_dict_rdict.pcm
+#root -b -q weightMCpp.C++
+#rm weightMCpp_C.d weightMCpp_C.so weightMCpp_C_ACLiC_dict_rdict.pcm
 root -b -q weightMCPbPb.C++
 rm weightMCPbPb_C.d weightMCPbPb_C.so weightMCPbPb_C_ACLiC_dict_rdict.pcm
 fi

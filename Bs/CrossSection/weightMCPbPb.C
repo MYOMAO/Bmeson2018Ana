@@ -3,8 +3,9 @@
 #include "TLegendEntry.h"
 
 void weightPbPbvertex(){
-    TFile*fMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20171120_bPt10_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20171119_bPt10jpsiPt0tkPt0p8_Bs_pthatweight_BDT15to50.root");
+ //   TFile*fMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20171120_bPt10_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20171119_bPt10jpsiPt0tkPt0p8_Bs_pthatweight_BDT15to50.root");
     //TFile*fMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20180316_bPt0_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20180314_bPt0tkPt0MuAll_Bs_pthatweight.root");
+	TFile*fMC=new TFile("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/MC_Bs_PbPb_TMVA_BDT_PbPb.root");
 	TTree *ntDkpiMC = (TTree*)fMC->Get("ntphi");
 	TTree *ntSkimMC = (TTree*)fMC->Get("ntSkim");
 	TTree *ntHiMC = (TTree*)fMC->Get("ntHi");
@@ -13,7 +14,7 @@ void weightPbPbvertex(){
 	ntDkpiMC->AddFriend(ntHiMC);
 	ntDkpiMC->AddFriend(ntHltMC);
 
-    TFile*fData=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20171110_bPt10_BfinderData_PbPb_20171109_bPt10jpsiPt0tkPt0p8_Bs_HIOniaL1DoubleMu0_AllDatamerged_BDT15to50.root");
+    TFile*fData=new TFile("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/Data_Bs_PbPb_TMVA_BDT_PbPb.root");
     //TFile*fData=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20180316_bPt0_BfinderData_PbPb_20180314_bPt0tkPt0MuAll_Bs_HIOniaL1DoubleMu0_AllDatamerged.root");
 	TTree *ntDkpiData = (TTree*)fData->Get("ntphi");
 	TTree *ntSkimData = (TTree*)fData->Get("ntSkim");
@@ -84,7 +85,9 @@ void weightPbPbFONLLpthat(int minfit=2,int maxfit=100){
 	gStyle->SetStatW(0.30);
 	gStyle->SetStatH(0.04);
 	gStyle->SetStatFontSize(0.03); 
-    TFile*infMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20180316_bPt0_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20180314_bPt0tkPt0MuAll_Bs_pthatweight_candWise_BDT7to50.root");
+ //   TFile*infMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20180316_bPt0_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20180314_bPt0tkPt0MuAll_Bs_pthatweight_candWise_BDT7to50.root");
+ 	TFile*infMC=new TFile("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/MC_Bs_PbPb_TMVA_BDT_PbPb.root");
+
     //TFile*infMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20180316_bPt0_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20180314_bPt0tkPt0MuAll_Bs_pthatweight.root");
 	TTree* ntGen = (TTree*)infMC->Get("ntGen");
 	TTree *ntHiMC = (TTree*)infMC->Get("ntHi");
@@ -189,8 +192,10 @@ void weightPbPbFONLLpthat(int minfit=2,int maxfit=100){
 }
 
 void weightPbPbCentrality(){
-    TFile*fMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20171120_bPt10_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20171119_bPt10jpsiPt0tkPt0p8_Bs_pthatweight_BDT15to50.root");
+ //   TFile*fMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20171120_bPt10_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20171119_bPt10jpsiPt0tkPt0p8_Bs_pthatweight_BDT15to50.root");
     //TFile*fMC=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20180316_bPt0_BfinderMC_PbPb_BsToJpsiPhi_HydjetCymbMB_5p02_20180314_bPt0tkPt0MuAll_Bs_pthatweight.root");
+	TFile*fMC=new TFile("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/MC_Bs_PbPb_TMVA_BDT_PbPb.root");
+
 	TTree *ntDkpiMC = (TTree*)fMC->Get("ntphi");
 	TTree *ntSkimMC = (TTree*)fMC->Get("ntSkim");
 	TTree *ntHiMC = (TTree*)fMC->Get("ntHi");
@@ -199,7 +204,7 @@ void weightPbPbCentrality(){
 	ntDkpiMC->AddFriend(ntHiMC);
 	ntDkpiMC->AddFriend(ntHltMC);
 
-    TFile*fData=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20171110_bPt10_BfinderData_PbPb_20171109_bPt10jpsiPt0tkPt0p8_Bs_HIOniaL1DoubleMu0_AllDatamerged_BDT15to50.root");
+    TFile*fData=new TFile("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/Data_Bs_PbPb_TMVA_BDT_PbPb.root");
     //TFile*fData=new TFile("/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntuple20180316_bPt0_BfinderData_PbPb_20180314_bPt0tkPt0MuAll_Bs_HIOniaL1DoubleMu0_AllDatamerged.root");
 	TTree *ntDkpiData = (TTree*)fData->Get("ntphi");
 	TTree *ntSkimData = (TTree*)fData->Get("ntSkim");

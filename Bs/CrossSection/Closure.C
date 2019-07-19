@@ -26,10 +26,10 @@ void Closure(TString collyst, TString infile, TString eff, TString oufile){
 	gStyle->SetOptStat(0); 
 
 	TFile *fin = new TFile(infile.Data());
-	TFile *Eff = new TFile(eff.Data());
+	//TFile *Eff = new TFile(eff.Data());
 
 	TH1D* FitHis = (TH1D *) fin->Get("hPt");
-	TH1D* FitEff = (TH1D *) Eff->Get("hEff");
+	TH1D* FitEff = (TH1D *) fin->Get("hEff");
 	TH1D* MCHis = (TH1D *) fin->Get("hPtGen");
 
 
@@ -38,8 +38,13 @@ void Closure(TString collyst, TString infile, TString eff, TString oufile){
 	MCHis->Sumw2();
 
 	TH1D * ClosureHis = (TH1D *) FitHis->Clone("ClosureHis");
+	ClosureHis->SetMinimum(0.8);
+	ClosureHis->SetMaximum(1.2);
+
+
 	ClosureHis->Divide(FitEff);
 	ClosureHis->Divide(MCHis);
+
 
 
 	TCanvas* c= new TCanvas("c","",600,600);
@@ -50,6 +55,12 @@ void Closure(TString collyst, TString infile, TString eff, TString oufile){
 	ClosureHis->GetXaxis()->SetTitle("B_{S} p_{T} (GeV/c)");
 	ClosureHis->GetYaxis()->SetTitle("Corrected Yield/GenYield");
 	ClosureHis->Draw("ep");
+
+	TLine *l10 = new TLine(5,1,50,1);
+	l10->SetLineStyle(2);
+	l10->SetLineWidth(2);
+	l10->SetLineColor(kRed);
+	l10->Draw("SAME");
 
 	TFile * fout = new TFile(oufile.Data(),"RECREATE");
 	fout->cd();
@@ -69,8 +80,8 @@ int main(int argc, char *argv[])
 
 	if(argc == 5){
 		Closure(argv[1],argv[2],argv[3],argv[4]);
-	return 0;
-}
+		return 0;
+	}
 }
 
 

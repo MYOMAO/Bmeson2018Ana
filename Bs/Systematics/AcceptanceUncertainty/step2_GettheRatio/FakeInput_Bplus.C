@@ -149,9 +149,8 @@ void FakeInput_Bplus(){
 	TF1 *fRfitft_Bpluspt = new TF1("fRfitft_Bpluspt","[0]*x + [1]/x**5",5,50.0);//Bplus, pt dependence
 	fRfitft_Bpluspt->SetParLimits(2,1,3);
 	//TF1 *fRfitft_Bsy = new TF1("fRfitft_Bsy","[0]*pow((x-0.0),2)+[1]",-2.865,1.935);
-	TF1 *fRfitft_Bsy = new TF1("fRfitft_Bsy","[0] +[1] *x + [2] *x *x",0.0,2.4);//Bplus, y dependence
-	fRfitft_Bsy->SetParLimits(0,0.2,0.9);
-	fRfitft_Bsy->SetParLimits(2,-5,0);
+	TF1 *fRfitft_Bsy = new TF1("fRfitft_Bsy","[0] + [1] *x",0.0,2.4);//Bplus, y dependence
+//	fRfitft_Bsy->SetParLimits(2,-5,0);
 
 	// call histogram for parameter fit
 	TH1D* hParafitft_Bpluspt = new TH1D("hParafitft_Bpluspt","",2,0,2);
@@ -269,7 +268,7 @@ void FakeInput_Bplus(){
 	std::cout << std::string(76,'#') << std::endl;
 	hParafitft_Bsy->SetBinContent(1,fRfitft_Bsy->GetParameter(0));
 	hParafitft_Bsy->SetBinContent(2,fRfitft_Bsy->GetParameter(1));
-	hParafitft_Bsy->SetBinContent(3,fRfitft_Bsy->GetParameter(2));
+//	hParafitft_Bsy->SetBinContent(3,fRfitft_Bsy->GetParameter(2));
 
 	pt11->Clear();
 	pt11 = new TPaveText(0.22,0.80,0.27,0.85,"NDC");

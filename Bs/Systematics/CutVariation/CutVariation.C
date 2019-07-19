@@ -40,12 +40,13 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 	if(collsyst == "PbPb" && doweight == 1)
 	{
 		//BptWeight="0.475953*TMath::Exp(-0.001731*Bpt)+38.069448/(Bpt*Bpt+0.001237*0.001237)";
-		BptWeight="0.474599*TMath::Exp(-0.001406*Bpt)+38.036016/(Bpt*Bpt+0.000330*0.000330)";
+	//	BptWeight="0.474599*TMath::Exp(-0.001406*Bpt)+38.036016/(Bpt*Bpt+0.000330*0.000330)";
+	//	BptWeight = "0.603534*TMath::Exp(-0.006505*Bpt)+13.177674/(Bpt*Bpt -4.418950 * Bpt + 0.009566*0.009566)";
+		BptWeight = "0.329452*TMath::Exp(-0.019321*Bpt)+41.766452/(Bpt*Bpt -0.003756 * Bpt + 0.000029*0.000029)";
 		CentWeight = "CentWeight";
 		//PVzWeight = "TMath::Exp(0.057104 + -0.020908 * PVz + -0.001864 * PVz * PVz)";
 		//PVzWeight =	"(0.162740 * TMath::Exp(- 0.020823 * (PVz - 0.428205)*(PVz - 0.428205)))/(0.159489 * TMath::Exp(- 0.019979 * (PVz - 0.594276)*(PVz - 0.594276)))";
 		PVzWeight="0.163562 * TMath::Exp(- 0.021039 * (PVz - 0.426587)*(PVz - 0.426587))/(0.159619 * TMath::Exp(- 0.020011 * (PVz - 0.587652)*(PVz - 0.587652)))";
-		
 		cout << "WEIGHT = YES" << endl;
 
 	}
@@ -77,23 +78,27 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 	nt->AddFriend("hltanalysis/HltTree");
 	nt->AddFriend("hiEvtAnalyzer/HiTree");
 	nt->AddFriend("skimanalysis/HltTree");
-//	nt->AddFriend("BDT_pt_15_20");
-//	nt->AddFriend("BDT_pt_7_15");
-//	nt->AddFriend("BDT_pt_20_50");	
-	nt->AddFriend("BDT");	
+	nt->AddFriend("BDT_pt_15_20");
+	nt->AddFriend("BDT_pt_5_10");
+	nt->AddFriend("BDT_pt_10_15");	
+	nt->AddFriend("BDT_pt_20_50");	
+//	nt->AddFriend("BDT");	
 
 
 	TTree* ntMC = (TTree*)finMC->Get("Bfinder/ntphi");
 	ntMC->AddFriend("hltanalysis/HltTree");
 	ntMC->AddFriend("hiEvtAnalyzer/HiTree");
 	ntMC->AddFriend("skimanalysis/HltTree");
-
+	ntMC->AddFriend("BDT_pt_15_20");
+	ntMC->AddFriend("BDT_pt_5_10");
+	ntMC->AddFriend("BDT_pt_10_15");	
+	ntMC->AddFriend("BDT_pt_20_50");	
 	/*
 	ntMC->AddFriend("BDT_pt_15_20");
 	ntMC->AddFriend("BDT_pt_7_15");
 	ntMC->AddFriend("BDT_pt_20_50");	
 	*/
-	ntMC->AddFriend("BDT");	
+	//ntMC->AddFriend("BDT");	
 	ntMC->AddFriend("CentWeightTree");	
 
 
@@ -110,22 +115,20 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 	ofstream out2(Form("Ratio_%s.dat",collsyst.Data()));
 	ofstream out3(Form("Prob_%s.dat",collsyst.Data()));
 
-	TH1D * DataPre = new TH1D("DataPre","DataPre",NBMassBin,BMassMin,BMassMax);
-
-
-	nt->Project("DataPre","Bmass",PreCut.Data());
 
 
 
-	TH1D * MCPre = new TH1D("MCPre","MCPre",NBMassBin,BMassMin,BMassMax);
+	//nt->Project("DataPre","Bmass",PreCut.Data());
 
-	ntMC->Project("MCPre","Bmass",(TCut(BptWeight.Data())*TCut(CentWeight.Data())*TCut(PVzWeight.Data())*TCut(weightfunctionreco.Data()))*(TCut(PreCutMC.Data())));
 
-	cout << "DataPre = " << DataPre->Integral() << endl;
-	cout << "MCPre = " << MCPre->Integral() << endl;
+
+	//ntMC->Project("MCPre","Bmass",(TCut(BptWeight.Data())*TCut(CentWeight.Data())*TCut(PVzWeight.Data())*TCut(weightfunctionreco.Data()))*(TCut(PreCutMC.Data())));
+
+
 
 	TFile * CutVarOut = new TFile("CutVarOut.root","RECREATE");
 	CutVarOut->cd();
+/*
 	fDataPre = fit(c, cMC, DataPre, MCPre, ptMin, ptMax, 0, isPbPb, total, CentMinBin, CentMaxBin, "1");
 
 	PreCutMC = Form("%s *  (%s && Bgen == 23333)",weightfunctionreco.Data(),PreCut.Data());
@@ -136,13 +139,13 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 
 	PreCutYieldMC = fMCPre->Integral(BMassMin,BMassMax)/binwidthmass;
 	PreCutYieldErrMC = fMCPre->Integral(BMassMin,BMassMax)/binwidthmass*fMCPre->GetParError(0)/fMCPre->GetParameter(0);
-	
+*/	
 //	PreCutYieldMC = MCPre->Integral();
 //	PreCutYieldErrMC = TMath::Sqrt(PreCutYieldMC);
+//	cout << "PreCutYieldData = " << PreCutYieldData << "   PreCutYieldMC  = " << PreCutYieldMC << endl;
 
 
 
-	cout << "PreCutYieldData = " << PreCutYieldData << "   PreCutYieldMC  = " << PreCutYieldMC << endl;
 	//Alpha Variation//
 
 	for(int j = 3; j < 7; j++){
@@ -153,7 +156,41 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 		ResultHis->GetYaxis()->SetTitle(Form("%s Cut Variation",VarXName[j].Data()));
 		NVarStep[j] = (VarCutMax[j] - VarCutMin[j])/NCut[j];
 	
-		cout << "j = " << j << "Var[j].Data()  = " << Var[j].Data()  << endl;
+		cout << "j = " << j << "   Var[j].Data()  = " << Var[j].Data()  << endl;
+
+
+		VarPreCutData = Form("((%s %s %f && %s) && (%s))",Var[j].Data(),Direction[j].Data(),VarCutMin[j],VarPtRange[j].Data(),PreCut.Data());
+	
+		cout << "VarPreCutData = " << VarPreCutData.Data() << endl;
+ 
+		VarPreCutMC = Form("((%s) && Bgen == 23333)",VarPreCutData.Data());
+
+		TH1D * DataPre = new TH1D("DataPre","DataPre",NBMassBin,BMassMin,BMassMax);
+		nt->Project("DataPre","Bmass",VarPreCutData.Data());
+		cout << "DataPre = " << DataPre->Integral() << endl;
+
+		TH1D * MCPre = new TH1D("MCPre","MCPre",NBMassBin,BMassMin,BMassMax);
+		ntMC->Project("MCPre","Bmass",VarPreCutMC.Data());
+		cout << "MCPre = " << MCPre->Integral() << endl;
+
+
+		fDataPre = fit(c, cMC, DataPre, MCPre, ptMin, ptMax, 0, isPbPb, total, CentMinBin, CentMaxBin, "1");
+		PreCutYieldData = fDataPre->Integral(BMassMin,BMassMax)/binwidthmass;
+		PreCutYieldErrData = fDataPre->Integral(BMassMin,BMassMax)/binwidthmass*fDataPre->GetParError(0)/fDataPre->GetParameter(0);
+
+
+
+
+
+		fMCPre = fit(c, cMC, MCPre, MCPre, ptMin, ptMax, 1, isPbPb, total, CentMinBin, CentMaxBin, "1");
+		PreCutYieldMC = fMCPre->Integral(BMassMin,BMassMax)/binwidthmass;
+		PreCutYieldErrMC = fMCPre->Integral(BMassMin,BMassMax)/binwidthmass*fMCPre->GetParError(0)/fMCPre->GetParameter(0);
+		PreCutYieldMC = MCPre->Integral();
+		PreCutYieldErrMC = TMath::Sqrt(PreCutYieldMC);
+
+		
+		cout << "PreCutYieldData = " << PreCutYieldData << "   PreCutYieldMC  = " << PreCutYieldMC << endl;
+
 
 		for(int i = 0; i < NCut[j]; i++)
 		{
@@ -161,7 +198,8 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 			cout << "Now Working on " << Var[j].Data() << "  i = " << i <<  "  CutValue = " << CutValue << endl;
 
 			CutValue = VarCutMin[j] + i * 	NVarStep[j];
-			VarCutData = Form("((%s %s %f && %s)||(%s)) && (%s)",Var[j].Data(),Direction[j].Data(),CutValue,VarPtRange[j].Data(),OutSideCut[j].Data(),PreCut.Data());
+			//VarCutData = Form("((%s %s %f && %s)||(%s)) && (%s)",Var[j].Data(),Direction[j].Data(),CutValue,VarPtRange[j].Data(),OutSideCut[j].Data(),PreCut.Data());
+			VarCutData = Form("((%s %s %f && %s) && (%s))",Var[j].Data(),Direction[j].Data(),CutValue,VarPtRange[j].Data(),PreCut.Data());
 
 			cout << "VarCutData = " << VarCutData.Data() << endl;
 			

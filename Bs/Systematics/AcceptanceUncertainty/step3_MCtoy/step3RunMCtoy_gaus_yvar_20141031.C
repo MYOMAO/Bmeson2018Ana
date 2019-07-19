@@ -47,7 +47,7 @@ void step3RunMCtoy_gaus_yvar_20141031() {
 	ditTree = new TTree("ditTree","Test tree");
 	ditTree->Branch("ay1",&ay1,"ay1/D");
 	ditTree->Branch("ay2",&ay2,"ay2/D");
-	ditTree->Branch("ay3",&ay3,"ay3/D");
+	//ditTree->Branch("ay3",&ay3,"ay3/D");
 
 	srand((unsigned int)time(NULL));
 	for (int i = 0; i < 10000; i++){
@@ -84,7 +84,7 @@ void getfit() {
 	hfity->Fit("fsecpol");
 	ay1=fsecpol->GetParameter(0);
 	ay2=fsecpol->GetParameter(1);
-	ay3=fsecpol->GetParameter(2);
+//	ay3=fsecpol->GetParameter(2);
 
 	ditTree->Fill();
 	return;

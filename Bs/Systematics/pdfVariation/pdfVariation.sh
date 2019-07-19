@@ -5,46 +5,46 @@ CENTPbPbMAX=100
 
 #
 DOSAVEHISTPP=0
-DOSAVEHISTPbPb=0
+DOSAVEHISTPbPb=1
 #DOSAVEHISTPPMB=1
 #DOSAVEHISTPbPbMB=1
 
 #
 DOFITDEFAULTNEWPP=0
-DOFITDEFAULTNEWPbPb=0
+DOFITDEFAULTNEWPbPb=1
 #DOFITDEFAULTNEWPPMB=1
 #DOFITDEFAULTNEWPbPbMB=1
 
 DOFITINCREASEWIDPP=0
-DOFITINCREASEWIDPbPb=0
+DOFITINCREASEWIDPbPb=1
 #DOFITINCREASEWIDPPMB=1
 #DOFITINCREASEWIDPbPbMB=1
 
 DOFITDECREASEWIDPP=0
-DOFITDECREASEWIDPbPb=0
+DOFITDECREASEWIDPbPb=1
 #DOFITDECREASEWIDPPMB=1
 #DOFITDECREASEWIDPbPbMB=1
 
 DOFITPOLY3PP=0
-DOFITPOLY3PbPb=0
+DOFITPOLY3PbPb=1
 #DOFITPOLY2PPMB=1
 #DOFITPOLY2PbPbMB=1
 
 
 DOFITPOLY1PP=0
-DOFITPOLY1PbPb=0
+DOFITPOLY1PbPb=1
 #DOFITEXPO2PPMB=1
 #DOFITEXPO2PbPbMB=1
 
 
 DOFITEXPO2PP=0
-DOFITEXPO2PbPb=0
+DOFITEXPO2PbPb=1
 #DOFITEXPO2PPMB=1
 #DOFITEXPO2PbPbMB=1
 
 
 DOFITSINGLEGAUSPP=0
-DOFITSINGLEGAUSPbPb=0
+DOFITSINGLEGAUSPbPb=1
 
 DOFITTRIPLEGAUSPP=0
 DOFITTRIPLEGAUSPbPb=1
@@ -71,9 +71,11 @@ INPUTDATAPP="/data/wangj/Data2015/Bntuple/pp/ntB_EvtBase_20160420_BfinderData_pp
 
 #INPUTMCPbPb="/export/d00/scratch/zzshiNPFIT_PbPb/CMSSW_7_5_8_patch3/Merge/2018Ana/BsTMVA/TMVAHigh/MC_Bs_pp_TMVA_BDT_pp.root"
 #INPUTDATAPbPb="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/BsTMVA/TMVAHigh/Data_Bs_pp_TMVA_BDT_pp.root"
-INPUTMCPbPb="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/BsTMVA/TMVAHigh4BinsRedo/MC_Bs_pp_TMVA_BDT_pp.root"
-INPUTDATAPbPb="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/BsTMVA/TMVAHigh4BinsRedo/Data_Bs_pp_TMVA_BDT_pp.root"
+#INPUTMCPbPb="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/BsTMVA/TMVAHigh4BinsRedo/MC_Bs_pp_TMVA_BDT_pp.root"
+#INPUTDATAPbPb="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/BsTMVA/TMVAHigh4BinsRedo/Data_Bs_pp_TMVA_BDT_pp.root"
 
+INPUTMCPbPb="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/MC_Bs_PbPb_TMVA_BDT_PbPb.root"
+INPUTDATAPbPb="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/Data_Bs_PbPb_TMVA_BDT_PbPb.root"
 
 ##
 
@@ -88,9 +90,14 @@ TRGPP="(HLT_HIL1DoubleMu0_v1)"
 LABELPP="PP"
 NPFIT_PP="3.12764e1*Gaus(x,5.33166,3.64663e-2)*(x<5.33166)+(x>=5.33166)*3.12764e1*Gaus(x,5.33166,1.5204e-1)+2.11124e2*TMath::Erf(-(x-5.14397)/6.43194e-2) + 2.11124e2"
 
-BASECUTPbPb="TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.77-1.8*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.8))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.77-1.8*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.8))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015"
-CUTPbPb=${BASECUTPbPb}"&&((Bpt>5&&Bpt<7&&BDT_pt_5_7>0.52)||(Bpt>7&&Bpt<15&&BDT_pt_7_15>0.58)||(Bpt>15&&Bpt<20&&BDT_pt_15_20> 0.59)||(Bpt>30&&Bpt<50&&BDT_pt_20_50>0.65))"
-CUTPbPb=${CUTPbPb}"&&abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter"
+
+#BASECUTPbPb="(hiBin < 181) && Btrk1Pt > 0.9 && Btrk2Pt > 0.9 && Bchi2cl > 0.05 && BsvpvDistance/BsvpvDisErr > 2 && Bpt > 5 && abs(Btrk1Eta-0.0) < 2.4  && abs(Btrk2Eta-0.0) < 2.4 && (TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.77-1.8*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.8))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.77-1.8*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.8))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015) && (abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter) && (Btrk1PixelHit + Btrk1StripHit > 10) && (Btrk2PixelHit + Btrk2StripHit > 10) && (Btrk1PtErr/Btrk1Pt < 0.1)&& (Btrk2PtErr/Btrk2Pt < 0.1) && Btrk1Chi2ndf/(Btrk1nStripLayer+Btrk1nPixelLayer) < 0.18 && Btrk2Chi2ndf/(Btrk2nStripLayer+Btrk2nPixelLayer) < 0.18"
+#CUTPbPb=${BASECUTPbPb}"&&((Bpt>5&&Bpt<10&&BDT_pt_5_10>0.20)||(Bpt>10&&Bpt<15&&BDT_pt_10_15> 0.22)||(Bpt>15&&Bpt<20&&BDT_pt_15_20>0.22)||(Bpt>20&&Bpt<50&&BDT_pt_20_50>0.28))"
+#CUTPbPb=${CUTPbPb}"&&abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter"
+
+
+
+
 TRGPbPb="(Bpt > 0)"
 LABELPbPb="PbPb"
 NPFIT_PbPb="1"

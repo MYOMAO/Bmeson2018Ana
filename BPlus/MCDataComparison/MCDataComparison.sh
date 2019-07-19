@@ -5,7 +5,7 @@ doPbPbComparison=1
 doShapePbPb=0
 doReweightPbPb=0
 doCentReweightPbPb=0
-doCentTree=0
+doCentTree=1
 WithCentWeights=1
 WithWeights=1
 
@@ -23,7 +23,7 @@ WithWeights=1
 
 #ppData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/TMVAVeryLowCheck/Data_D0_pp_TMVA_BDTG_pp.root"
 #ppMC="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/Unskim2/ppUnskim2.root"
-CentOutFile="CentOut.root"
+CentOutFile="BPlusNew/CentOut.root"
 
 ppData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/ppReweightStudy/Data/PD23.root"
 ppMC="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/ppReweightStudy/MC/MC.root"
@@ -42,10 +42,17 @@ ppMC="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/ppReweightStudy/MC/MC.r
 #PbPbData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/ForJulia/crab_Bfinder_20181220_HIDoubleMuon_HIRun2018A_PromptReco_v1v2_1031_NoJSON_skimhltBsize_ntKp.root"
 
 #PbPbMC="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/crab_Bfinder_20190520_Hydjet_Pythia8_BuToJpsiK_1033p1_pt3tkpt0p7dls2_v2_pthatweight.root"
-PbPbMC="/export/d00/scratch/gwangjun/crab_Bfinder_20190520_Hydjet_Pythia8_BuToJpsiK_1033p1_pt3tkpt0p7dls2_v2_pthatweight_hardcut.root"
-PbPbData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/crab_Bfinder_20190513_HIDoubleMuon__PsiPeri__HIRun2018A_04Apr2019_v1_1033p1_GoldenJSON_skimhltBsize_ntKp.root"
 
-PbPbMCCentWeight="crab_Bfinder_20190520_Hydjet_Pythia8_BuToJpsiK_1033p1_pt3tkpt0p7dls2_v2_pthatweight_hardcut_weighted.root"
+
+#PbPbMC="/export/d00/scratch/gwangjun/crab_Bfinder_20190520_Hydjet_Pythia8_BuToJpsiK_1033p1_pt3tkpt0p7dls2_v2_pthatweight_hardcut.root"
+#PbPbData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/crab_Bfinder_20190513_HIDoubleMuon__PsiPeri__HIRun2018A_04Apr2019_v1_1033p1_GoldenJSON_skimhltBsize_ntKp.root"
+
+PbPbMC="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/BPlusCheck/MCDataComparison/BPlusNew/NewMCBPlus.root"
+PbPbData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/BPlus/crab_Bfinder_20190513_HIDoubleMuon__PsiPeri__HIRun2018A_04Apr2019_v1_1033p1_GoldenJSON_skimhltBsize_ntKp.root"
+
+
+
+#PbPbMCCentWeight="crab_Bfinder_20190520_Hydjet_Pythia8_BuToJpsiK_1033p1_pt3tkpt0p7dls2_v2_pthatweight_hardcut_weighted.root"
 
 
 #PbPbMCBs="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data/MC_Bs_PbPb_TMVA_BDT_PbPb.root"
@@ -108,7 +115,7 @@ fi
 
 if [ $WithWeights -eq 1 ]; then
 g++ MCDataComparison.C $(root-config --cflags --libs) -g -o MCDataComparison.exe 
-./MCDataComparison.exe "PbPb" "$PbPbData"  "$PbPbMCCentWeight" "$SignalCut" "$SideBandCut" "$GenCut" "$CommonCut" "$WithWeights" 
+./MCDataComparison.exe "PbPb" "$PbPbData"  "$PbPbMC" "$SignalCut" "$SideBandCut" "$GenCut" "$CommonCut" "$WithWeights" 
 rm MCDataComparison.exe
 fi
 
