@@ -22,10 +22,12 @@ DORAARATIO=0
 DOANALYSISPbPb_REWEIGHT=0
 
 
+DOANALYSISPbPb_FITNP=1
+
 #Closure Test
 
-DOCLOSUREPbPb=1
-FINCLOSUREPbPb=1
+DOCLOSUREPbPb=0
+FINCLOSUREPbPb=0
 
 
 #ONY For Acceptance Studies
@@ -151,6 +153,8 @@ INPUTDATAPbPb="/export/d00/scratch/tawei/HeavyFlavor/Run2Ana/BsTMVA/samples/Bntu
 
 INPUTMCPbPbCANDWISE="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/MC_Bs_PbPb_TMVA_BDT_PbPb.root"
 INPUTDATAPbPbCANDWISE="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/Data_Bs_PbPb_TMVA_BDT_PbPb.root"
+INPUTMCNPPbPbCANDWISE="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/BsNPMC/MakeBDT/AllPt/BsNPAllMerged.root"
+
 
 ## ANALYSIS PP TRIGGERED
 FONLLDATINPUT="pp_Bplus_5p03TeV_y2p4"
@@ -284,6 +288,7 @@ BASECUTPbPb="(hiBin < 181) && Btrk1Pt > 1.0 && Btrk2Pt > 1.0 && Bchi2cl > 0.05 &
 CUTPbPb=${BASECUTPbPb}"&&((Bpt>5&&Bpt<10&&BDT_pt_5_10>0.17)||(Bpt>10&&Bpt<15&&BDT_pt_10_15> 0.17)||(Bpt>15&&Bpt<20&&BDT_pt_15_20>0.26)||(Bpt>20&&Bpt<50&&BDT_pt_20_50>0.25))"
 
 CUTPbPb=${CUTPbPb}"&&abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter"
+CUTPbPbNP=${CUTPbPb}"&&abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter && Bgen != 23333"
 
 
 echo "NEW CUT CUTPbPb = " $CUTPbPb
@@ -317,6 +322,8 @@ OUTPUTFILEPlotPbPb="ROOTfiles/CrossSectionPbPb.root"
 OUTPUTFILEPbPbDATA="ROOTfiles/data_PbPb.root"
 OUTPUTFILEPbPbMC="ROOTfiles/mc_PbPb.root"
 
+OUTPUTFILEPbPbNP="BsNPSpectra.root"
+
 #SETTING for NP fit
 NPFIT_PbPb="1"
 #NPFIT_PbPb="1.299998*Gaus(x,6.099828,-0.242801)/(sqrt(2*3.14159)*-0.242801)+8.186179*TMath::Erf((x-5.000000)/-0.205218)+8.186179+1.263652*(0.426611*Gaus(x,5.383307,0.249980)/(sqrt(2*3.14159)*0.249980)+(1-0.426611)*Gaus(x,5.383307,0.037233)/(sqrt(2*3.14159)*0.037233))" 
@@ -326,7 +333,7 @@ NPROOFIT_PbPb="1"
 
 if [ $DOCLOSUREPbPb -eq 1 ]; then      
 g++ fitB.C $(root-config --cflags --libs) -g -o fitB.exe 
-./fitB.exe 1 0 "$INPUTMCPbPbCANDWISE"  "$INPUTMCPbPbCANDWISE" "Bpt" "$TRGPbPb" "$CUTPbPb"   "$SELGENPbPb"   "$ISMCPbPb"   1   "$ISDOWEIGHTPbPb"   "$LABELPbPb"  "$OUTPUTFILECLOSUREPbPb" "plotFits/plotFits" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
+./fitB.exe 1 0 "$INPUTMCPbPbCANDWISE"  "$INPUTMCPbPbCANDWISE" "Bpt" "$TRGPbPb" "$CUTPbPb"   "$SELGENPbPb"   "$ISMCPbPb"   1   "$ISDOWEIGHTPbPb"   "$LABELPbPb"  "$OUTPUTFILECLOSUREPbPb" "plotFits/plotClosure" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
 rm fitB.exe
 echo "Closure Part 1 DONE !!!"
 fi
@@ -350,6 +357,18 @@ g++ ReweightBpt.C $(root-config --cflags --libs) -g -o ReweightBpt.exe
 ./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILEREWEIGHT"
 rm ReweightBpt.exe
 fi
+
+
+
+
+
+if [ $DOANALYSISPbPb_FITNP -eq 1 ]; then      
+g++ fitB.C $(root-config --cflags --libs) -g -o fitB.exe 
+./fitB.exe 1 0 "$INPUTMCNPPbPbCANDWISE" "$INPUTMCPbPbCANDWISE" "Bpt" "$TRGPbPb" "$CUTPbPbNP" "$SELGENPbPb" "$ISMCPbPb" 1 "$ISDOWEIGHTPbPb" "$LABELPbPb" "$OUTPUTFILEPbPbNP" "plotFits/plotNP" "2" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
+rm fitB.exe
+fi 
+
+
 
 if [ $DOANALYSISPbPb_FIT -eq 1 ]; then      
 g++ fitB.C $(root-config --cflags --libs) -g -o fitB.exe 
@@ -432,6 +451,7 @@ fi
 
 
 if [ $DOANALYSISPbPb_PTSHAPESYSTPLOT -eq 1 ]; then    
+rm -rf ResultFile/Ptshape.tex
 g++ PtShapeSyst.C $(root-config --cflags --libs) -g -o PtShapeSyst.exe 
 ./PtShapeSyst.exe "$WEIGHTEDEFFOUTFILE" "$UNWEIGHTEDEFFOUTFILE" "$PLOTNAME" "$PTSHAPEOUTFILENAME"
 rm PtShapeSyst.exe
