@@ -45,7 +45,13 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 	{
 		seldata = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselection.Data(),cut.Data(),hiBinMin,hiBinMax);
 		selmc = Form("%s&&%s&&hiBin>=%f&&hiBin<=%f",trgselectionmc.Data(),cut.Data(),hiBinMin,hiBinMax);
+
+		cout << "Trigger Data = " << trgselection.Data() << endl;
+		cout << "Trigger MC = " << trgselectionmc.Data() << endl;
+
 	}
+	cout << "Pass 0" << endl; 
+
 
 	gStyle->SetTextSize(0.05);
 	gStyle->SetTextFont(42);
@@ -58,23 +64,43 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 	TFile* inf = new TFile(inputdata.Data());
 	TFile* infMC = new TFile(inputmc.Data());
 
+	cout << "Pass 1" << endl; 
+
+	cout << "inputmc = " << inputmc.Data() << endl;
+
 	TH1D* h;
 	TH1D* hMC;
 
 	TTree* nt;
 	TTree* ntMC;
 
-	nt = (TTree*)inf->Get("ntphi");
+	nt = (TTree*)inf->Get("Bfinder/ntphi");
+	nt->AddFriend("hltanalysis/HltTree");
+	nt->AddFriend("hiEvtAnalyzer/HiTree");
+	nt->AddFriend("skimanalysis/HltTree");
+	nt->AddFriend("BDT_pt_15_20");
+	nt->AddFriend("BDT_pt_5_10");
+	nt->AddFriend("BDT_pt_10_15");	
+	nt->AddFriend("BDT_pt_20_50");		
+
+	cout << "Pass 2" << endl; 
+
 	//nt->AddFriend("ntHlt");
 	//nt->AddFriend("ntHi");
 	//nt->AddFriend("ntSkim");
 	//nt->AddFriend("BDTStage1_pt15to50");
 
-	ntMC = (TTree*)infMC->Get("ntphi");
-	//ntMC->AddFriend("ntHlt");
-	//ntMC->AddFriend("ntHi");
-	//ntMC->AddFriend("ntSkim");
-	//ntMC->AddFriend("BDTStage1_pt15to50");
+	ntMC = (TTree*)infMC->Get("Bfinder/ntphi");
+	ntMC->AddFriend("hltanalysis/HltTree");
+	ntMC->AddFriend("hiEvtAnalyzer/HiTree");
+	ntMC->AddFriend("skimanalysis/HltTree");
+	ntMC->AddFriend("BDT_pt_15_20");
+	ntMC->AddFriend("BDT_pt_5_10");
+	ntMC->AddFriend("BDT_pt_10_15");	
+	ntMC->AddFriend("BDT_pt_20_50");	
+	ntMC->AddFriend("CentWeightTree");	
+
+	cout << "Pass 3" << endl; 
 
 	TF1 *total;
 	TString outputf;
@@ -96,8 +122,9 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
     if(usePbPb) _isPbPb = "PbPb";
     TString _postfix = "";
     if(weightdata!="1") _postfix = "_EFFCOR";
-
-	for(int i=0;i<_nBins;i++)
+	varExp="Bpt";
+	
+	for(int i=1;i<_nBins;i++)
 	{
 		TCanvas* c= new TCanvas(Form("c%d",i),"",600,600);
 	    TLatex* tex1 = new TLatex(0.518,0.82,Form("%.0f < p_{T} < %.0f GeV/c",_ptBins[i],_ptBins[i+1]));
@@ -111,8 +138,7 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 		setTex(tex4);
 		setTex(tex5);
 		tex3->SetTextSize(0.07);
-
-		for(int v = 0; v < nVar; v++){
+		for(int v = 1; v < nVar; v++){
     		_count++;
 			h   = new TH1D(Form("h%d",_count),  "", vbins[v], vbinmin[v], vbinmax[v]);
 			hMC = new TH1D(Form("hMC%d",_count),"", vbins[v], vbinmin[v], vbinmax[v]);
@@ -120,9 +146,18 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 		    h->SetXTitle(vxaxis[v].c_str());
 			setHist(hMC);
 		    hMC->SetXTitle(vxaxis[v].c_str());
+
+			//cout << "InsideData = " << Form("(%s&&%s>%f&&%s<%f)*(1/%s)", seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],weightdata.Data()) << endl;
+
+			//cout << "InsideMC = " << Form("%s*(%s&&%s>%f&&%s<%f)", weightmc.Data(), Form("%s&&Bgen==23333",selmc.Data()),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1]) << endl;
+
+
 			nt->Project(Form("h%d",_count),     vexp[v].c_str(), Form("(%s&&%s>%f&&%s<%f)*(1/%s)", seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],weightdata.Data()));
-			ntMC->Project(Form("hMC%d",_count), vexp[v].c_str(), Form("%s*(%s&&%s>%f&&%s<%f)", weightmc.Data(), Form("%s&&Bgen==23333",selmc.Data()),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1]));
+			//ntMC->Project(Form("hMC%d",_count), vexp[v].c_str(), Form("%s*(%s&&%s>%f&&%s<%f)", weightmc.Data(), Form("%s&&Bgen==23333",selmc.Data()),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1]));
+			//	ntMC->Project(Form("hMC%d",_count), vexp[v].c_str(), Form("%s*(((%s)&&(%s>%f&&%s<%f))&&(Bgen == 23333))", weightmc.Data(), selmc.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1]));
+			ntMC->Project(Form("hMC%d",_count), vexp[v].c_str(), Form("(Bgen == 23333) && (%s>%f&&%s<%f &&(%s))",varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],cut.Data()));
 			h->SetAxisRange(0,h->GetMaximum()*1.4*1.2,"Y");
+			hMC->Sumw2();
 			hMC->Scale(1/hMC->Integral());
 			hMC->SetAxisRange(0,hMC->GetMaximum()*1.4*1.2,"Y");
 	    	TLatex* tex;
@@ -132,14 +167,14 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 		    tex2->Draw();
 		    tex3->Draw();
 		    tex5->Draw();
-	        c->SaveAs(Form("%s%s/%s_%s_0_%s.pdf",outplotf.Data(),_prefix.Data(),"data",_isPbPb.Data(),vname[v].c_str()));
+	        c->SaveAs(Form("%s%s/%s_%s_%d_%s.pdf",outplotf.Data(),_prefix.Data(),"data",_isPbPb.Data(),i,vname[v].c_str()));
 
 			hMC->Draw("pe");
 		    tex1->Draw();
 		    tex2->Draw();
 		    tex4->Draw();
 		    tex5->Draw();
-	        c->SaveAs(Form("%s%s/%s_%s_0_%s.pdf",outplotf.Data(),_prefix.Data(),"mc",_isPbPb.Data(),vname[v].c_str()));
+	        c->SaveAs(Form("%s%s/%s_%s_%d_%s.pdf",outplotf.Data(),_prefix.Data(),"mc",_isPbPb.Data(),i,vname[v].c_str()));
 		}
 	}  
 	//outf->Close();

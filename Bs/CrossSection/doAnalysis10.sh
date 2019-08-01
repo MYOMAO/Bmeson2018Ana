@@ -1,9 +1,9 @@
 #!/bin/bash
 #source clean.sh
 CENTPbPbMIN=0
-CENTPbPbMAX=100
+CENTPbPbMAX=90
 
-DOANALYSISPP_FONLL=0
+DOANALYSISPP_FONLL=1
 DOANALYSISPP_FIT=0
 DOANALYSISPP_FITONSAVED=0
 DOANALYSISPP_ROOFIT=0
@@ -19,10 +19,11 @@ DOANALYSISPbPb_MCSTUDY=0
 DOANALYSISPbPb_CROSS=0
 DORAA=0
 DORAARATIO=0
-DOANALYSISPbPb_REWEIGHT=0
+DOANALYSISPbPb_REWEIGHTBPT=0
+DOANALYSISPbPb_REWEIGHTPVZ=0
 
 
-DOANALYSISPbPb_FITNP=1
+DOANALYSISPbPb_FITNP=0
 
 #Closure Test
 
@@ -35,8 +36,8 @@ DOANALYSISPbPb_FITONY=0
 DOANALYSISPbPb_MCSTUDYONY=0
 
 
-DOANALYSISPbPb_PTSHAPESYST=0
-DOANALYSISPbPb_PTSHAPESYSTPLOT=0
+DOANALYSISPbPb_PTSHAPESYST=1
+DOANALYSISPbPb_PTSHAPESYSTPLOT=1
 ### pt inclusive interval mass fit
 DOANALYSISPP_FIT_Inc=0
 DOANALYSISPP_FITONSAVED_Inc=0
@@ -188,6 +189,7 @@ RECOONLYPP=$CUTPP
 TRGPP="(HLT_HIL1DoubleMu0_v1)"
 TRGPPMC="(HLT_HIL1DoubleMu0ForPPRef_v1)"
 OUTPUTFILEPPSAVEHIST="ROOTfiles/hPtSpectrumSaveHistBplusPP.root"
+
 OUTPUTFILEPP="ROOTfiles/hPtSpectrumBplusPP.root"
 OUTPUTFILEPPSAVEHIST_ROOFIT="ROOTfiles/hPtSpectrumSaveHistBplusPP_roofit.root"
 OUTPUTFILEPP_ROOFIT="ROOTfiles/hPtSpectrumBplusPP_roofit.root"
@@ -216,8 +218,6 @@ if [ $DOANALYSISPP_FIT -eq 1 ]; then
 g++ fitBPP.C $(root-config --cflags --libs) -g -o fitB.exe 
 #./fitB.exe 0 0 "$INPUTDATAPPCANDWISE" "$INPUTMCPPCANDWISE" "Bpt" "$TRGPP" "$CUTPP" "$SELGENPP" "$ISMCPP" 1 "$ISDOWEIGHTPP" "$LABELPP" "$OUTPUTFILEPPSAVEHIST" "plotFits/plotFits" "$NPFIT_PP" 0 "0" "100"
 ./fitB.exe 0 0 "$INPUTDATAPPCANDWISE" "$INPUTMCPPCANDWISE" "Bpt" "$TRGPP" "$CUTPP" "$SELGENPP" "$ISMCPP" 1 "$ISDOWEIGHTPP" "$LABELPP" "$OUTPUTFILEPP" "plotFits/plotFits" "$NPFIT_PP" 0 "0" "100"
-
-
 rm fitB.exe
 fi 
 
@@ -302,7 +302,7 @@ RECOONLYPbPb=$CUTPbPb
 #TRGPbPb="(HLT_HIL1DoubleMu0_v1||HLT_HIL1DoubleMu0_part1_v1||HLT_HIL1DoubleMu0_part2_v1||HLT_HIL1DoubleMu0_part3_v1)"
 #TRGPbPbMC="(HLT_HIL1DoubleMu0_v1||HLT_HIL1DoubleMu0_part1_v1||HLT_HIL1DoubleMu0_part2_v1||HLT_HIL1DoubleMu0_part3_v1)"
 TRGPbPb="(Bpt > 0)"
-TRGPbPbMC="(Bpt > 0)"
+TRGPbPbMC="(HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1)"
 
 OUTPUTFILEPbPbSAVEHIST="ROOTfiles/hPtSpectrumSaveHistBplusPbPb.root"
 OUTPUTFILEPbPb="ROOTfiles/hPtSpectrumBplusPbPb.root"
@@ -350,14 +350,23 @@ fi
 
 
 
-if [ $DOANALYSISPbPb_REWEIGHT -eq 1 ]; then      
+if [ $DOANALYSISPbPb_REWEIGHTBPT -eq 1 ]; then      
+
+#BPT	
 g++ Bplusdsigmadpt.cc $(root-config --cflags --libs) -g -o Bplusdsigmadpt.exe 
 ./Bplusdsigmadpt.exe "$FONLLDATINPUT"  "$FONLLOUTPUTFILEREWEIGHT" "$LABELPP" 1
 g++ ReweightBpt.C $(root-config --cflags --libs) -g -o ReweightBpt.exe
 ./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILEREWEIGHT"
+#./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILE"
 rm ReweightBpt.exe
+#PVZ
 fi
 
+if [ $DOANALYSISPbPb_REWEIGHTPVZ -eq 1 ]; then   
+g++ ReweightPVz.C $(root-config --cflags --libs) -g -o ReweightPVz.exe
+./ReweightPVz.exe "$INPUTDATAPbPbCANDWISE" "$INPUTMCPbPbCANDWISE"
+rm ReweightPVz.exe
+fi
 
 
 
@@ -388,7 +397,8 @@ fi
 
 
 
-if [ $DOANALYSISPbPb_FITONSAVED -eq 1 ]; then      
+if [ $DOANALYSISPbPb_FITONSAVED -eq 1 ]; then
+OUTPUTFILEPbPbSAVEHIST=$OUTPUTFILEPbPb
 g++ fitB.C $(root-config --cflags --libs) -g -o fitB.exe 
 ./fitB.exe 1 1 "$OUTPUTFILEPbPbSAVEHIST" "$OUTPUTFILEPbPbSAVEHIST" "Bpt" "$TRGPbPb" "$CUTPbPb" "$SELGENPbPb" "$ISMCPbPb" 1 "$ISDOWEIGHTPbPb" "$LABELPbPb" "$OUTPUTFILEPbPb" "plotFits/plotFitsOnSaved" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
 rm fitB.exe
@@ -811,7 +821,9 @@ fi
 
 if [ $PROJECTVAR -eq 1 ]; then      
 g++ plotSth.C $(root-config --cflags --libs) -g -o plotSth.exe 
-./plotSth.exe 0 "$INPUTDATAPPCANDWISE" "$INPUTMCPPCANDWISE" "Bpt" "$TRGPP" "$TRGPPMC" "$CUTPP" "$SELGENPP" "$ISMCPP" 1 "$ISDOWEIGHTPP" "$LABELPP" "" "plotSth" "$NPFIT_PP" 0 "0" "100"
+#./plotSth.exe 0 "$INPUTDATAPPCANDWISE" "$INPUTMCPPCANDWISE" "Bpt" "$TRGPP" "$TRGPPMC" "$CUTPP" "$SELGENPP" "$ISMCPP" 1 "$ISDOWEIGHTPP" "$LABELPP" "" "plotSth" "$NPFIT_PP" 0 "0" "100"
+
+
 ./plotSth.exe 1 "$INPUTDATAPbPbCANDWISE" "$INPUTMCPbPbCANDWISE" "Bpt" "$TRGPbPb" "$TRGPbPbMC" "$CUTPbPb" "$SELGENPbPb" "$ISMCPbPb" 1 "$ISDOWEIGHTPbPb" "$LABELPbPb" "" "plotSth" "$NPFIT_PbPb" 0 "$CENTPbPbMIN" "$CENTPbPbMAX"
 rm plotSth.exe
 fi 

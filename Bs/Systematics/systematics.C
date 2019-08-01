@@ -6,8 +6,8 @@
 #include <TLegend.h>
 #include <TLatex.h>
 #include <TFile.h>
-const int nPtBins=2;
-double PtBins[nPtBins+1] = {7,15,50};
+const int nPtBins=4;
+double PtBins[nPtBins+1] = {5,10,15,20,50};
 const int nPtBins750=3;
 double PtBins750[nPtBins750+1] = {7,15,20,50};
 // =============================================================================================================
@@ -21,13 +21,13 @@ double BRUncertainty	= 7.57;// from PDG sqrt((0.08/1.07)^2+(0.033/5.961)^2+(0.5/
 // Normalization uncertainty
 double ppLumiUncertainty = 2.3;     // B+ paper
 double ppTrackingEfficiency	= 4*2; // single track systematics from D* studies
-double PbPbTrackingEfficiency = 6*2; // from charged particle analysis, paper
+double PbPbTrackingEfficiency = 5*2; // from charged particle analysis, paper
 //double ppAlignment = 2.8;              // alignment systematic from pp 13 TeV analysis
 //double PbPbAlignment = 2.8;            // alignment systematic from pp 13 TeV analysis
 double ppAlignment = 0;
 double PbPbAlignment = 0;
-double ppLifetime = 0.3;               // from 13 TeV analysis
-double PbPbLifetime = 0.3;             // from 13 TeV analysis
+double ppLifetime = 0.0;               // from 13 TeV analysis
+double PbPbLifetime = 0.0;             // from 13 TeV analysis
 TH1D*  ppSignalExtractionSigVar;
 TH1D*  ppSignalExtractionBkgVar;
 TH1D*  ppMesonSelection;
@@ -41,10 +41,10 @@ TH1D* ppEff;
 // PbPb uncertainty
 // =============================================================================================================
 // Normalization uncertainty
-double PbPbNMBUncertainty	= 2;		// B+ paper
-double TAAUncertainty0to100	= 8.9;	    // B+ paper
-double TAAUncertainty0to100HI = 2.8;	// B+ paper 
-double TAAUncertainty0to100LO = 3.4;	// B+ paper 
+double PbPbNMBUncertainty	= 0;		// B+ paper
+double TAAUncertainty0to100	= 2.2;	    // B+ paper
+double TAAUncertainty0to100HI = 2.2;	// B+ paper 
+double TAAUncertainty0to100LO = 2.2;	// B+ paper 
 double TAAUncertainty0to10	= 1.7;		// B+ paper
 TH1D*  PbPbSignalExtractionSigVar;
 TH1D*  PbPbSignalExtractionBkgVar;
@@ -54,14 +54,17 @@ TH1D*  PbPbAccUnc;
 TH1D*  PbPbPtShape;
 TFile* PbPbMCEfffile;
 TH1D* PbPbEff;
+
 // RAA uncertainty, for systematic that can cancel such as PDF variation
 TH1D*  RAASignalExtraction;
 
 bool initialized = 0;
 void initializationPP(int SysOpt=0)
 {
-
+	if(!gROOT->GetListOfFiles()->FindObject("../CrossSection/ROOTfiles/MCstudiesPP.root")){
 	ppMCEfffile = new TFile("../CrossSection/ROOTfiles/MCstudiesPP.root");
+	}
+
 	ppEff = (TH1D*)ppMCEfffile->Get("hEff");
 	ppMesonSelection = new TH1D("ppMesonSelection","",nPtBins,PtBins);
 	ppSignalExtractionSigVar = new TH1D("ppSignalExtractionSigVar","",nPtBins,PtBins);
@@ -117,11 +120,15 @@ void initializationPP(int SysOpt=0)
 			ppPtShape->SetBinContent(i+1,ptshape_pp_750[i]);
 		}
 	}
+	//ppMCEfffile->Close();
 }
 
 void initializationPbPbCent0100(int SysOpt=0)
 {
+	if(!gROOT->GetListOfFiles()->FindObject("../CrossSection/ROOTfiles/MCstudiesPbPb.root")){
 	PbPbMCEfffile = new TFile("../CrossSection/ROOTfiles/MCstudiesPbPb.root");
+	}
+
 	PbPbEff = (TH1D*)PbPbMCEfffile->Get("hEff");
 	PbPbMesonSelection = new TH1D("PbPbMesonSelection","",nPtBins,PtBins);
 	PbPbSignalExtractionSigVar = new TH1D("PbPbSignalExtractionSigVar","",nPtBins,PtBins);
@@ -129,12 +136,12 @@ void initializationPbPbCent0100(int SysOpt=0)
 	PbPbTagAndProbe = new TH1D("PbPbTagAndProbe","",nPtBins,PtBins);
 	PbPbAccUnc = new TH1D("PbPbAccUnc","",nPtBins,PtBins);
 	PbPbPtShape = new TH1D("PbPbPtShape","",nPtBins,PtBins);
-	double selUnc_pbpb[2] = {18.595802, 8.551800, };
-	double extUncSig_pbpb[2] = {4.201315, 3.479940, };
-	double extUncBkg_pbpb[2] = {8.747003, 0.675209, };
-	double tnpUnc_pbpb[2] = {5.059860, 3.776518, };
-	double AccUnc_PbPb[nPtBins] = {1.662617, 1.732661, };
-    double ptshape_PbPb[2] = {7.909751, 3.812999, };
+	double selUnc_pbpb[nPtBins] = {20, 30,30,35 };
+	double extUncSig_pbpb[nPtBins] = {4.66, 0.33, 2.37,1.38 };
+	double extUncBkg_pbpb[nPtBins] = {8.18, 5.68, 2.06,1.27};
+	double tnpUnc_pbpb[nPtBins] = {5.059860, 3.776518,5.059860, 3.776518 };
+	double AccUnc_PbPb[nPtBins] = {0.04, 1.47, 4.83, 8.60 };
+    double ptshape_PbPb[nPtBins] = {34.8, 1.96, 0.09, 0.33 };
 	for(int i = 0; i < nPtBins; i++){
 		PbPbMesonSelection->SetBinContent(i+1, selUnc_pbpb[i]);
 		PbPbSignalExtractionSigVar->SetBinContent(i+1, extUncSig_pbpb[i]);
@@ -144,15 +151,17 @@ void initializationPbPbCent0100(int SysOpt=0)
 		PbPbPtShape->SetBinContent(i+1,ptshape_PbPb[i]);
 	}
 	if(SysOpt==1){// for Bs Bp ratio
-		PbPbTrackingEfficiency = 6;
+		PbPbTrackingEfficiency = 10;
 		PbPbTagAndProbe = new TH1D("PbPbTagAndProbeOpt1","",nPtBins,PtBins); 
-		double tnpUnc_PbPbOpt1[2] = {0., 0.};
-		double AccUnc_PbPbOpt1[nPtBins] = {0., 0.};
+		double tnpUnc_PbPbOpt1[nPtBins] = {0., 0.,0,0};
+		double AccUnc_PbPbOpt1[nPtBins] = {0., 0.,0,0};
 		for(int i = 0; i < nPtBins; i++){
 			PbPbTagAndProbe->SetBinContent(i+1,tnpUnc_PbPbOpt1[i]);//assume canceled
 			PbPbAccUnc->SetBinContent(i+1,AccUnc_PbPbOpt1[i]);//assume canceled
 		}
 	}
+	//PbPbMCEfffile->Close();
+
 }
 
 void initializationRAA(int SysOpt=0)
@@ -523,7 +532,7 @@ void plotSystematicsRAA(double centL=0,double centH=100)
 	canvas->SetLogx();
 
 	TH2F* hempty=new TH2F("hempty","",50,5,60.,10.,-1.,1.);
-	hempty->GetXaxis()->CenterTitle();
+	hempty->GetXaxis()->CenterTitle(); 
 	hempty->GetYaxis()->CenterTitle();
 	hempty->GetYaxis()->SetTitle("Systematical Uncertainty");
 	hempty->GetXaxis()->SetTitle("B_{s} p_{T} (GeV/c)");
@@ -571,7 +580,7 @@ void plotSystematicsRAA(double centL=0,double centH=100)
 	TH1D *h7 = new TH1D("h7","",100,0,1);
 	h7->SetLineWidth(2); h7->SetLineColor(kYellow);
 
-	TLatex* texlumi = new TLatex(0.19,0.936,"28.0 pb^{-1} (5.02 TeV pp) + 351 #mub^{-1} (5.02 TeV PbPb)");
+	TLatex* texlumi = new TLatex(0.19,0.936,"28.0 pb^{-1} (5.02 TeV pp) + 1.5 #nb^{-1} (5.02 TeV PbPb)");
 	texlumi->SetNDC();
 	//texlumi->SetTextAlign(31);
 	texlumi->SetTextFont(42);
@@ -620,6 +629,7 @@ void plotSystematicsRAA(double centL=0,double centH=100)
 	leg->AddEntry(h5,"B Meson Selection and Correction","l");
 	leg->AddEntry(h6,"Tag and Probe","l");
 	leg->Draw();
+	gStyle->SetOptStat(0); 
 	canvas->SaveAs("SystematicSummaryRAA.pdf");
 	canvas->SaveAs("SystematicSummaryRAA.png");
 }
@@ -710,7 +720,7 @@ void plotSystematicsPP()
 	texpre->SetLineWidth(2);
 	texpre->Draw();
 
-	TLatex * texY = new TLatex(0.5,0.8324607,"B_{s} d#sigma / dp_{T}, |y| < 2.4");//0.2612903,0.8425793
+	TLatex * texY = new TLatex(0.5,0.8324607,"B_{s} #frac{1}{T_{AA}} dN / dp_{T}, |y| < 2.4");//0.2612903,0.8425793
 	texY->SetNDC();
 	texY->SetTextColor(1);
 	texY->SetTextFont(42);
@@ -771,8 +781,12 @@ void plotSystematicsPbPb()
 	drawSys(PtBins[0],0, PtBins[0],systematicsPbPb(PtBins[0],1,0,100),1);
 	drawSys(PtBins[nPtBins],0, PtBins[nPtBins],systematicsPbPb(PtBins[nPtBins],1,0,100),1);
 
+	int n = 0;
 	for (double i=PtBins[0];i<PtBins[nPtBins];i+=0.1)
-	{      
+	{   
+		
+		cout << "n = " << n << endl;
+		
 		drawSys(i,systematicsPbPb(i,1,0,100,0,0), i+0.1,systematicsPbPb(i,1,0,100+0.1,0,0),1);
 		drawSys(i,sqrt((systematicsPbPb(i,1,0,100,0,2)*systematicsPbPb(i,1,0,100,0,2))-(systematicsPbPb(i,1,0,100,0,1)*systematicsPbPb(i,1,0,100,0,1))),
 				i+0.1,sqrt((systematicsPbPb(i+0.1,1,0,100,0,2)*systematicsPbPb(i+0.1,1,0,100,0,2))-(systematicsPbPb(i+0.1,1,0,100,0,1)*systematicsPbPb(i+0.1,1,0,100,0,1))),4);
@@ -780,6 +794,7 @@ void plotSystematicsPbPb()
 				i+0.1,sqrt((systematicsPbPb(i+0.1,1,0,100,0,3)*systematicsPbPb(i+0.1,1,0,100,0,3))-(systematicsPbPb(i+0.1,1,0,100,0,2)*systematicsPbPb(i+0.1,1,0,100,0,2))),kGreen+2);
 		drawSys(i,sqrt((systematicsPbPb(i,1,0,100,0,0)*systematicsPbPb(i,1,0,100,0,0))-(systematicsPbPb(i,1,0,100,0,3)*systematicsPbPb(i,1,0,100,0,3))),
 				i+0.1,sqrt((systematicsPbPb(i+0.1,1,0,100,0,0)*systematicsPbPb(i+0.1,1,0,100,0,0))-(systematicsPbPb(i+0.1,1,0,100,0,3)*systematicsPbPb(i+0.1,1,0,100,0,3))),kMagenta);
+		n = n + 1;
 	}
 
 	TH1D *h1 = new TH1D("h1","",100,0,1);
@@ -793,7 +808,7 @@ void plotSystematicsPbPb()
 	TH1D *h6 = new TH1D("h6","",100,0,1);
 	h6->SetLineWidth(2); h6->SetLineColor(kMagenta);
 
-	TLatex* texlumi = new TLatex(0.35,0.936,"351 #mub^{-1} (5.02 TeV PbPb)");
+	TLatex* texlumi = new TLatex(0.35,0.936,"1.5 nb^{-1} (5.02 TeV PbPb)");
 	texlumi->SetNDC();
 	//texlumi->SetTextAlign(31);
 	texlumi->SetTextFont(42);
@@ -815,7 +830,7 @@ void plotSystematicsPbPb()
 	texpre->SetLineWidth(2);
 	texpre->Draw();
 
-	TLatex * texY = new TLatex(0.5,0.8324607,"B_{s} d#sigma / dp_{T}, |y| < 2.4");//0.2612903,0.8425793
+	TLatex * texY = new TLatex(0.5,0.8324607,"B_{s} #frac{1}{T_{AA}} dN / dp_{T}, |y| < 2.4");//0.2612903,0.8425793
 	texY->SetNDC();
 	texY->SetTextColor(1);
 	texY->SetTextFont(42);
@@ -833,7 +848,7 @@ void plotSystematicsPbPb()
 	leg->AddEntry(h5,"B Meson Selection and Correction","l");
 	leg->AddEntry(h6,"Tag and Probe","l");
 	leg->Draw();
-
+	gStyle->SetOptStat(0); 
 	canvas->SaveAs("SystematicSummaryPbPb.pdf");
 	canvas->SaveAs("SystematicSummaryPbPb.png");
 }

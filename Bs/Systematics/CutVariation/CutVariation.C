@@ -32,9 +32,11 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 
 	TCanvas *cResults = new TCanvas("cResults","cResults",600,600);
 
-	int doweight = 0;
+	int doweight = 1;
 
 	if(collsyst == "pp") weightfunctionreco="(pthatweight)*(maxDgenpt<pthat/1.2)*(0.0116437+Dgenpt*(0.0602697)+Dgenpt*Dgenpt*(-0.00226879)+Dgenpt*Dgenpt*Dgenpt*(3.91035e-05)+Dgenpt*Dgenpt*Dgenpt*Dgenpt*(-3.0699e-07)+Dgenpt*Dgenpt*Dgenpt*Dgenpt*Dgenpt*(8.73234e-10))";
+	
+
 
 
 	if(collsyst == "PbPb" && doweight == 1)
@@ -48,6 +50,7 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 		//PVzWeight =	"(0.162740 * TMath::Exp(- 0.020823 * (PVz - 0.428205)*(PVz - 0.428205)))/(0.159489 * TMath::Exp(- 0.019979 * (PVz - 0.594276)*(PVz - 0.594276)))";
 		PVzWeight="0.163562 * TMath::Exp(- 0.021039 * (PVz - 0.426587)*(PVz - 0.426587))/(0.159619 * TMath::Exp(- 0.020011 * (PVz - 0.587652)*(PVz - 0.587652)))";
 		cout << "WEIGHT = YES" << endl;
+		pthatweight = "(pthatweight)";
 
 	}
 
@@ -59,6 +62,8 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 		//PVzWeight = "TMath::Exp(0.057104 + -0.020908 * PVz + -0.001864 * PVz * PVz)";
 		//PVzWeight =	"(0.162740 * TMath::Exp(- 0.020823 * (PVz - 0.428205)*(PVz - 0.428205)))/(0.159489 * TMath::Exp(- 0.019979 * (PVz - 0.594276)*(PVz - 0.594276)))";
 		PVzWeight="(1)";
+		pthatweight = "pthatweight";
+
 		cout << "WEIGHT = NO" << endl;
 
 	}
@@ -159,18 +164,19 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 		cout << "j = " << j << "   Var[j].Data()  = " << Var[j].Data()  << endl;
 
 
-		VarPreCutData = Form("((%s %s %f && %s) && (%s))",Var[j].Data(),Direction[j].Data(),VarCutMin[j],VarPtRange[j].Data(),PreCut.Data());
+		VarPreCutData = Form("((%s %s %f && %s) && (%s))",Var[j].Data(),Direction[j].Data(),WorkingPoint[j],VarPtRange[j].Data(),PreCut.Data());
 	
 		cout << "VarPreCutData = " << VarPreCutData.Data() << endl;
- 
+
 		VarPreCutMC = Form("((%s) && Bgen == 23333)",VarPreCutData.Data());
 
 		TH1D * DataPre = new TH1D("DataPre","DataPre",NBMassBin,BMassMin,BMassMax);
+		DataPre->SetBinErrorOption(TH1::kPoisson);
 		nt->Project("DataPre","Bmass",VarPreCutData.Data());
 		cout << "DataPre = " << DataPre->Integral() << endl;
 
 		TH1D * MCPre = new TH1D("MCPre","MCPre",NBMassBin,BMassMin,BMassMax);
-		ntMC->Project("MCPre","Bmass",VarPreCutMC.Data());
+		ntMC->Project("MCPre","Bmass",(TCut(BptWeight.Data())*TCut(CentWeight.Data())*TCut(PVzWeight.Data())*TCut(weightfunctionreco.Data()))*(TCut(VarPreCutMC.Data())));
 		cout << "MCPre = " << MCPre->Integral() << endl;
 
 
@@ -178,21 +184,32 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 		PreCutYieldData = fDataPre->Integral(BMassMin,BMassMax)/binwidthmass;
 		PreCutYieldErrData = fDataPre->Integral(BMassMin,BMassMax)/binwidthmass*fDataPre->GetParError(0)/fDataPre->GetParameter(0);
 
+		c->SaveAs(Form("Plots/Fits/Data_%s_Work.png",VarName[j].Data()));
+		c->SaveAs(Form("Plots/Fits/Data_%s_Work.pdf",VarName[j].Data()));
+
 
 
 
 
 		fMCPre = fit(c, cMC, MCPre, MCPre, ptMin, ptMax, 1, isPbPb, total, CentMinBin, CentMaxBin, "1");
+		MCPre->SetBinErrorOption(TH1::kPoisson);
 		PreCutYieldMC = fMCPre->Integral(BMassMin,BMassMax)/binwidthmass;
 		PreCutYieldErrMC = fMCPre->Integral(BMassMin,BMassMax)/binwidthmass*fMCPre->GetParError(0)/fMCPre->GetParameter(0);
 		PreCutYieldMC = MCPre->Integral();
 		PreCutYieldErrMC = TMath::Sqrt(PreCutYieldMC);
+	
+		c->SaveAs(Form("Plots/Fits/MC_%s_Work.png",VarName[j].Data()));
+		c->SaveAs(Form("Plots/Fits/MC_%s_Work.pdf",VarName[j].Data()));
+
 
 		
+
+
 		cout << "PreCutYieldData = " << PreCutYieldData << "   PreCutYieldMC  = " << PreCutYieldMC << endl;
 
 
 		for(int i = 0; i < NCut[j]; i++)
+		//for(int i = 0; i < 0; i++)
 		{
 
 			cout << "Now Working on " << Var[j].Data() << "  i = " << i <<  "  CutValue = " << CutValue << endl;
@@ -309,13 +326,13 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 
 
 			DataRatio = YieldData/PreCutYieldData;
-			DataRatioErr = DataRatio * sqrt(1/YieldData + 1/PreCutYieldData);
+			DataRatioErr = DataRatio * sqrt((YieldErrData/YieldData)*(YieldErrData/YieldData) + (PreCutYieldErrData/PreCutYieldData)*(PreCutYieldErrData/PreCutYieldData));
 
 			MCRatio = YieldMC/PreCutYieldMC;
-			MCRatioErr = MCRatio * sqrt(1/YieldMC + 1/PreCutYieldMC);
+			MCRatioErr = MCRatio * sqrt((YieldErrMC/YieldMC)*(YieldErrMC/YieldMC) + (PreCutYieldErrMC/PreCutYieldMC)*(PreCutYieldErrMC/PreCutYieldMC));
 
 			doubleratio = DataRatio/MCRatio;
-			doubleratioErr = doubleratio * sqrt(1/YieldData + 1/PreCutYieldData + 1/YieldErrMC + 1/PreCutYieldMC);
+			doubleratioErr = doubleratio * sqrt((MCRatioErr/MCRatio)*(MCRatioErr/MCRatio) + (DataRatioErr/DataRatio)*(DataRatioErr/DataRatio));
 
 
 			cout << "DataRatio = " << DataRatio << "  MCRatio = " << MCRatio << endl;
@@ -339,7 +356,7 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 		ResultHis->SetMarkerColor(kBlack);
 		ResultHis->SetMarkerSize(2);
 	
-	
+
 		TF1 *func = new TF1("func","[0] + [1] * x");
 		ResultHis->Fit(func);
 		
@@ -354,11 +371,23 @@ void CutVariation(TString collsyst, TString inputdata, TString inputMC, TString 
 
 		fout <<  Var[j].Data() << "  " << " y - intercept = " << par0 << "  y - intercept Error = " << par0Err << "   " << "slope = " << par1 <<  " slope error = " << par1Err << endl;
 		ResultHis->Draw("ep");
-		TLine *l10 = new TLine(WorkingPoint[j],0,WorkingPoint[j],2);
+	
+
+		TLine *l10 = new TLine(WorkingPoint[j],gPad->GetUymin(),WorkingPoint[j],gPad->GetUymax());
 		l10->SetLineStyle(2);
 		l10->SetLineWidth(2);
 		l10->SetLineColor(kBlue);
 		l10->Draw("SAME");
+
+
+
+		TLine *unityline = new TLine(VarHisMin[j],1,VarHisMax[j],1);
+		unityline->SetLineStyle(2);
+		unityline->SetLineWidth(2);
+		unityline->SetLineColor(kGreen);
+		unityline->Draw("SAME");
+
+
 
 		cResults->SaveAs(Form("Plots/CutVar%s.png",VarName[j].Data()));
 		cResults->SaveAs(Form("Plots/CutVar%s.pdf",VarName[j].Data()));

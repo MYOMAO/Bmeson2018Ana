@@ -46,7 +46,8 @@ ppMC="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/ppReweightStudy/MC/MC.r
 #PbPbData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/crab_Bfinder_20190513_HIDoubleMuon__PsiPeri__HIRun2018A_04Apr2019_v1_1033p1_GoldenJSON_skimhltBsize_ntKp.root"
 PbPbMC="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/MC_Bs_PbPb_TMVA_BDT_PbPb.root"
 PbPbData="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/Data_Bs_PbPb_TMVA_BDT_PbPb.root"
-
+PbPbMCPVZALPHA="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/skim/SkimMCWithPVZ.root"
+PbPbDataNOCUT="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/BPlusCheck/MCDataComparison/crab_Bfinder_20181220_HIDoubleMuon_HIRun2018A_PromptReco_v1v2_1031_NoJSON_loose_skimhlt_empty.root"
 
 #PbPbMCCentWeight="crab_Bfinder_20190520_Hydjet_Pythia8_BuToJpsiK_1033p1_pt3tkpt0p7dls2_v2_pthatweight_hardcut_weighted.root"
 
@@ -130,7 +131,7 @@ fi
 
 if [ $doCentReweightPbPb -eq 1 ]; then
 g++ CentReweight.C $(root-config --cflags --libs) -g -o CentReweight.exe 
-./CentReweight.exe "PbPb" "$PbPbData"  "$PbPbMC" $WithCentWeights
+./CentReweight.exe "PbPb" "$PbPbDataNOCUT"  "$PbPbMCPVZALPHA" $WithCentWeights
 rm CentReweight.exe
 fi
 

@@ -1,7 +1,7 @@
-using namespace std;
 #include "uti.h"
 #include "parameters.h"
-
+#include <iostream>
+#include <fstream>
 //double setparam0=100.;
 double setparam0=50000.;
 double setparam1=5.36682;
@@ -14,13 +14,32 @@ double fixparam1=5.36682;
 //Double_t nbinsmasshisto=50;
 Double_t minhisto=5.00;
 Double_t maxhisto=6.00;
-Double_t nbinsmasshisto=50;
+const int nbinsmasshisto=50;
 Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
+TString seldata;
+TString selmc;
+TString selmcgen;
+
+TF1 * mass;
+TF1 * background;
 
 TString collisionsystem;
-TString infname;
 Float_t centmin,centmax;
+TString infname;
+TF1 *total;
+#define BSUBS_MASS 5.36682
+int    drawOpt=0;
+double _ErrCor=1;
+
+using namespace std;
+using std::cout;
+using std::endl;
+
+
+
+static Int_t _count=0;
+
 
 void fitDdefaultnew(TString collsyst="PbPb",TString npfit="0" , Float_t centMin=0, Float_t centMax=100, TString outputfile="outfMasshisto/mass")
 {
@@ -28,6 +47,9 @@ void fitDdefaultnew(TString collsyst="PbPb",TString npfit="0" , Float_t centMin=
 	infname = outputfile;
 	centmin = centMin;
 	centmax = centMax;
+	bool isPbPb = 0;
+
+	if(collsyst.Data()=="PbPb") isPbPb = 1;
 
 	gStyle->SetTextSize(0.05);
 	gStyle->SetTextFont(42);
@@ -36,370 +58,650 @@ void fitDdefaultnew(TString collsyst="PbPb",TString npfit="0" , Float_t centMin=
 	gStyle->SetPadTopMargin(0.1);
 	gStyle->SetPadBottomMargin(0.145);
 	gStyle->SetTitleX(.0f);
+	double ptmin;
+	double ptmax;
+	const int NPDF = 9;
 
-	TF1* fit(Float_t ptmin, Float_t ptmax, TString npfit);
-	ofstream fout(Form("outYield/defaultnew_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax));
-	ofstream falpha(Form("outAlpha/defaultnew_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax));
-	for(int i=0;i<nBins;i++)
-	{
-		TF1* f = fit(ptBins[i],ptBins[i+1], npfit.Data());
-		Float_t yield = f->Integral(minhisto,maxhisto)/binwidthmass;
-		fout<<ptBins[i]<<" "<<ptBins[i+1]<<" "<<yield<<endl;
-		falpha<<ptBins[i]<<" "<<ptBins[i+1]<<" "<<f->GetParameter(6)<<" "<<f->GetParError(6)<<endl;
+
+	TString FitMethodName[NPDF]={"default","linear","2nd","Expo","Single","Triple","increase","decrease","fixmean"};
+	TString OutPlotName[NPDF]={"plotFits/DMass_defaultnew","plotFits/DMass_poly1","plotFits/DMass_poly2","plotFits/DMass_expo2","plotFits/DMass_SingleGaus","plotFits/DMass_TripleGaus","plotFits/DMass_increasewid","plotFits/DMass_decreasewid","plotFits/DMass_fixmean"};
+
+	TString foutName[NPDF]={Form("outYield/defaultnew_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/poly1_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/poly2_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/expo2_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/SingleGaus_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/TripleGaus_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/increasewid_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/decreasewid_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outYield/fixmean_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax)};
+
+
+
+
+	TString falphaName[NPDF]={Form("outAlpha/defaultnew_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/poly1_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/poly2_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/expo2_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/SingleGaus_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/TripleGaus_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/increasewid_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/decreasewid_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax),Form("outAlpha/fixmean_%s_cent_%.0f_%.0f.dat",collsyst.Data(),centmin,centmax)};
+	int FitOpt1[NPDF] = {0,0,0,0,1,2,3,4,5};
+	int FitOpt2[NPDF] = {0,1,2,3,0,0,0,0,0};
+	TF1 *fit(TCanvas* c, TCanvas* cMC, TH1F* h, TH1F* hMCSignal, Double_t ptmin, Double_t ptmax, int isMC, bool isPbPb, TF1* &total,Float_t centmin, Float_t centmax, TString npfit, int funcOpt = 0, int funcOptB = 0);
+
+
+	for(int j = 0; j < 1; j++){
+
+
+		ofstream fout(foutName[j].Data());
+		ofstream falpha(falphaName[j].Data());
+
+		for(int i=0;i< nBins;i++)
+		{
+			ptmin = ptBins[i];
+			ptmax = ptBins[i+1];
+
+			TCanvas* c = new TCanvas(Form("c_%.0f_%.0f",ptmin,ptmax),"",600,600);
+			TCanvas* cMC = new TCanvas(Form("cMC_%.0f_%.0f",ptmin,ptmax),"",600,600);
+
+			TFile* infile = new TFile(Form("%s_%s_cent_%.0f_%.0f_pt_%.0f_%.0f.root",infname.Data(),collisionsystem.Data(),centmin,centmax,ptmin,ptmax));
+			TH1F* h = (TH1F*)infile->Get("h");    
+			h->SetName(Form("h_%.0f_%.0f",ptmin,ptmax));
+			TH1F* hMCSignal = (TH1F*)infile->Get("hMCSignal");  
+			hMCSignal->SetName(Form("hMCSignal_%.0f_%.0f",ptmin,ptmax));
+
+			h->SetBinErrorOption(TH1::kPoisson);
+			TF1* f = fit(c,cMC,h, hMCSignal ,ptBins[i],ptBins[i+1],0,isPbPb, total,centMin ,centMax, npfit.Data(),FitOpt1[j],FitOpt2[j]);
+
+			Float_t YIELD = f->Integral(minhisto,maxhisto)/binwidthmass;
+			fout<<ptBins[i]<<" "<<ptBins[i+1]<<" "<<YIELD<<endl;
+			falpha<<ptBins[i]<<" "<<ptBins[i+1]<<" "<<f->GetParameter(6)<<" "<<f->GetParError(6)<<endl;
+
+
+			TLatex* tex;
+			tex = new TLatex(0.35,0.85,Form("%.0f < p_{T} < %.0f GeV/c, %d < Cent < %d ",ptBins[i],ptBins[i+1],centMin,centMax));
+			tex->SetNDC();
+			tex->SetTextFont(42);
+			tex->SetTextSize(0.045);
+			tex->SetLineWidth(2);
+			tex->Draw();
+
+			tex = new TLatex(0.75,0.80,"|y| < 2.4");
+
+
+			double Yield = f->Integral(minhisto,maxhisto)/binwidthmass;
+			double YieldErr = f->Integral(minhisto,maxhisto)/binwidthmass*f->GetParError(0)/f->GetParameter(0);
+
+
+
+			c->SaveAs(Form("%s_%s_cent_%.0f_%.0f_pt_%.0f_%.0f.pdf",OutPlotName[j].Data(),collsyst.Data(),centMin ,centMax,ptBins[i],ptBins[i+1]));
+			TLegend* leg = new TLegend(0.65,0.58,0.82,0.88,NULL,"brNDC");
+			leg->SetBorderSize(0);
+			leg->SetTextSize(0.04);
+			leg->SetTextFont(42);
+			leg->SetFillStyle(0);
+			leg->AddEntry(h,"Data","pl");
+			leg->AddEntry(f,"Fit","l");
+			leg->AddEntry(mass,"B_{s} Signal","f");
+			// leg->AddEntry(massSwap,"K-#pi swapped","f");
+			leg->AddEntry(background,"Combinatorial","l");
+			leg->Draw("same");
+
+			TLatex* texCms = new TLatex(0.18,0.93, "#scale[1.25]{CMS} Preliminary");
+			texCms->SetNDC();
+			texCms->SetTextAlign(12);
+			texCms->SetTextSize(0.04);
+			texCms->SetTextFont(42);
+			texCms->Draw();
+
+			TLatex* texCol = new TLatex(0.96,0.93, Form("%s #sqrt{s_{NN}} = 5.02 TeV",collisionsystem.Data()));
+			texCol->SetNDC();
+			texCol->SetTextAlign(32);
+			texCol->SetTextSize(0.04);
+			texCol->SetTextFont(42);
+			texCol->Draw();
+
+			TLatex* texPt = new TLatex(0.22,0.78,Form("%.1f < p_{T} < %.1f GeV/c",ptmin,ptmax));
+			texPt->SetNDC();
+			texPt->SetTextFont(42);
+			texPt->SetTextSize(0.04);
+			texPt->SetLineWidth(2);
+			texPt->Draw();
+
+			TLatex* texY = new TLatex(0.22,0.83,"|y| < 2.4");
+			texY->SetNDC();
+			texY->SetTextFont(42);
+			texY->SetTextSize(0.04);
+			texY->SetLineWidth(2);
+			texY->Draw();
+
+			TLatex* texYield = new TLatex(0.22,0.73,Form("N_{D} = %.1f #pm %.1f",Yield,YieldErr));
+			texYield->SetNDC();
+			texYield->SetTextFont(42);
+			texYield->SetTextSize(0.04);
+			texYield->SetLineWidth(2);
+			texYield->Draw();
+
+
+
+			TH1F* hPull = (TH1F*)h->Clone("hPull");
+			for(int i=0;i<h->GetNbinsX();i++)
+			{
+				Float_t nfit = f->Integral(h->GetBinLowEdge(i+1),h->GetBinLowEdge(i+1)+h->GetBinWidth(i+1))/h->GetBinWidth(i+1);
+				if(h->GetBinError(i+1)==0)
+				{
+					hPull->SetBinContent(i+1,0.);
+				}
+				else hPull->SetBinContent(i+1,(h->GetBinContent(i+1)-nfit)/h->GetBinError(i+1));
+				hPull->SetBinError(i+1,0);
+			}
+
+			hPull->SetMinimum(-4.);
+			hPull->SetMaximum(4.);
+			hPull->SetYTitle("Pull");
+			hPull->GetXaxis()->SetTitleOffset(1.);
+			hPull->GetYaxis()->SetTitleOffset(0.65);
+			hPull->GetXaxis()->SetLabelOffset(0.007);
+			hPull->GetYaxis()->SetLabelOffset(0.007);
+			hPull->GetXaxis()->SetTitleSize(0.12);
+			hPull->GetYaxis()->SetTitleSize(0.12);
+			hPull->GetXaxis()->SetLabelSize(0.1);
+			hPull->GetYaxis()->SetLabelSize(0.1);
+			hPull->GetYaxis()->SetNdivisions(504);
+			TLine* lPull = new TLine(5.0, 0, 6.0, 0);
+			lPull->SetLineWidth(1);
+			lPull->SetLineStyle(7);
+			lPull->SetLineColor(1);
+			TPad* pFit = new TPad("pFit","",0,0.3,1,1);
+			pFit->SetBottomMargin(0);
+			pFit->Draw();
+			pFit->cd();
+			h->Draw("e");
+			background->Draw("same");   
+			mass->Draw("same");
+			f->Draw("same");
+			texCms->Draw();
+			texCol->Draw();
+			texPt->Draw();
+			texY->Draw();
+			texYield->Draw();
+			c->cd();
+			TPad* pPull = new TPad("pPull","",0,0,1,0.3);
+			pPull->SetTopMargin(0);
+			pPull->SetBottomMargin(0.3);
+			pPull->Draw();
+			pPull->cd();
+			hPull->Draw("phist");
+			lPull->Draw();
+			c->cd();
+			c->SaveAs(Form("%s_%s_cent_%.0f_%.0f_pt_%.0f_%.0f_Pull.pdf",OutPlotName[j].Data(),collsyst.Data(),centMin ,centMax,ptBins[i],ptBins[i+1]));
+
+		}
+		falpha.close();
+		fout.close();
+
 	}
-	falpha.close();
-	fout.close();
 }
 
-TF1* fit(Float_t ptmin, Float_t ptmax, TString npfit)
+
+TF1 *fit(TCanvas* c, TCanvas* cMC, TH1F* h, TH1F* hMCSignal, Double_t ptmin, Double_t ptmax, int isMC, bool isPbPb, TF1* &total,Float_t centmin, Float_t centmax, TString npfit, int funcOpt = 0, int funcOptB = 0)
 {
-
-	static Int_t count=0;
-	count++;
-	TCanvas* c = new TCanvas(Form("c_%.0f_%.0f",ptmin,ptmax),"",600,600);
-	TFile* infile = new TFile(Form("%s_%s_cent_%.0f_%.0f_pt_%.0f_%.0f.root",infname.Data(),collisionsystem.Data(),centmin,centmax,ptmin,ptmax));
-	TH1F* h = (TH1F*)infile->Get("h");                    h->SetName(Form("h_%.0f_%.0f",ptmin,ptmax));
-	TH1F* hMCSignal = (TH1F*)infile->Get("hMCSignal");    hMCSignal->SetName(Form("hMCSignal_%.0f_%.0f",ptmin,ptmax));
-	//  TH1F* hMCSwapped = (TH1F*)infile->Get("hMCSwapped");  hMCSwapped->SetName(Form("hMCSwapped_%.0f_%.0f",ptmin,ptmax));
+	cout<<"total data: "<<h->GetEntries()<<endl;
 	TString iNP = npfit;
-
-	//  TF1* f = new TF1(Form("f_%.0f_%.0f",ptmin,ptmax),"[0]*([7]*([9]*Gaus(x,[1],[2]*(1+[11]))/(sqrt(2*3.14159)*[2]*(1+[11]))+(1-[9])*Gaus(x,[1],[10]*(1+[11]))/(sqrt(2*3.14159)*[10]*(1+[11])))+(1-[7])*Gaus(x,[1],[8]*(1+[11]))/(sqrt(2*3.14159)*[8]*(1+[11])))+[3]+[4]*x+[5]*x*x+[6]*x*x*x", 1.7, 2.0);
-	/*
-	   TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2]*(1+[12]))/(sqrt(2*3.14159)*[2]*(1+[12]))+(1-[7])*Gaus(x,[1],[8]*(1+[12]))/(sqrt(2*3.14159)*[8]*(1+[12])))+[3]+[4]*x+[5]*x*x+[11]*("+iNP+")");
-
-	//    TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2]*(1+[12]))/(sqrt(2*3.14159)*[2]*(1+[12]))+(1-[7])*Gaus(x,[1],[8]*(1+[12]))/(sqrt(2*3.14159)*[8]*(1+[12]))+[3]+[4]*x+[5]*x*x+[11]*("+iNP+")");
-
-	cout << "Total MC  = " << hMCSignal->Integral() << endl;
-	f->SetParLimits(4,-1000,1000);
-	f->SetParLimits(2,0.01,0.05);
-	f->SetParLimits(8,0.01,0.05);
-	f->SetParLimits(7,0,1);
-	f->SetParLimits(11,0,1000);
-
-	f->SetParameter(0,setparam0);
-	f->SetParameter(1,setparam1);
-	f->SetParameter(2,setparam2);
-	f->SetParameter(8,setparam3);
-	f->FixParameter(1,fixparam1);
-	f->FixParameter(11,0);
-	f->FixParameter(12,0);
-
-
-	if(weightdata != "1"){
-	int maxb = h->GetMaximumBin();
-	double _max = h->GetBinContent(maxb);
-	double _maxE = h->GetBinError(maxb);
-	_ErrCor = (_maxE/_max)/(1/sqrt(_max));
-	f->SetParLimits(0,0,1e5);
-	f->SetParLimits(4,-1e5,1e5);
-	f->SetParLimits(11,0,1e4);
-	}
-	hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	f->ReleaseParameter(1);
-	hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"L m q","",minhisto,maxhisto);
-
-
-	f->FixParameter(1,f->GetParameter(1));
-	f->FixParameter(2,f->GetParameter(2));
-	f->FixParameter(7,f->GetParameter(7));
-	f->FixParameter(8,f->GetParameter(8));
-	printf("Fixed para.:\n");
-	printf("%f, %f, %f\n", f->GetParameter(2), f->GetParameter(7), f->GetParameter(8));
-	h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	f->ReleaseParameter(1);
-	f->ReleaseParameter(12);
-	f->SetParLimits(12,-0.1,0.1);
-
-	h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-	f->SetLineColor(kRed);
-
-*/
-	/*
-	   f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
-	   f->FixParameter(8,f->GetParameter(8));
-	   f->ReleaseParameter(3);
-	   f->ReleaseParameter(4);
-	   f->ReleaseParameter(5);
-	   f->ReleaseParameter(6);
-
-	   f->SetLineColor(kRed);
-
-	   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"q","",minhisto,maxhisto);
-	   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"q","",minhisto,maxhisto);
-	   f->ReleaseParameter(1);
-	   f->SetParLimits(1,1.86,1.87);
-	   f->ReleaseParameter(11);
-	   f->SetParLimits(11,-1.,1.);
-	   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
-	   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
-	   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L q","",minhisto,maxhisto);
-	   h->Fit(Form("f_%.0f_%.0f",ptmin,ptmax),"L m","",minhisto,maxhisto);
-	   */
-
-//	TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*([9]*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10])))+[3]+[4]*x+[5]*x*x+[11]*("+iNP+")");
-
-	TF1 *f = new TF1(Form("f%d",count),"[0]*([7]*Gaus(x,[1],[2]*(1+[12]))/(sqrt(2*3.14159)*[2]*(1+[12]))+(1-[7])*Gaus(x,[1],[8]*(1+[12]))/(sqrt(2*3.14159)*[8]*(1+[12])))+[3]+[4]*x+[5]*x*x+[6]*x*x*x");
-
-
-	//h->Draw();
-	f->SetParLimits(4,-1000,1000);
-	f->SetParLimits(2,0.01,0.1);
-	f->SetParLimits(8,0.01,0.1);
-	f->SetParLimits(7,0,1);
-	f->SetParLimits(11,0,1000);
-	f->SetParLimits(9,0,1);
-	f->SetParLimits(10,0.01,0.10);
-
-	f->SetParameter(0,setparam0);
-	f->SetParameter(1,setparam1);
-	f->SetParameter(2,setparam2);
-	f->SetParameter(8,setparam3);
-	f->FixParameter(1,fixparam1);
-	f->FixParameter(11,0);
-	f->FixParameter(12,0);
-
-	/*
-	   if(weightdata != "1"){
-	   int maxb = h->GetMaximumBin();
-	   double _max = h->GetBinContent(maxb);
-	   double _maxE = h->GetBinError(maxb);
-	   _ErrCor = (_maxE/_max)/(1/sqrt(_max));
-	   f->SetParLimits(0,0,1e5);
-	   f->SetParLimits(4,-1e5,1e5);
-	   f->SetParLimits(11,0,1e4);
-	   }
-	   */
-	h->GetEntries();
-
-	hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	f->ReleaseParameter(1);
-	hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-	hMCSignal->Fit(Form("f%d",count),"L m q","",minhisto,maxhisto);
-
-	f->FixParameter(1,f->GetParameter(1));
-	f->FixParameter(2,f->GetParameter(2));
-	f->FixParameter(7,f->GetParameter(7));
-	f->FixParameter(8,f->GetParameter(8));
-	//f->ReleaseParameter(11);
-	printf("Fixed para.:\n");
-	printf("%f, %f, %f\n", f->GetParameter(2), f->GetParameter(7), f->GetParameter(8));
-	h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
-	f->ReleaseParameter(1);
-	f->ReleaseParameter(12);
-	f->SetParLimits(12,-0.1,0.1);
-
-	h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
-	h->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
-
-
-
-	TF1 *background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x");
-	background->SetParameter(0,f->GetParameter(3));
-	background->SetParameter(1,f->GetParameter(4));
-	background->SetParameter(2,f->GetParameter(5));
-	background->SetParameter(3,f->GetParameter(6));
+    TString funcform = "";
+	TString sigfunc;
+	TString bkgfunc;
 	
-	background->SetLineColor(4);
-	background->SetRange(minhisto,maxhisto);
-	//background->SetLineStyle(2);//PAS
-	background->SetLineStyle(7);//paper
-	//background->SetLineWidth(5);
-	background->SetLineWidth(9);
 
-	TF1 *Bkpi = new TF1(Form("fBkpi%d",count),"[0]*("+iNP+")");
-	Bkpi->SetParameter(0,f->GetParameter(11));
-	Bkpi->SetRange(minhisto,maxhisto);
-	Bkpi->SetLineStyle(1);
-	//Bkpi->SetFillStyle(3004);//PAS
-	Bkpi->SetFillStyle(3005);//paper
-	//Bkpi->SetLineColor(kGreen+1);//PAS
-	//Bkpi->SetFillColor(kGreen+1);//PAS
-	Bkpi->SetLineColor(kGreen+4);//paper
-	Bkpi->SetFillColor(kGreen+4);//paper
-	//Bkpi->SetLineWidth(5);
-	Bkpi->SetLineWidth(9);
+	if(funcOpt == 0 || funcOpt ==5) sigfunc = "[0]*([7]*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*TMath::Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))";
+	if(funcOpt == 1) sigfunc = "[0]*(TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2]))";//single Gaussian
+	if(funcOpt == 2) sigfunc = "[0]*([7]*TMath::Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[7])*([9]*TMath::Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8])+(1-[9])*TMath::Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10])))";//triple Gaussian
+	if(funcOpt == 3 || funcOpt == 4) sigfunc = "[0]*([7]*TMath::Gaus(x,[1],[2]*(1+[12]))/(sqrt(2*3.14159)*[2]*(1+[12]))+(1-[7])*TMath::Gaus(x,[1],[8]*(1+[12]))/(sqrt(2*3.14159)*[8]*(1+[12])))";// increase width or decrease width
 
-	TF1 *mass = new TF1(Form("fmass%d",count),"[0]*([3]*Gaus(x,[1],[2]*(1+[5]))/(sqrt(2*3.14159)*[2]*(1+[5]))+(1-[3])*Gaus(x,[1],[4]*(1+[5]))/(sqrt(2*3.14159)*[4]*(1+[5])))");
-	mass->SetParameters(f->GetParameter(0),f->GetParameter(1),f->GetParameter(2),f->GetParameter(7),f->GetParameter(8),f->GetParameter(12));
+	if(funcOptB == 1) bkgfunc = "[3]+[4]*x";//linear background
+	if(funcOptB == 2) bkgfunc = "[3]+[4]*x+[5]*x*x";//2nd order background
+	if(funcOptB == 0) bkgfunc =  "[3]+[4]*x+[5]*x*x+[6]*x*x*x";//3rd order background
+	if(funcOptB == 3) bkgfunc = "[3]*exp(-[4]*x)";//exponential background
+
+
+	
+
+	funcform = sigfunc + "+" + bkgfunc;
+	//if(funcOpt == onlyBG) funcform = bkgfunc;//consider only background, for prompt fit
+	if(npfit != "1") funcform = funcform + "+[11]*(" + iNP + ")";
+	//if(npfit == "2") funcform = "0";
+
+
+
+	cout << "isMC = " << isMC << endl;
+	
+	TString Tag = "Data";
+	if(isMC == 1) Tag = "MC";
+
+	TF1 *f = new TF1(Form("f%d",_count),funcform.Data());
+	f->SetNpx(5000);
+	f->SetLineWidth(4);
+	f->SetRange(minhisto,maxhisto);
+	//clean0(h);
+
+	/*
+	if(weightdata != "1"){
+		int maxb = h->GetMaximumBin();
+		double _max = h->GetBinContent(maxb);
+		double _maxE = h->GetBinError(maxb);
+		_ErrCor = (_maxE/_max)/(1/sqrt(_max));
+		f->SetParLimits(0,0,1e5);
+		f->SetParLimits(4,-1e5,1e5);
+		f->SetParLimits(11,0,1e4);
+	}
+	*/
+	//signal setting
+	f->SetParameter(0,setparam0);
+	f->SetParameter(1,setparam1);
+	f->SetParameter(2,setparam2);
+	f->SetParameter(8,setparam3);
+	f->SetParameter(10,setparam3);
+	f->SetParameter(12,0);
+	f->SetParLimits(2,0.01,0.3);
+	f->SetParLimits(8,0.01,1.0);
+	f->SetParLimits(10,0.01,0.3);
+	//signal fraction
+	f->SetParLimits(7,0,1);
+	f->SetParLimits(9,0,1);
+	//remove background for MC fitting
+	f->FixParameter(3,0);
+	f->FixParameter(4,0);
+	f->FixParameter(5,0);
+	f->FixParameter(6,0);
+	f->FixParameter(11,0);
+
+	f->FixParameter(1,fixparam1);
+	hMCSignal->Fit(Form("f%d",_count),"q","",minhisto,maxhisto);
+	hMCSignal->Fit(Form("f%d",_count),"q","",minhisto,maxhisto);
+
+	cout << "Pass First Fit" << endl;
+	
+	if(funcOpt !=5 ) f->ReleaseParameter(1);
+
+
+	hMCSignal->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+	hMCSignal->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+	hMCSignal->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+	hMCSignal->Fit(Form("f%d",_count),"L m","",minhisto,maxhisto);
+
+
+	cout << "Pass Second Fit" << endl;
+
+	/*
+	hMCSignal->Fit(Form("f%d",_count),"M","",minhisto,maxhisto);
+	hMCSignal->Fit(Form("f%d",_count),"M","",minhisto,maxhisto);
+	hMCSignal->Fit(Form("f%d",_count),"M","",minhisto,maxhisto);
+	hMCSignal->Fit(Form("f%d",_count),"M","",minhisto,maxhisto);
+	*/
+	cMC->cd();
+	hMCSignal->SetMarkerSize(1.55);
+	hMCSignal->SetMarkerStyle(20);
+	hMCSignal->SetLineColor(1);
+	hMCSignal->SetLineWidth(4);
+	hMCSignal->SetStats(0);
+	hMCSignal->GetXaxis()->SetNdivisions(-50205);
+	hMCSignal->Draw("e");
+	c->cd();
+
+	f->ReleaseParameter(3);
+	f->ReleaseParameter(4);
+	f->SetParLimits(4,-0.7,-0.4);
+	f->ReleaseParameter(5);
+	f->ReleaseParameter(6);
+	//some custome setting for PDF syst
+	//if(funcOpt == linearBG) f->SetParLimits(4,0,1e3);
+	if(funcOptB == 3) f->SetParLimits(4,0,5);
+	f->ReleaseParameter(11);
+	f->SetParLimits(11,0,1000);
+	f->FixParameter(1,f->GetParameter(1));
+	f->FixParameter(2,f->GetParameter(2));
+	f->FixParameter(7,f->GetParameter(7));
+	f->FixParameter(8,f->GetParameter(8));
+	f->FixParameter(9,f->GetParameter(9));
+	f->FixParameter(10,f->GetParameter(10));
+	float relativeWidth;
+	float relativeWidthErr;
+	if(funcOpt > 2){
+	f->FixParameter(12,f->GetParameter(12));
+	 relativeWidth = f->GetParameter(12);
+	 relativeWidthErr = f->GetParError(12);
+	}
+	h->Fit(Form("f%d",_count),"q","",minhisto,maxhisto);
+	h->Fit(Form("f%d",_count),"q","",minhisto,maxhisto);
+	h->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+	h->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+	h->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+
+	cout << "Pass Third Fit" << endl;
+
+	if(funcOpt == 4) {f->FixParameter(12,relativeWidth-relativeWidthErr); cout<<"width change: "<<relativeWidthErr/relativeWidth<<endl;}
+	if(funcOpt == 3) {f->FixParameter(12,relativeWidth+relativeWidthErr);}
+	if(funcOpt == 3 || funcOpt == 4){
+		h->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+		h->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+		h->Fit(Form("f%d",_count),"L q","",minhisto,maxhisto);
+	}
+
+
+	//	TFitResultPtr fitResult = h->Fit(Form("f%d",_count),"L m s","",minhisto,maxhisto);
+
+
+	cout << "Total fuc = " << funcform << endl;
+
+	
+	cout << "sigfunc = " << sigfunc.Data() << endl;
+
+	mass = new TF1(Form("fmass%d",_count),Form("%s",sigfunc.Data()));
+	mass->SetParameter(0,f->GetParameter(0));
+	mass->SetParameter(1,f->GetParameter(1));
+	mass->SetParameter(2,f->GetParameter(2));
+	mass->SetParameter(7,f->GetParameter(7));
+	mass->SetParameter(8,f->GetParameter(8));
+	mass->SetParameter(9,f->GetParameter(9));
+	mass->SetParameter(10,f->GetParameter(10));
+	if(funcOpt > 2) mass->SetParameter(12,f->GetParameter(12));
+	
+
+
+
 	mass->SetParError(0,f->GetParError(0));
 	mass->SetParError(1,f->GetParError(1));
 	mass->SetParError(2,f->GetParError(2));
-	mass->SetParError(3,f->GetParError(7));
-	mass->SetParError(4,f->GetParError(8));
+	mass->SetParError(7,f->GetParError(7));
+	mass->SetParError(8,f->GetParError(8));
+	mass->SetParError(9,f->GetParError(9));
+	mass->SetParError(10,f->GetParError(10));
+	if(funcOpt > 2)	mass->SetParError(12,f->GetParError(12));
+	mass->SetRange(minhisto,maxhisto);
+	//mass->SetRange(5.16,5.40);
+	mass->SetFillColor(kOrange-3);
+	mass->SetLineColor(kOrange-3);
+	mass->SetFillStyle(3002);
+	mass->SetLineWidth(4);
+	mass->SetLineStyle(7);
 
 
-	//mass->SetLineColor(2);//PAS
-	//mass->SetFillColor(2);//PAS
-	mass->SetFillColor(kOrange-3);//paper
-	mass->SetLineColor(kOrange-3);//paper
-	//mass->SetFillStyle(3004);//PAS
-	mass->SetFillStyle(3002);//paper
-	//mass->SetLineWidth(5);
-	mass->SetLineWidth(9);
-	//mass->SetLineStyle(2);//PAS
-	mass->SetLineStyle(7);//paper
+	cout << "background = " << bkgfunc.Data() << endl;
 
-	//h->SetXTitle("m_{#mu#muK} (GeV/c^{2})");
-	h->SetXTitle("m_{B} (GeV/c^{2})");
+
+	background = new TF1(Form("background%d",_count),Form("%s",bkgfunc.Data()));
+	background->SetParameter(3,f->GetParameter(3));
+	background->SetParameter(4,f->GetParameter(4));
+	background->SetParameter(5,f->GetParameter(5));
+
+	cout << "Par 5 from f = " << f->GetParameter(5) << endl;
+	cout << "Par 5 Before = " << background->GetParameter(5) << endl;
+
+
+	background->SetParameter(6,f->GetParameter(6));
+	background->SetRange(minhisto,maxhisto);
+	background->SetLineColor(4);
+	background->SetLineStyle(7);
+	background->SetLineWidth(4);
+
+	TF1 *Bkpi = new TF1(Form("fBkpi%d",_count),"[0]*("+iNP+")");
+	Bkpi->SetParameter(0,f->GetParameter(11));
+	Bkpi->SetRange(minhisto,maxhisto);
+	Bkpi->SetLineStyle(1);
+	Bkpi->SetFillStyle(3005);
+	Bkpi->SetLineColor(kGreen+4);
+	Bkpi->SetFillColor(kGreen+4);
+	Bkpi->SetLineWidth(4);
+
+	//h->SetXTitle("m_{B} (GeV/c^{2})");
+    h->SetXTitle("m_{J/#psi(#mu#mu)#phi(KK)} (GeV/c^{2})");
 	h->SetYTitle("Events / (20 MeV/c^{2})");
 	h->GetXaxis()->CenterTitle();
 	h->GetYaxis()->CenterTitle();
-	h->SetAxisRange(0,h->GetMaximum()*1.4*1.2,"Y");
-	//h->GetXaxis()->SetTitleOffset(1.3);
-	//h->GetYaxis()->SetTitleOffset(1.8);
-	h->GetXaxis()->SetTitleOffset(0.9);
-	h->GetYaxis()->SetTitleOffset(1.3);
-	//h->GetXaxis()->SetLabelOffset(0.007);
-	//h->GetYaxis()->SetLabelOffset(0.007);
-	//h->GetXaxis()->SetTitleSize(0.045);
-	//h->GetYaxis()->SetTitleSize(0.045);
-	h->GetXaxis()->SetTitleSize(0.07);
-	h->GetYaxis()->SetTitleSize(0.07);
+	h->GetXaxis()->SetTitleOffset(1.0);
+	h->GetYaxis()->SetTitleOffset(1.4);
+	h->GetXaxis()->SetTitleSize(0.055);
+	h->GetYaxis()->SetTitleSize(0.055);
 	h->GetXaxis()->SetTitleFont(42);
 	h->GetYaxis()->SetTitleFont(42);
 	h->GetXaxis()->SetLabelFont(42);
 	h->GetYaxis()->SetLabelFont(42);
-	//h->GetXaxis()->SetLabelSize(0.04);
-	//h->GetYaxis()->SetLabelSize(0.04);
-	h->GetXaxis()->SetLabelSize(0.06);
-	h->GetYaxis()->SetLabelSize(0.06);
-	//h->SetMarkerSize(1.0);
+	h->GetXaxis()->SetLabelSize(0.055);
+	h->GetYaxis()->SetLabelSize(0.055);
 	h->SetMarkerSize(1.55);
 	h->SetMarkerStyle(20);
 	h->SetLineColor(1);
-	h->SetLineWidth(5);
+	h->SetLineWidth(4);
 	h->SetStats(0);
 	h->GetXaxis()->SetNdivisions(-50205);
+	//h->SetMaximum((h->GetBinContent(h->GetMaximumBin())+h->GetBinError(h->GetMaximumBin()))*1.4);
+	h->SetMaximum((h->GetBinContent(h->GetMaximumBin())+h->GetBinError(h->GetMaximumBin()))*1.8);
+	c->cd();
 	h->Draw("e");
-	Bkpi->SetRange(5.00,5.60);
-	Bkpi->Draw("same");
+	if(npfit != "1" && npfit != "2"){
+		//Bkpi->SetRange(5.00,5.60);
+		Bkpi->Draw("same");
+	}
+	if( npfit != "2"){	
 	background->Draw("same");   
-	//mass->SetRange(5.16,5.40);
 	mass->Draw("same");
 	f->Draw("same");
+	}
 	c->RedrawAxis();
 
-	Double_t yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
-	Double_t yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);  
-	std::cout<<"YIELD="<<yield<<std::endl;
+	//accessing fir results
+	//https://root.cern.ch/root/html/ROOT__Fit__FitResult.html
+	//TFitResultPtr fr = h->Fit(Form("f%d",_count),"L m s e","",minhisto,maxhisto);
+	//Int_t fitStatus = fr;
+	//printf("fit result status: %d\n", fitStatus);
+	//printf("Central val: %f\n", fr->GetParams()[0]);
+	//printf("HESSE err: %f (%.2f%)\n" , fr->GetErrors()[0], fr->GetErrors()[0]/fr->GetParams()[0]*100);
+	//printf("Minos err: %f (%.2f%), %f (%.2f%)\n", fr->LowerError(0), -fr->LowerError(0)/fr->GetParams()[0]*100, fr->UpperError(0), fr->UpperError(0)/fr->GetParams()[0]*100);
+	//printf("diff in %: (%.2f%), (%.2f%)\n", -fr->LowerError(0)/fr->GetParams()[0]*100-fr->GetErrors()[0]/fr->GetParams()[0]*100, fr->UpperError(0)/fr->GetParams()[0]*100-fr->GetErrors()[0]/fr->GetParams()[0]*100);
 
-	TLegend* leg = new TLegend(0.65,0.58,0.82,0.88,NULL,"brNDC");
+	//print out chi2 calculations
+	Double_t yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
+	Double_t yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
+
+	cout << "yield inside = " << yield << endl;
+	cout << "yieldErr inside = " << yieldErr << endl;
+
+	cout << "Gauss 1 Peak = " <<  mass->GetParameter(0) * mass->GetParameter(7) << endl;
+	cout << "Gauss 1 Width = " <<  mass->GetParameter(2)  << endl;
+	cout << "Gauss 2 Peak = " <<  mass->GetParameter(0) * (1 - mass->GetParameter(7)) * mass->GetParameter(9) << endl;
+	cout << "Gauss 2 Width = " <<  mass->GetParameter(2)  << endl;
+	cout << "Gauss 3 Peak = " <<  mass->GetParameter(0) * (1 - mass->GetParameter(7)) *(1 - mass->GetParameter(9)) << endl;
+	cout << "Gauss 3 Width = " <<  mass->GetParameter(10)  << endl;
+
+
+
+
+	cout << "------------------------------- VAR PRINT OUT  -----------------------------" << endl;
+	cout << "------------------------------- Mass Function  -----------------------------" << endl;
+	cout << "Par 0 = " << mass->GetParameter(0) << endl;
+	cout << "Par 1 = " << mass->GetParameter(1) << endl;
+	cout << "Par 2 = " << mass->GetParameter(2) << endl;
+	cout << "Par 7 = " << mass->GetParameter(7) << endl;
+	cout << "Par 8 = " << mass->GetParameter(8) << endl;
+	cout << "Par 9 = " << mass->GetParameter(9) << endl;
+	cout << "Par 10 = " << mass->GetParameter(10) << endl;
+
+
+	cout << "------------------------------- Background Function  -----------------------------" << endl;
+	cout << "Par 3 = " << background->GetParameter(3) << endl;
+	cout << "Par 4 = " << background->GetParameter(4) << endl;
+	cout << "Par 5 = " << background->GetParameter(5) << endl;
+	cout << "Par 6 = " << background->GetParameter(6) << endl;
+
+
+	cout << "------------------------------- Total Function  -----------------------------" << endl;
+	cout << "Par 0 = " << f->GetParameter(0) << endl;
+	cout << "Par 1 = " << f->GetParameter(1) << endl;
+	cout << "Par 2 = " << f->GetParameter(2) << endl;
+	cout << "Par 3 = " << f->GetParameter(3) << endl;
+	cout << "Par 4 = " << f->GetParameter(4) << endl;
+	cout << "Par 5 = " << f->GetParameter(5) << endl;
+	cout << "Par 6 = " << f->GetParameter(6) << endl;	
+	cout << "Par 7 = " << f->GetParameter(7) << endl;
+	cout << "Par 8 = " << f->GetParameter(8) << endl;
+	cout << "Par 9 = " << f->GetParameter(9) << endl;
+	cout << "Par 10 = " << f->GetParameter(10) << endl;
+
+	cout << "------------------------------- DONE  -----------------------------" << endl;
+	
+
+
+
+	TH1D* fh = (TH1D*)h->Clone("fh");
+	double dataArr[nbinsmasshisto]; double dataErrArr[nbinsmasshisto]; double fitArr[nbinsmasshisto]; 
+	for(int i = 0; i < nbinsmasshisto; i++){
+		dataArr[i] = h->GetBinContent(i+1);
+		dataErrArr[i] = h->GetBinError(i+1);
+		fitArr[i] = f->Eval(h->GetBinCenter(i+1));
+		fh->SetBinContent(i+1, fitArr[i]);
+		fh->SetBinError(i+1, sqrt(fitArr[i]));
+	}
+	printf("f->GetNDF: %d, f->GetChisquare: %f\n", f->GetNDF(), f->GetChisquare());
+	printf("h->Chisquare(f): %f, h->Chisquare(f,'L'): %f \n", h->Chisquare(f), h->Chisquare(f,"L"));
+	printf("h->Chi2Test(fh): %f\n", h->Chi2Test(fh, "UU CHI2"));
+//	printf("2*fitResult->MinFcnValue(): %f\n", 2*fitResult->MinFcnValue());
+	printf("f->GetProb: %f, TMath::Prob: %f\n", f->GetProb(), TMath::Prob(f->GetChisquare(), f->GetNDF()));
+    double chi2Std = 0;
+    double chi2Neyman = 0;
+    double chi2Peason = 0;
+    double chi2BakerCousins = 0;
+	chi2Cal(dataArr, dataErrArr, fitArr, nbinsmasshisto, chi2Std, chi2Neyman, chi2Peason, chi2BakerCousins);
+    printf("chi2 Standard: %f\n",chi2Std);
+    printf("chi2 Neyman: %f\n",chi2Neyman);
+    printf("chi2 Peason: %f\n",chi2Peason);
+    printf("chi2 Baker & Cousins: %f\n",chi2BakerCousins);
+
+    TLegend *leg = new TLegend(0.525,0.40,0.85,0.75,NULL,"brNDC");
+    if(drawOpt == 1) {
+        leg = new TLegend(0.525,0.57,0.85,0.80,NULL,"brNDC");
+    }
 	leg->SetBorderSize(0);
-	leg->SetTextSize(0.04);
+	leg->SetTextSize(0.055);
 	leg->SetTextFont(42);
 	leg->SetFillStyle(0);
-	leg->AddEntry(h,"Data","pl");
-	leg->AddEntry(f,"Fit","l");
-	leg->AddEntry(mass,"B_{s} Signal","f");
-	// leg->AddEntry(massSwap,"K-#pi swapped","f");
-	leg->AddEntry(background,"Combinatorial","l");
+	if(npfit !="2")  leg->AddEntry(h,"Data","pl");
+	if(npfit == "2") leg->AddEntry(h,"NP B_{s} Bkgd","pl");
+	if(npfit !="2") leg->AddEntry(f,"Fit","l");
+	if(npfit !="2") leg->AddEntry(mass,"Signal","f");
+	if(npfit !="2") leg->AddEntry(background,"Combinatorial","l");
+	if(npfit != "1" && npfit !="2") leg->AddEntry(Bkpi,"B #rightarrow J/#psi X","f");
 	leg->Draw("same");
 
-	TLatex* texCms = new TLatex(0.18,0.93, "#scale[1.25]{CMS} Preliminary");
-	texCms->SetNDC();
-	texCms->SetTextAlign(12);
-	texCms->SetTextSize(0.04);
-	texCms->SetTextFont(42);
-	texCms->Draw();
+	TLatex* texcms = new TLatex(0.22,0.87,"CMS");
+	texcms->SetNDC();
+	texcms->SetTextAlign(13);
+	texcms->SetTextFont(62);
+	texcms->SetTextSize(0.075);
+	texcms->SetLineWidth(2);
+	//texcms->Draw();
 
-	TLatex* texCol = new TLatex(0.96,0.93, Form("%s #sqrt{s_{NN}} = 5.02 TeV",collisionsystem.Data()));
+	TLatex* texB = new TLatex(0.225,0.74,"B^{0}_{s}");
+	texB->SetNDC();
+	texB->SetTextFont(42);
+	texB->SetTextSize(0.055);
+	texB->SetLineWidth(2);
+	//texB->Draw();
+
+	// preliminary setting
+	texcms = new TLatex(0.21,0.88,"CMS");
+	texcms->SetNDC();
+	texcms->SetTextAlign(13);
+	texcms->SetTextFont(62);
+	texcms->SetTextSize(0.06);
+	texcms->SetLineWidth(2);
+	texcms->Draw();
+    //TLatex* texpre = new TLatex(0.21,0.83,"Preliminary");
+    TLatex* texpre = new TLatex(0.21,0.83,"Supplementary");
+    texpre->SetNDC();
+    texpre->SetTextAlign(13);
+    texpre->SetTextFont(52);
+    texpre->SetTextSize(0.035);
+    texpre->SetLineWidth(2);
+    //texpre->Draw();centMax
+	texB = new TLatex(0.225,0.68,"B^{0}_{s}");
+	texB->SetNDC();
+	texB->SetTextFont(62);
+	texB->SetTextSize(0.07);
+	texB->SetLineWidth(2);
+	texB->Draw();
+	// preliminary setting
+
+	TLatex* texCol;
+	if(collisionsystem=="pp"||collisionsystem=="PP"||collisionsystem=="ppInc"||collisionsystem=="PbPbInc") texCol= new TLatex(0.95,0.94, Form("28.0 pb^{-1} (%s 5.02 TeV)","pp"));
+	else texCol= new TLatex(0.945,0.94, Form("1.5 nb^{-1} (%s 5.02 TeV)","PbPb"));
 	texCol->SetNDC();
 	texCol->SetTextAlign(32);
-	texCol->SetTextSize(0.04);
+	texCol->SetTextSize(0.055);
 	texCol->SetTextFont(42);
 	texCol->Draw();
 
-	TLatex* texPt = new TLatex(0.22,0.78,Form("%.1f < p_{T} < %.1f GeV/c",ptmin,ptmax));
-	texPt->SetNDC();
-	texPt->SetTextFont(42);
-	texPt->SetTextSize(0.04);
-	texPt->SetLineWidth(2);
-	texPt->Draw();
+	float Chi2 =  f->GetChisquare();
+	int nDOF = f->GetNDF();
+    float nChi2 =  f->GetChisquare()/f->GetNDF();
+   // float nChi2 = f->GetChisquare();
+	int nDigit_chi2BakerCousins = 2;
+    int nDigit_nChi2 = 2;
+    chi2BakerCousins = roundToNdigit(chi2BakerCousins);
+    nChi2 = roundToNdigit(nChi2);
+    nDigit_chi2BakerCousins = sigDigitAfterDecimal(chi2BakerCousins);
+	
+	cout << "Chi2 = " <<  Chi2 << "  nChi2 = " << nChi2 << endl;
 
-	TLatex* texY = new TLatex(0.22,0.83,"|y| < 2.4");
-	texY->SetNDC();
-	texY->SetTextFont(42);
-	texY->SetTextSize(0.04);
-	texY->SetLineWidth(2);
-	texY->Draw();
+    nDigit_nChi2 = sigDigitAfterDecimal(nChi2);
+    TLatex* texChi = new TLatex(0.55,0.50, Form("#chi^{2}/nDOF: %.*f/%d = %.*f", nDigit_chi2BakerCousins, Chi2, nDOF, nDigit_nChi2, nChi2));
+	texChi->SetNDC();
+	texChi->SetTextAlign(12);
+	texChi->SetTextSize(0.04);
+	texChi->SetTextFont(42);
 
-	TLatex* texYield = new TLatex(0.22,0.73,Form("N_{D} = %.0f #pm %.0f",yield,yieldErr));
+	double width = 0.05;
+	double BmassH = BSUBS_MASS + width;
+	double BmassL = BSUBS_MASS - width;
+	Double_t bkgd = background->Integral(BmassL,BmassH)/binwidthmass;
+	cout<<"BG in signal region: "<<bkgd<<endl;
+	Double_t SB = yield/bkgd;
+    Double_t Significance =  yield/TMath::Sqrt(bkgd+yield);
+    int nDigit_Significance = 6;
+    Significance = roundToNdigit(Significance);
+    nDigit_Significance = sigDigitAfterDecimal(Significance);
+    TLatex* texSig = new TLatex(0.55,0.54,Form("Significance = %.*f", nDigit_Significance, Significance));
+
+
+    cout<<"Significance = "<<Significance<<endl;
+	texSig->SetNDC();
+	texSig->SetTextFont(42);
+	texSig->SetTextSize(0.04);
+	texSig->SetLineWidth(2);
+
+//    int nDigit_yield = 6;
+ //   yield = roundToNdigit(yield);
+//    nDigit_yield = sigDigitAfterDecimal(yield);
+ //   TLatex* texYield = new TLatex(0.55,0.44,Form("Yield = %.*f", nDigit_yield, yield));
+
+	TLatex* texYield = new TLatex(0.55,0.44,Form("Yield = %f", yield));
 	texYield->SetNDC();
 	texYield->SetTextFont(42);
 	texYield->SetTextSize(0.04);
 	texYield->SetLineWidth(2);
-	texYield->Draw();
 
-	c->SaveAs(Form("plotFits/DMass_defaultnew_%s_cent_%.0f_%.0f_pt_%.0f_%.0f.pdf",collisionsystem.Data(),centmin,centmax,ptmin,ptmax));
+//	int nDigit_yieldErr = 6;
+//	yieldErr = roundToNdigit(yieldErr);
+//    nDigit_yieldErr = sigDigitAfterDecimal(yieldErr);
+	//TLatex* texYieldErr = new TLatex(0.55,0.34,Form("YieldErr = %.*f", nDigit_yieldErr, yieldErr));
+	TLatex* texYieldErr = new TLatex(0.55,0.34,Form("YieldErr = %f", yieldErr));
+	texYieldErr->SetNDC();
+	texYieldErr->SetTextFont(42);
+	texYieldErr->SetTextSize(0.04);
+	texYieldErr->SetLineWidth(2);
 
-	TCanvas* cPull = new TCanvas(Form("cPull_%.0f_%.0f",ptmin,ptmax),"",600,700);
-	TH1F* hPull = (TH1F*)h->Clone("hPull");
-	for(int i=0;i<h->GetNbinsX();i++)
-	{
-		Float_t nfit = f->Integral(h->GetBinLowEdge(i+1),h->GetBinLowEdge(i+1)+h->GetBinWidth(i+1))/h->GetBinWidth(i+1);
-		if(h->GetBinError(i+1)==0)
-		{
-			hPull->SetBinContent(i+1,0.);
-		}
-		else hPull->SetBinContent(i+1,(h->GetBinContent(i+1)-nfit)/h->GetBinError(i+1));
-		hPull->SetBinError(i+1,0);
-	}
-	hPull->SetMinimum(-4.);
-	hPull->SetMaximum(4.);
-	hPull->SetYTitle("Pull");
-	hPull->GetXaxis()->SetTitleOffset(1.);
-	hPull->GetYaxis()->SetTitleOffset(0.65);
-	hPull->GetXaxis()->SetLabelOffset(0.007);
-	hPull->GetYaxis()->SetLabelOffset(0.007);
-	hPull->GetXaxis()->SetTitleSize(0.12);
-	hPull->GetYaxis()->SetTitleSize(0.12);
-	hPull->GetXaxis()->SetLabelSize(0.1);
-	hPull->GetYaxis()->SetLabelSize(0.1);
-	hPull->GetYaxis()->SetNdivisions(504);
-	TLine* lPull = new TLine(5.0, 0, 6.0, 0);
-	lPull->SetLineWidth(1);
-	lPull->SetLineStyle(7);
-	lPull->SetLineColor(1);
-	TPad* pFit = new TPad("pFit","",0,0.3,1,1);
-	pFit->SetBottomMargin(0);
-	pFit->Draw();
-	pFit->cd();
-	h->Draw("e");
-	background->Draw("same");   
-	mass->Draw("same");
-	// massSwap->Draw("same");
-	f->Draw("same");
-	leg->Draw("same");
-	texCms->Draw();
-	texCol->Draw();
-	texPt->Draw();
-	texY->Draw();
-	texYield->Draw();
-	cPull->cd();
-	TPad* pPull = new TPad("pPull","",0,0,1,0.3);
-	pPull->SetTopMargin(0);
-	pPull->SetBottomMargin(0.3);
-	pPull->Draw();
-	pPull->cd();
-	hPull->Draw("phist");
-	lPull->Draw();
-	cPull->cd();
-	cPull->SaveAs(Form("plotFits/DMass_defaultnew_%s_cent_%.0f_%.0f_pt_%.0f_%.0f_Pull.pdf",collisionsystem.Data(),centmin,centmax,ptmin,ptmax));
+	
 
+
+
+
+	TF1* t = (TF1*)h->GetFunction(Form("f%d",_count))->Clone();
+	h->GetFunction(Form("f%d",_count))->Delete();
+	t->Draw("same");
+	h->Draw("e same");
+    //if(1) {
+        texChi->Draw();
+        texSig->Draw("SAME");
+        texYield->Draw("SAME");
+		texYieldErr->Draw("SAME");
+
+	total=f;
 	return mass;
 }
 

@@ -38,8 +38,8 @@ void Closure(TString collyst, TString infile, TString eff, TString oufile){
 	MCHis->Sumw2();
 
 	TH1D * ClosureHis = (TH1D *) FitHis->Clone("ClosureHis");
-	ClosureHis->SetMinimum(0.8);
-	ClosureHis->SetMaximum(1.2);
+	ClosureHis->SetMinimum(0.50);
+	ClosureHis->SetMaximum(1.20);
 
 
 	ClosureHis->Divide(FitEff);
@@ -49,7 +49,6 @@ void Closure(TString collyst, TString infile, TString eff, TString oufile){
 
 	TCanvas* c= new TCanvas("c","",600,600);
 	c->cd();
-	ClosureHis->Draw("ep");
 	ClosureHis->SetLineColor(kBlue);
 	ClosureHis->SetMarkerSize(3);
 	ClosureHis->GetXaxis()->SetTitle("B_{S} p_{T} (GeV/c)");

@@ -594,11 +594,11 @@ int TMVAClassification(std::string inputSname, std::string inputBname, std::stri
 
   if (Use["BDTD"]) // Decorrelation + Adaptive Boost
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTD",
-                         "!H:!V:NTrees=400:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:VarTransform=Decorrelate" );
+                         "!H:!V:NTrees=6000:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:VarTransform=Decorrelate" );
 
   if (Use["BDTF"])  // Allow Using Fisher discriminant in node splitting for (strong) linearly correlated variables
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTF",
-                         "!H:!V:NTrees=50:MinNodeSize=2.5%:UseFisherCuts:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=20" );
+                         "!H:!V:NTrees=2500:MinNodeSize=2.5%:UseFisherCuts:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:SeparationType=GiniIndex:nCuts=20000" );
 
   // RuleFit -- TMVA implementation of Friedman's method
   if (Use["RuleFit"])

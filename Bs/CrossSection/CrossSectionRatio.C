@@ -26,7 +26,7 @@ void CrossSectionRatio(TString inputFONLL="ROOTfiles/output_inclusiveDd0meson_5T
 
 	TH1F* hPtSigma = (TH1F*)file->Get("hPt");
 	if(doDataCor != 1) hPtSigma->Divide(hEff);
-	hPtSigma->Scale(1./(2*lumi*BRchain));
+	hPtSigma->Scale(1./(2*6.274*BRchain));
 	hPtSigma->SetName("hPtSigma");
 
 	int _nBins = hPtSigma->GetNbinsX();
@@ -35,7 +35,7 @@ void CrossSectionRatio(TString inputFONLL="ROOTfiles/output_inclusiveDd0meson_5T
 		printf("UPDATE BIN NUMBER BUFFER\n");
 		return;
 	}
-	for (int i = 0; i < _nBins; i++){
+	for (int i = 0; i < _nBins+1; i++){
 		_ptBins[i] = hPtSigma->GetBinLowEdge(i+1);
 	}
 	_ptBins[_nBins] = hPtSigma->GetBinLowEdge(_nBins) + hPtSigma->GetBinWidth(_nBins);
@@ -123,14 +123,15 @@ void CrossSectionRatio(TString inputFONLL="ROOTfiles/output_inclusiveDd0meson_5T
 		pSigma->Draw();
 		pSigma->cd();
 	}
+	
 
-	Float_t yaxisMin=5.e2,yaxisMax=1.e+7;
+	Float_t yaxisMin=5.e2,yaxisMax=2.e+8;
 	if(plotFONLL) yaxisMin=1.e+3;
 	TH2F* hemptySigma=new TH2F("hemptySigma","",50,_ptBins[0]-5.,_ptBins[_nBins]+5.,10.,yaxisMin,yaxisMax);  
 	hemptySigma->GetXaxis()->CenterTitle();
 	hemptySigma->GetYaxis()->CenterTitle();
 	hemptySigma->GetYaxis()->SetTitle("#frac{d#sigma_{pp}}{dp_{T}} ( pb GeV^{-1}c)");
-	if(isPbPb) hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} ( pb GeV^{-1}c)");
+	if(isPbPb) hemptySigma->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} ( mb GeV^{-1}c)");
 	hemptySigma->GetXaxis()->SetTitle("p_{T} (GeV/c)");
 	hemptySigma->GetXaxis()->SetTitleOffset(1.);
 	hemptySigma->GetYaxis()->SetTitleOffset(1.45*tpadr);
@@ -219,6 +220,14 @@ void CrossSectionRatio(TString inputFONLL="ROOTfiles/output_inclusiveDd0meson_5T
 	texB->SetTextSize(0.07/tpadr);
 	texB->SetLineWidth(2);
 	texB->Draw();
+
+	TLatex* Central = new TLatex(0.72,0.70,"Cent. 0 - 90%");
+	Central->SetNDC();
+	Central->SetTextFont(62);
+	Central->SetTextSize(0.04);
+	Central->SetLineWidth(2);
+	Central->Draw();
+
 
 	TLatex* texGlobal = new TLatex(0.53,1-(1-0.594)/tpadr,Form("Global uncertainty"));
 	texGlobal->SetNDC();

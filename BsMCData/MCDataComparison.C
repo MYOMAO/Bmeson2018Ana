@@ -202,9 +202,9 @@ void MCDataComparison(TString collsyst, TString inputdata, TString inputMC, TStr
 		TH1D * MassData = new TH1D("MassData","MassData",50,4.8,5.8);
 		nt->Project("MassData","Bmass",Form("(%s)&&(%s)",CommonCut.Data(),ptCuts.Data()));
 		MassData->SetMinimum(0);
-		MassData->GetXaxis()->SetTitle("B^{+} mass (GeV/c^{2})");
+		MassData->GetXaxis()->SetTitle("B^{0}_{S} mass (GeV/c^{2})");
 		MassData->GetYaxis()->SetTitle("Counts");
-		MassData->SetTitle("B^{+} Invariant Mass Distribution");
+		MassData->SetTitle("B^{0}_{S} Invariant Mass Distribution");
 		MassData->Draw();
 		MassData->SetTitleOffset(1.50);
 

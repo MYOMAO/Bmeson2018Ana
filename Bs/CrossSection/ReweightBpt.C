@@ -28,7 +28,7 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	TCanvas * c = new TCanvas("c","c",1800,600);
 	c->Divide(3,1);
 	TCut weighpthat = "(pthatweight)";
-	TCut GenCut ="(TMath::Abs(Gy)<2.4&&TMath::Abs(GpdgId)==531&&GisSignal>0 && GcollisionId==0)";
+	TCut GenCut ="(TMath::Abs(Gy)<2.4&&TMath::Abs(GpdgId)==531&&GisSignal>0 )";
 
 
 	TFile *finMC = new TFile(inputMC.Data());
@@ -41,9 +41,14 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 
 
 	TH1D * GptMC = new TH1D("GptMC","GptMC",nBinsReweight,ptBinsReweight);
+	
 	GptMC->GetYaxis()->SetTitleOffset(1.1);
 
 	tMC->Project("GptMC","Gpt",TCut(weighpthat)*TCut(GenCut));
+	GptMC->Sumw2();
+
+	divideBinWidth(GptMC);
+
 	GptMC->GetXaxis()->SetTitle("Gen p_{T} (GeV)");
 	GptMC->GetYaxis()->SetTitle("PYTHIA, #entries ");
 	GptMC->SetTitle("");
@@ -73,7 +78,7 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 		
 		yErr = gaeBplusReference->GetErrorY(i);
 		GptFONLL->SetBinContent(i+1,y);
-		GptFONLL->SetBinError(i+1,yErr);
+		//GptFONLL->SetBinError(i+1,yErr);
 	}
 
 
@@ -98,13 +103,7 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	c->cd(3);
 
 
-
-	TF1 * f1 = new TF1("f1","[3]*TMath::Exp(-[0]*x)+[1]/(x*x+[4]*x+[2]*[2])",5,105);
-	f1->SetParLimits(0,0,1);
-	f1->SetParLimits(1,10,100);
-	f1->SetParLimits(2,0,0.01);
-	f1->SetParLimits(3,0,10);
-	f1->SetParLimits(4,-5,0);
+	TF1 * f1 = new TF1("f1","[0]/(x*x*x)-[1]/(x*x) + [2]",5,105);
 
 
 
@@ -140,7 +139,9 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	//GptFONLL->Draw("ep");
 	//
 	//
-	TString BptReweightFunc = Form("%f*TMath::Exp(-%f*Bpt)+%f/(Bpt*Bpt+ %f * Bpt + %f*%f)",f1->GetParameter(3),f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(4),f1->GetParameter(2),f1->GetParameter(2));
+//	TString BptReweightFunc =  Form("%f+%f/(Bpt*Bpt)",f1->GetParameter(0),f1->GetParameter(1));
+	//TString BptReweightFunc = Form("%f*TMath::Exp(-%f*Bpt)+%f/(Bpt*Bpt+ %f * Bpt + %f*%f)",f1->GetParameter(3),f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(4),f1->GetParameter(2),f1->GetParameter(2));
+	TString BptReweightFunc = Form("%f/(x*x*x)-%f/(x*x)+%f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2));
 
 	cout << "Bpt Func = " << BptReweightFunc.Data() << endl;
 
@@ -148,6 +149,21 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	c->SaveAs("plotReweight/BptReweigt.pdf");
 
 
+	ofstream foutResults(Form("ResultFile/ReweightBpt.tex"));
+	foutResults	<< "Functional Form: [0] + [1]/x*x)" << endl;
+	foutResults	<< "Fitting Results: " << BptReweightFunc.Data() << endl;
+	foutResults << "Paramater 0 = " << f1->GetParameter(0) << endl;
+	foutResults << "Paramater 0 Error = " << f1->GetParError(0) << endl;
+	foutResults << "Paramater 1 = " << f1->GetParameter(1) << endl;
+	foutResults << "Paramater 1 Error = " << f1->GetParError(1) << endl;
+	foutResults << "Paramater 2 = " << f1->GetParameter(2) << endl;
+	foutResults << "Paramater 2 Error = " << f1->GetParError(2) << endl;
+/*
+	foutResults << "Paramater 3 = " << f1->GetParameter(3) << endl;
+	foutResults << "Paramater 3 Error = " << f1->GetParError(3) << endl;
+	foutResults << "Paramater 4 = " << f1->GetParameter(4) << endl;
+	foutResults << "Paramater 4 Error = " << f1->GetParError(4) << endl;
+*/
 
 }
 

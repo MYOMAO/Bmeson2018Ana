@@ -1,5 +1,7 @@
 #include "uti.h"
 #include "parameters.h"
+#include <iostream>
+#include <fstream>
 using namespace std;
 #define BSUBS_MASS 5.36682
 
@@ -85,7 +87,10 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	funcform = sigfunc + "+" + bkgfunc;
 	if(funcOpt == onlyBG) funcform = bkgfunc;//consider only background, for prompt fit
 	if(npfit != "1") funcform = funcform + "+[11]*(" + iNP + ")";
-	
+	//if(npfit == "2") funcform = "0";
+
+
+
 	cout << "isMC = " << isMC << endl;
 	
 	TString Tag = "Data";
@@ -303,13 +308,15 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	h->SetMaximum((h->GetBinContent(h->GetMaximumBin())+h->GetBinError(h->GetMaximumBin()))*1.8);
 	c->cd();
 	h->Draw("e");
-	if(npfit != "1"){
+	if(npfit != "1" && npfit != "2"){
 		//Bkpi->SetRange(5.00,5.60);
 		Bkpi->Draw("same");
 	}
+	if( npfit != "2"){	
 	background->Draw("same");   
 	mass->Draw("same");
 	f->Draw("same");
+	}
 	c->RedrawAxis();
 
 	//accessing fir results
@@ -369,11 +376,12 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	leg->SetTextSize(0.055);
 	leg->SetTextFont(42);
 	leg->SetFillStyle(0);
-	leg->AddEntry(h,"Data","pl");
-	leg->AddEntry(f,"Fit","l");
-	if(funcOpt != onlyBG) leg->AddEntry(mass,"Signal","f");
-	leg->AddEntry(background,"Combinatorial","l");
-	if(npfit != "1") leg->AddEntry(Bkpi,"B #rightarrow J/#psi X","f");
+	if(npfit !="2")  leg->AddEntry(h,Tag.Data(),"pl");
+	if(npfit == "2") leg->AddEntry(h,"NP B_{s} Bkgd","pl");
+	if(npfit !="2") leg->AddEntry(f,"Fit","l");
+	if(funcOpt != onlyBG && npfit !="2") leg->AddEntry(mass,"Signal","f");
+	if(npfit !="2") leg->AddEntry(background,"Combinatorial","l");
+	if(npfit != "1" && npfit !="2") leg->AddEntry(Bkpi,"B #rightarrow J/#psi X","f");
 	leg->Draw("same");
 
 	TLatex* texcms = new TLatex(0.22,0.87,"CMS");
@@ -437,7 +445,7 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	cout << "Chi2 = " <<  Chi2 << "  nChi2 = " << nChi2 << endl;
 
     nDigit_nChi2 = sigDigitAfterDecimal(nChi2);
-    TLatex* texChi = new TLatex(0.55,0.50, Form("#chi^{2}/nDOF: %.*f/%d = %.*f", nDigit_chi2BakerCousins, Chi2, nDOF, nDigit_nChi2, nChi2));
+    TLatex* texChi = new TLatex(0.55,0.44, Form("#chi^{2}/nDOF: %.*f/%d = %.*f", nDigit_chi2BakerCousins, Chi2, nDOF, nDigit_nChi2, nChi2));
 	texChi->SetNDC();
 	texChi->SetTextAlign(12);
 	texChi->SetTextSize(0.04);
@@ -454,6 +462,8 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
     Significance = roundToNdigit(Significance);
     nDigit_Significance = sigDigitAfterDecimal(Significance);
     TLatex* texSig = new TLatex(0.55,0.54,Form("Significance = %.*f", nDigit_Significance, Significance));
+
+
     cout<<"Significance = "<<Significance<<endl;
 	texSig->SetNDC();
 	texSig->SetTextFont(42);
@@ -465,7 +475,7 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 //    nDigit_yield = sigDigitAfterDecimal(yield);
  //   TLatex* texYield = new TLatex(0.55,0.44,Form("Yield = %.*f", nDigit_yield, yield));
 
-	TLatex* texYield = new TLatex(0.55,0.44,Form("Yield = %f", yield));
+	TLatex* texYield = new TLatex(0.55,0.50,Form("Yield = %.4f #pm %.4f", yield,yieldErr));
 	texYield->SetNDC();
 	texYield->SetTextFont(42);
 	texYield->SetTextSize(0.04);
@@ -480,6 +490,21 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	texYieldErr->SetTextFont(42);
 	texYieldErr->SetTextSize(0.04);
 	texYieldErr->SetLineWidth(2);
+	if(npfit !="2"){
+	ofstream foutResults(Form("ResultFile/fit_%d.tex",_count));
+	foutResults	<< "Significance = "  << Significance << endl;
+	foutResults	<< "Chi Square = "  << Chi2 << endl;
+	foutResults	<< "Yield = "  << yield << endl;
+
+	
+	foutResults	<< "Mean = "  <<  f->GetParameter(1) << endl;
+	foutResults	<< "Large Width = "  << f->GetParameter(8) << endl;
+	foutResults	<< "Small Width "  << f->GetParameter(2) << endl;
+	foutResults	<< "Fraction "  << f->GetParameter(7) << endl;
+	}
+	
+
+
 
 
 	TF1* t = (TF1*)h->GetFunction(Form("f%d",_count))->Clone();
@@ -487,11 +512,11 @@ TF1 *fit(T* c, TCanvas* cMC, TH1D* h, TH1D* hMCSignal, Double_t ptmin, Double_t 
 	t->Draw("same");
 	h->Draw("e same");
     //if(1) {
-    if(drawOpt == 1) {
+    if(drawOpt == 1 && npfit !="2") {
         texChi->Draw();
-        texSig->Draw("SAME");
+        //texSig->Draw("SAME");
         texYield->Draw("SAME");
-		texYieldErr->Draw("SAME");
+		//texYieldErr->Draw("SAME");
     }
 	f->Write();
 	h->Write();

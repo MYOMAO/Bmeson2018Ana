@@ -87,7 +87,7 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		selmcgen = selmcgen+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
 		selmcgenacceptance=selmcgenacceptance+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
 		cut=cut+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
-		cut_recoonly=cut_recoonly+Form("&&hiBin>=%f&&hiBin<=%f",hiBinMin,hiBinMax);
+		cut_recoonly=cut_recoonly+Form("&&hiBin>=%f&&hiBin<=%f ",hiBinMin,hiBinMax);
 	}
 
 	printf("############## input parameters\n");
@@ -154,8 +154,8 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		weightPVz = weightPVz_PbPb;
 	}
 	if(PbPbweight==2) {
-		weightGpt = weightGpt_pp;
-		weightBgenpt = weightGpt_pp;
+		weightGpt = "1";
+		weightBgenpt = "1";
 		weightHiBin = weightHiBin_PbPb;
 		weightPVz = weightPVz_PbPb;
 	}

@@ -20,15 +20,22 @@ void PtShapeSyst(TString WeightedFile, TString UnWeightedFile,  TString plotname
 	hEffRatio->GetYaxis()->SetTitle("p_{T} Weighted Eff/p_{T} Unweighted Eff");
 	hEffRatio->GetYaxis()->SetTitleOffset(1.3);
 	hEffRatio->SetTitle("");
+	hEffRatio->SetMinimum(0.5);
+	hEffRatio->SetMaximum(1.2);
 	hEffRatio->Draw("p");
 
-
+	
 
 	TLine *l1 = new TLine(7.0,1,50.0,1);
 	l1->SetLineStyle(2);
 	l1->SetLineWidth(2);
 	l1->Draw();
 
+
+	for(int i = 0; i < hEffRatio->GetNbinsX();i++){
+
+		cout << "dev from unity = " << abs(1 - hEffRatio->GetBinContent(i+1)) << endl;
+	}
 
 
 	c->SaveAs(plotname.Data());
@@ -38,8 +45,12 @@ void PtShapeSyst(TString WeightedFile, TString UnWeightedFile,  TString plotname
 	for(int i = 1; i < nBins + 1; i++){
 		Ratio = abs(hEffWeighted->GetBinContent(i)-hEffUnWeighted->GetBinContent(i))/hEffWeighted->GetBinContent(i);
 		PtShapeSyst = PtShapeSyst + Ratio;
+		
+		cout << "pt " << ptBins[i-1] <<" - " << ptBins[i] << "   Syst = " << Ratio << endl;
+		ofstream foutResults(Form("ResultFile/Ptshape.tex"), ios::app);
+		foutResults <<  "pt " << ptBins[i-1] <<" - " << ptBins[i] << "   Syst = " << Ratio << endl;
 	}
-	
+
 	double PtShapeSystFinal = TMath::Sqrt(PtShapeSyst)/nBins;
 
 	cout << "Pt Shape Systematics = " <<PtShapeSystFinal << endl; 

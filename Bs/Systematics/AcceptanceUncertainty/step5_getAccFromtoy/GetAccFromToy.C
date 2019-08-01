@@ -19,8 +19,13 @@
 //const int nBins = 5;
 //double ptBins[nBins+1] = {7,10,15,20,30,50};
 
-const int nBins = 4;
-double ptBins[nBins+1] = {5,10.,15.,20.,50};
+//const int nBins = 4;
+//double ptBins[nBins+1] = {5,10.,15.,20.,50};
+
+
+const int nBins = 2;
+double ptBins[nBins+1] = {0, 30 * 2, 90*2};
+
 double Rat[nBins];
 double RatErr[nBins];
 const int nBinsy=4;
@@ -30,7 +35,7 @@ double RatErrylab[nBinsy];
 
 bool ispp = 0;
 string label;
-bool ispt = 0;
+bool ispt = 1;
 string var;
 
 TH1D *hAccCompBin[nBins];
@@ -60,7 +65,7 @@ void GetAccFromToy(){
 	else{
 	    anar->SetBranchAddress("ay1", &a1);
     	anar->SetBranchAddress("ay2", &a2);
-		anar->SetBranchAddress("ay3", &a3);
+	//	anar->SetBranchAddress("ay3", &a3);
 	}
 
 
@@ -100,13 +105,13 @@ void GetAccFromToy(){
         Rat[i]=hReweightDataOverMC_Pt->GetBinContent(i+1);
         RatErr[i]=hReweightDataOverMC_Pt->GetBinError(i+1);
         std::cout << Rat[i] << " , " << RatErr[i] << std::endl;
-		hAccCompBin[i] = new TH1D(Form("hAccCompBin%d",i+1),"",1000,hPtProjectAcc->GetBinContent(i+1)*0.3,hPtProjectAcc->GetBinContent(i+1)*3.0);
+		hAccCompBin[i] = new TH1D(Form("hAccCompBin%d",i+1),"",8000,hPtProjectAcc->GetBinContent(i+1)*0.8,hPtProjectAcc->GetBinContent(i+1)*1.2);
 	}
 	for(int i = 0; i < nBinsy; i++){ 
         Ratylab[i]=hReweightDataOverMC_Pt->GetBinContent(i+1);
         RatErrylab[i]=hReweightDataOverMC_Pt->GetBinError(i+1);
         std::cout << Ratylab[i] << " , " << RatErrylab[i] << std::endl;
-		hAccYCompBin[i] = new TH1D(Form("hAccYCompBin%d",i+1),"",1000,hyProjectAcc->GetBinContent(i+1)*0.8,hyProjectAcc->GetBinContent(i+1)*1.2);
+		hAccYCompBin[i] = new TH1D(Form("hAccYCompBin%d",i+1),"",8000,hyProjectAcc->GetBinContent(i+1)*0.8,hyProjectAcc->GetBinContent(i+1)*1.2);
 	}
 
 	int nvar = anar->GetEntries();
@@ -131,11 +136,11 @@ std::cout << "nvar  = " << nvar << std::endl;
 			ExclBAna->GetEntry(candi);			
 			if(var == "pt"){
 				//ratio = a1*pt+a2;
-				ratio = a1 * pt + a2/pow(pt,5);
+				ratio =  a1 + a2 * y;
 			}
 			else{
 				//ratio = a1*pow(y,2)+a2;
-				ratio = a1 + a2 * y + a3 * y * y;
+				ratio = a1 + a2 * y;
 			}
 			totweight = weight*ratio;
 		//cout<<ratio<<endl;

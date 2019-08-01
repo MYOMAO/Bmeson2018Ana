@@ -120,7 +120,6 @@ rm MCDataComparison.exe
 fi
 
 
-
 fi
 
 if [ $doReweightPbPb -eq 1 ]; then

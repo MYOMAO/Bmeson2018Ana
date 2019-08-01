@@ -73,18 +73,22 @@ void CentReweight(TString collsyst, TString inputdata, TString inputMC, int dowe
 	TH1D * CentMC = new TH1D("CentMC","CentMC",nbins,0,nbins);
 	CentMC->GetXaxis()->SetTitle("hiBin");
 	CentMC->GetYaxis()->SetTitle("Normalized Counts");
-	CentMC->SetTitle("Centrality Distribution");
+//	CentMC->SetTitle("Centrality Distribution");
+	CentMC->SetTitle("");
 
 
 	TH1D * CentData = new TH1D("CentData","CentData",nbins,0,nbins);
 	CentData->GetXaxis()->SetTitle("hiBin");
 	CentData->GetYaxis()->SetTitle("Normalized Counts");
-	CentData->SetTitle("Centrality Distribution");
+//	CentData->SetTitle("Centrality Distribution");
+	CentData->SetTitle("");
 
 	TH1D * NCollHis = new TH1D("NCollHis","NCollHis",nbins,0,nbins);
 	NCollHis->GetXaxis()->SetTitle("hiBin");
 	NCollHis->GetYaxis()->SetTitle("NColl");
-	NCollHis->SetTitle("NColl vs hiBin");
+	//NCollHis->SetTitle("NColl vs hiBin");
+	NCollHis->SetTitle("");
+
 
 	TCanvas *cAll = new TCanvas("cAll","cAll",1800,600);
 	cAll->Divide(3,1);
@@ -118,7 +122,8 @@ void CentReweight(TString collsyst, TString inputdata, TString inputMC, int dowe
 
 
 	CentData->Sumw2();
-	CentData->SetTitle("Centrality Distribution Comparison Data -  NColl");	
+	//CentData->SetTitle("Centrality Distribution Comparison Data -  NColl");	
+	CentData->SetTitle("");	
 	CentData->Draw("ep");
 
 	NCollHis->SetMarkerSize(1.5);
@@ -155,8 +160,8 @@ void CentReweight(TString collsyst, TString inputdata, TString inputMC, int dowe
 	CentMC->SetMarkerColor(kRed);
 
 
-	CentData->SetTitle("Centrality Distribution Comparison Before NColl Correction");
-
+	//CentData->SetTitle("Centrality Distribution Comparison Before NColl Correction");
+	CentData->SetTitle("");
 	CentData->SetMaximum(0.1);
 	CentData->SetMinimum(0.0);
 	
@@ -179,7 +184,8 @@ void CentReweight(TString collsyst, TString inputdata, TString inputMC, int dowe
 
 	c2->SaveAs("CentWeight/CentBeforeNColl.png");
 	c2->SaveAs("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/BsRAA2015RunII/CrossSection/CentWeight/CentBeforeNColl.png");
-	CentData->SetTitle("Centrality Distribution Comparison After NColl Correction");
+//	CentData->SetTitle("Centrality Distribution Comparison After NColl Correction");
+	CentData->SetTitle("");
 
 	cAll->cd(2);
 	CentData->Draw("ep");
@@ -226,7 +232,8 @@ void CentReweight(TString collsyst, TString inputdata, TString inputMC, int dowe
 		TH1D * CentMCNew = new TH1D("CentMCNew","CentMCNew",nbins,0,nbins);
 		CentMCNew->GetXaxis()->SetTitle("hiBin");
 		CentMCNew->GetYaxis()->SetTitle("Normalized Counts");
-		CentMCNew->SetTitle("Centrality Distribution");
+	//	CentMCNew->SetTitle("Centrality Distribution");
+		CentMCNew->SetTitle("");
 
 		int Cent;
 		tMC->SetBranchAddress("hiBin",&Cent);
