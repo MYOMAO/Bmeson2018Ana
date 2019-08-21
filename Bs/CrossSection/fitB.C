@@ -373,7 +373,10 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 			line->SetLineWidth(4);
 			line->SetLineColor(kGreen+1);
 			line->Draw();
-			pullgraph->Draw();
+			pullgraph->GetXaxis()->SetTitle("m_{J/#psi(#mu#mu)#phi(KK)} (GeV/c^{2})");	
+			pullgraph->GetYaxis()->SetTitle("Pull from Fit");	
+			pullgraph->Draw("p");
+
 			cpull->SaveAs(Form("%s%s/%s_%s_%d_%d%s_pull.pdf",outplotf.Data(),_prefix.Data(),_isMC.Data(),_isPbPb.Data(),_count,j,_postfix.Data()));
 		}
 	}  

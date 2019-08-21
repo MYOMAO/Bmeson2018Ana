@@ -8,6 +8,9 @@
 const int nBins=4;
 double ptBins[nBins+1] = {5,10,15,20,50};
 //const int nBins=1;
+//double ptBins[nBins+1] = {5,10};
+
+//const int nBins=1;
 //double ptBins[nBins+1] = {20,50};
 const int nBinsInc=1;
 double ptBinsInc[nBinsInc+1] = {7,50};
@@ -25,8 +28,14 @@ double ptBins1250[nBins1250+1] = {12,15,20,30,50};
 const int nBinsFine=43;
 double ptBinsFine[nBinsFine+1]={7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
 
+//const int nBinsReweight=8;
+//double ptBinsReweight[nBinsReweight+1] = {5,10,15,25,40,60,120,200,300};
+
+
 const int nBinsReweight=6;
 double ptBinsReweight[nBinsReweight+1] = {5,10,15,25,40,60,120};
+
+
 //const int nBinsReweight=35;
 //double ptBinsReweight[nBinsReweight+1]={15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
 //const int nBinsReweight=43;
@@ -35,7 +44,12 @@ double ptBinsReweight[nBinsReweight+1] = {5,10,15,25,40,60,120};
 //double ptBinsReweight[nBinsReweight+1]={5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60};
 
 const int nBinsY=4;
-double ptBinsY[nBinsY+1] = {0.0, 0.5, 1.0, 1.5, 2.4};
+double ptBinsY[nBinsY+1] = {0.0,0.5, 1.0, 1.5, 2.4};
+
+//const int nBinsY=8;
+//double ptBinsY[nBinsY+1] = {-2.4,-1.5,-1.0, -0.5, 0.0, 0.5, 1.0, 1.5, 2.4};
+
+
 
 TCut weightGpt_pp = "(0.675236 + 0.035587*Gpt + -0.000358*Gpt*Gpt)";
 TCut weightBgenpt_pp = "(0.675236 + 0.035587*Bgenpt + -0.000358*Bgenpt*Bgenpt)";
@@ -60,8 +74,32 @@ TCut weightPVz_PbPb = "(0.08*exp(-0.5*((PVz-0.44)/5.12)**2))/(0.08*exp(-0.5*((PV
 //TCut weightGpt_PbPb = "0.329452*TMath::Exp(-0.019321*Gpt)+41.766452/(Gpt*Gpt -0.003756 * Gpt + 0.000029*0.000029)";
 //TCut weightBgenpt_PbPb = "0.329452*TMath::Exp(-0.019321*Bgenpt)+41.766452/(Bgenpt*Bgenpt -0.003756 * Bgenpt + 0.000029*0.000029)";
 
-TCut weightGpt_PbPb =  "507.849416/(Gpt*Gpt*Gpt)-48.774826/(Gpt*Gpt)+0.775102";
-TCut weightBgenpt_PbPb =  "507.849416/(Bgenpt*Bgenpt*Bgenpt)-48.774826/(Bgenpt*Bgenpt)+0.775102";
+//TCut weightGpt_PbPb =  "507.849416/(Gpt*Gpt*Gpt)-48.774826/(Gpt*Gpt)+0.775102";
+//TCut weightBgenpt_PbPb =  "507.849416/(Bgenpt*Bgenpt*Bgenpt)-48.774826/(Bgenpt*Bgenpt)+0.775102";
+
+
+//TCut weightGpt_PbPb_NLO =  "1";
+//TCut weightBgenpt_PbPb_NLO = "1";
+
+
+//TCut weightGpt_PbPb_NLO =  "258.273745/(Gpt*Gpt*Gpt)-0.008201*Gpt+0.453737";
+//TCut weightBgenpt_PbPb_NLO =  "258.273745/(Bgenpt*Bgenpt*Bgenpt)-0.008201*Bgenpt+0.453737";
+
+TCut weightGpt_PbPb = "(5.786639 - 0.517519*Gpt)*TMath::Exp(-0.226562 * Gpt) + 0.763430";
+TCut weightBgenpt_PbPb = "(5.786639 - 0.517519*Bgenpt)*TMath::Exp(-0.226562 * Bgenpt) + 0.763430";
+
+//TCut weightGpt_PbPb_NLO = "(4.840099 - 0.441483*Gpt)*TMath::Exp(-0.187098 * Gpt) + 0.751903";
+//TCut weightBgenpt_PbPb_NLO = "(4.840099 - 0.441483*Bgenpt)*TMath::Exp(-0.187098 * Bgenpt) + 0.751903";
+
+TCut weightGpt_PbPb_NLO= "(6.499818 - 0.464781*Gpt)*TMath::Exp(-0.241271 * Gpt) + 0.606720 + 0.003671 * Gpt";
+TCut weightBgenpt_PbPb_NLO= "(6.499818 - 0.464781*Bgenpt)*TMath::Exp(-0.241271 * Bgenpt) + 0.606720 + 0.003671 * Bgenpt";
+
+
+
+//TCut weightGpt_PbPb_NLO =  "275.287699/(Gpt*Gpt*Gpt)-0.194259*TMath::Power(Gpt,1/3)+0.094913";
+//TCut weightBgenpt_PbPb_NLO =  "275.287699/(Bgenpt*Bgenpt*Bgenpt)-0.194259*TMath::Power(Bgenpt,1/3)+0.094913";
+
+
 
 
 //TCut weightGpt_PbPb = "0.329452*TMath::Exp(-0.019321*Gpt)+41.766452/(Gpt*Gpt -0.003756 * Gpt + 0.000029*0.000029)";
@@ -76,7 +114,9 @@ TCut weightPVz_PbPb = "(0.163562 * TMath::Exp(- 0.021039 * (PVz - 0.426587)*(PVz
 TString weightgen_pp = "pthatweight*"+TString(weightGpt_pp);
 TString weightmc_pp  = "HLT_HIL1DoubleMu0ForPPRef_v1*pthatweight*"+TString(weightBgenpt_pp);
 TString weightgen_PbPb = "pthatweight*"+TString(weightGpt_PbPb);
-TString weightmc_PbPb = "(HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1)*pthatweight*"+TString(weightBgenpt_PbPb)+"*"+TString(weightHiBin_PbPb)+"*"+TString(weightPVz_PbPb);
+//TString weightmc_PbPb = "(HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1)*pthatweight*"+TString(weightBgenpt_PbPb)+"*"+TString(weightHiBin_PbPb)+"*"+TString(weightPVz_PbPb);
+TString weightmc_PbPb = "pthatweight*"+TString(weightBgenpt_PbPb)+"*"+TString(weightHiBin_PbPb)+"*"+TString(weightPVz_PbPb);
+
 TString weightgen="1";
 TString weightmc="1";
 TString weightdata="1";
@@ -93,15 +133,27 @@ double npart[nBinsCent] = {358.8, 226.7, 109.2, 21.87};
 //https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideHeavyIonCentrality?rev=100#Ncoll_Npart_5_TeV
 //https://twiki.cern.ch/twiki/pub/CMS/HI2015DailyMeetings/Ncoll_Npart_04Dec2015.pdf
 
+
 const int BIN_NUM=241;
 const int HMIN=0;
 const int HMAX=120;
+
+
+/*
+const int BIN_NUM=301;
+const int HMIN=0;
+const int HMAX=300;
+*/
+
 
 const double binsize=((double)(HMAX)-(double)(HMIN))/(double)(BIN_NUM);
 Double_t BRchain=3.118974e-5; //Bs->JpsiPhi = 0.107%, Jpsi->mumu = 5.961%, Phi->KK = 48.9%
 
 double sf_pp[2] = {145556.43/137477.84, 161234.79/158888.15, };
-double sf_pbpb[2] = {10784.59/10554.81, 28120.78/28645.82, };
+//double sf_pbpb[2] = {10784.59/10554.81, 28120.78/28645.82, };
+double sf_pbpb[4] = {1.0859,1.1442,1.1249,1.0646};
+
+
 double sf_pp_750[3] = {145556.43/137477.84, 82656.10/80783.33, 78578.69/78104.83, };
 double sf_pp_750_acc[4] = {70450.42/65157.74, 75106.01/72320.10, 82656.10/80783.33, 78578.69/78104.83, };
 double sf_pp_CutBase[2] = {101167.78/95546.77, 144104.49/142131.81, };

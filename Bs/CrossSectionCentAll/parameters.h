@@ -61,8 +61,23 @@ TCut weightPVz_PbPb = "(0.08*exp(-0.5*((PVz-0.44)/5.12)**2))/(0.08*exp(-0.5*((PV
 //TCut weightBgenpt_PbPb = "0.329452*TMath::Exp(-0.019321*Bgenpt)+41.766452/(Bgenpt*Bgenpt -0.003756 * Bgenpt + 0.000029*0.000029)";
 
 
-TCut weightGpt_PbPb =  "507.849416/(Gpt*Gpt*Gpt)-48.774826/(Gpt*Gpt)+0.775102";
-TCut weightBgenpt_PbPb =  "507.849416/(Bgenpt*Bgenpt*Bgenpt)-48.774826/(Bgenpt*Bgenpt)+0.775102";
+//TCut weightGpt_PbPb =  "507.849416/(Gpt*Gpt*Gpt)-48.774826/(Gpt*Gpt)+0.775102";
+//TCut weightBgenpt_PbPb =  "507.849416/(Bgenpt*Bgenpt*Bgenpt)-48.774826/(Bgenpt*Bgenpt)+0.775102";
+
+
+//TCut weightGpt_PbPb_NLO =  "258.273745/(Gpt*Gpt*Gpt)-0.008201*Gpt+0.453737";
+//TCut weightBgenpt_PbPb_NLO =  "258.273745/(Bgenpt*Bgenpt*Bgenpt)-0.008201*Bgenpt+0.453737";
+
+
+TCut weightGpt_PbPb = "(5.786639 - 0.517519*Gpt)*TMath::Exp(-0.226562 * Gpt) + 0.763430";
+TCut weightBgenpt_PbPb = "(5.786639 - 0.517519*Bgenpt)*TMath::Exp(-0.226562 * Bgenpt) + 0.763430";
+
+//TCut weightGpt_PbPb_NLO = "(4.840099 - 0.441483*Gpt)*TMath::Exp(-0.187098 * Gpt) + 0.751903";
+//TCut weightBgenpt_PbPb_NLO = "(4.840099 - 0.441483*Bgenpt)*TMath::Exp(-0.187098 * Bgenpt) + 0.751903";
+
+TCut weightGpt_PbPb_NLO= "(6.499818 - 0.464781*Gpt)*TMath::Exp(-0.241271 * Gpt) + 0.606720 + 0.003671 * Gpt";
+TCut weightBgenpt_PbPb_NLO= "(6.499818 - 0.464781*Bgenpt)*TMath::Exp(-0.241271 * Bgenpt) + 0.606720 + 0.003671 * Bgenpt";
+
 
 //TCut weightGpt_PbPb  ="0.742383+22.873473/(Gpt*Gpt)";
 //TCut weightBgenpt_PbPb  ="0.742383+22.873473/(Bgenpt*Bgenpt)";
@@ -84,7 +99,8 @@ TString weightBtk2eta="(0.953683 + 0.127024*abs(Btrk2Eta) + -0.0581856*abs(Btrk2
 
 const int nBinsCent=1;
 double ptBinsCent[nBinsCent+1] = {0 * 2, 90 *2};
-double TAA[nBinsCent] = {6.2};
+double TAA[nBinsCent] = {6.274};
+double TAAErr[nBinsCent]={0.137};
 double npart[nBinsCent] = {126};
 //https://twiki.cern.ch/twiki/pub/CMS/HiCentrality2016/AN-15-080_temp_20160802.pdf
 //https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideHeavyIonCentrality?rev=100#Ncoll_Npart_5_TeV

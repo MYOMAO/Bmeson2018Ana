@@ -2,6 +2,10 @@
 #include "parameters.h"
 using namespace std;
 
+
+int _nBins = nBinsCent;
+double *_ptBins = ptBinsCent;
+
 void PtShapeSyst(TString WeightedFile, TString UnWeightedFile,  TString plotname, TString outputfile){
 
 	TFile *Weighted = new TFile(WeightedFile.Data());
@@ -17,11 +21,12 @@ void PtShapeSyst(TString WeightedFile, TString UnWeightedFile,  TString plotname
 
 	hEffRatio->Divide(hEffUnWeighted);
 	hEffRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
-	hEffRatio->GetYaxis()->SetTitle("p_{T} Weighted Eff/p_{T} Unweighted Eff");
+	hEffRatio->GetYaxis()->SetTitle("p_{T} NLO Weighted Eff/p_{T} FONLL Weighted Eff");
 	hEffRatio->GetYaxis()->SetTitleOffset(1.3);
 	hEffRatio->SetTitle("");
-	hEffRatio->SetMinimum(0.5);
+	hEffRatio->SetMinimum(0.8);
 	hEffRatio->SetMaximum(1.2);
+
 	hEffRatio->Draw("p");
 
 
@@ -32,23 +37,27 @@ void PtShapeSyst(TString WeightedFile, TString UnWeightedFile,  TString plotname
 	l1->Draw();
 
 
+	for(int i = 0; i < hEffRatio->GetNbinsX();i++){
+
+		cout << "dev from unity = " << abs(1 - hEffRatio->GetBinContent(i+1)) << endl;
+	}
 
 	c->SaveAs(plotname.Data());
 	double Ratio;
 	double PtShapeSyst = 0;
 
-	for(int i = 1; i < nBins + 1; i++){
+	for(int i = 1; i < _nBins + 1; i++){
 		Ratio = abs(hEffWeighted->GetBinContent(i)-hEffUnWeighted->GetBinContent(i))/hEffWeighted->GetBinContent(i);
 		PtShapeSyst = PtShapeSyst + Ratio;
 		
-		cout << "pt " << ptBins[i-1] <<" - " << ptBins[i] << "   Syst = " << Ratio << endl;
+		cout << "Cent " << ptBins[i-1] <<" - " << ptBins[i] << "   Syst = " << Ratio << endl;
 		ofstream foutResults(Form("ResultFile/Ptshape.tex"), ios::app);
-		foutResults <<  "pt " << ptBins[i-1] <<" - " << ptBins[i] << "   Syst = " << Ratio << endl;
+		foutResults <<  "Cent " << _ptBins[i-1] <<" - " << _ptBins[i] << "   Syst = " << Ratio << endl;
 	}
 
 	double PtShapeSystFinal = TMath::Sqrt(PtShapeSyst)/nBins;
 
-	cout << "Pt Shape Systematics = " <<PtShapeSystFinal << endl; 
+	cout << "Pt Shape Systematics in Centrality = " <<PtShapeSystFinal << endl; 
 
 
 	TFile * fout = new TFile(outputfile.Data(),"RECREATE");

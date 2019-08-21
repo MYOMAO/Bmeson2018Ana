@@ -1,5 +1,7 @@
 #include "uti.h"
 #include "parameters.h"
+#include "TMath.h"
+
 using namespace std;
 
 Double_t setparam0=100.;
@@ -154,8 +156,8 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		weightPVz = weightPVz_PbPb;
 	}
 	if(PbPbweight==2) {
-		weightGpt = "1";
-		weightBgenpt = "1";
+		weightGpt = weightGpt_PbPb_NLO;
+		weightBgenpt = weightBgenpt_PbPb_NLO;
 		weightHiBin = weightHiBin_PbPb;
 		weightPVz = weightPVz_PbPb;
 	}

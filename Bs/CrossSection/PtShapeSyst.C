@@ -17,10 +17,13 @@ void PtShapeSyst(TString WeightedFile, TString UnWeightedFile,  TString plotname
 
 	hEffRatio->Divide(hEffUnWeighted);
 	hEffRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
-	hEffRatio->GetYaxis()->SetTitle("p_{T} Weighted Eff/p_{T} Unweighted Eff");
+//	hEffRatio->GetYaxis()->SetTitle("p_{T} Weighted Eff/p_{T} Unweighted Eff");
+	hEffRatio->GetYaxis()->SetTitle("p_{T} FONLL Weighted Eff/p_{T} NLO Weighted Eff");
+
+	
 	hEffRatio->GetYaxis()->SetTitleOffset(1.3);
 	hEffRatio->SetTitle("");
-	hEffRatio->SetMinimum(0.5);
+	hEffRatio->SetMinimum(0.8);
 	hEffRatio->SetMaximum(1.2);
 	hEffRatio->Draw("p");
 

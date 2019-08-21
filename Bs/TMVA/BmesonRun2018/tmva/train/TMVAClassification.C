@@ -546,12 +546,12 @@ int TMVAClassification(std::string inputSname, std::string inputBname, std::stri
       //// factory->BookMethod(dataloader, TMVA::Types::kDNN, "DNN", stdOptions);
 
       if (Use["DNN"]) {
-        TString stdOptions = dnnOptions + ":Architecture=STANDARD";
+        TString stdOptions = dnnOptions + ":Architecture=CPU";
         factory->BookMethod(dataloader, TMVA::Types::kDNN, "DNN", stdOptions);
       }
 
       if (Use["DNN2"]) {
-        TString stdOptions2 = dnnOptions2 + ":Architecture=STANDARD";
+        TString stdOptions2 = dnnOptions2 + ":Architecture=CPU";
         factory->BookMethod(dataloader, TMVA::Types::kDNN, "DNN2", stdOptions2);
       }
 
@@ -582,11 +582,11 @@ int TMVAClassification(std::string inputSname, std::string inputBname, std::stri
   // Boosted Decision Trees
   if (Use["BDTG"]) // Gradient Boost
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTG",
-                         "!H:!V:NTrees=1000:MinNodeSize=5.0%:BoostType=Grad:Shrinkage=1.0:UseBaggedBoost:BaggedSampleFraction=1.0:nCuts=35000:MaxDepth=4" );
+                         "!H:!V:NTrees=500:MinNodeSize=5.0%:BoostType=Grad:Shrinkage=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=15000:MaxDepth=4" );
 
   if (Use["BDT"])  // Adaptive Boost
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDT",
-                         "!H:!V:NTrees=6000:MinNodeSize=5.0%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.65:UseBaggedBoost:BaggedSampleFraction=0.65:SeparationType=GiniIndex:nCuts=30000" );
+                         "!H:!V:NTrees=15000:MinNodeSize=5.0%:MaxDepth=5:BoostType=AdaBoost:AdaBoostBeta=0.50:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=30000" );
 
   if (Use["BDTB"]) // Bagging
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTB",
@@ -594,7 +594,7 @@ int TMVAClassification(std::string inputSname, std::string inputBname, std::stri
 
   if (Use["BDTD"]) // Decorrelation + Adaptive Boost
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTD",
-                         "!H:!V:NTrees=6000:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:VarTransform=Decorrelate" );
+                         "!H:!V:NTrees=2000:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:SeparationType=GiniIndex:nCuts=20:VarTransform=Decorrelate" );
 
   if (Use["BDTF"])  // Allow Using Fisher discriminant in node splitting for (strong) linearly correlated variables
     factory->BookMethod( dataloader, TMVA::Types::kBDT, "BDTF",

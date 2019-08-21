@@ -4,6 +4,9 @@ CENTPbPbMIN=0
 CENTPbPbMAX=90
 
 DOANALYSISPP_FONLL=0
+DOANALYSISPP_NLO=0
+
+
 DOANALYSISPP_FIT=0
 DOANALYSISPP_FITONSAVED=0
 DOANALYSISPP_ROOFIT=0
@@ -11,7 +14,7 @@ DOANALYSISPP_ROOFITONSAVED=0
 DOANALYSISPP_MCSTUDY=0
 DOANALYSISPP_CROSS=0
 
-DOANALYSISPbPb_FIT=1
+DOANALYSISPbPb_FIT=0
 DOANALYSISPbPb_FITONSAVED=0
 DOANALYSISPbPb_ROOFIT=0
 DOANALYSISPbPb_ROOFITONSAVED=0
@@ -19,7 +22,9 @@ DOANALYSISPbPb_MCSTUDY=0
 DOANALYSISPbPb_CROSS=0
 DORAA=0
 DORAARATIO=0
-DOANALYSISPbPb_REWEIGHTBPT=0
+DOANALYSISPbPb_REWEIGHTBPT=1
+DOANALYSISPbPb_REWEIGHTBPT_NLO=1
+
 DOANALYSISPbPb_REWEIGHTPVZ=0
 
 
@@ -161,6 +166,13 @@ INPUTMCNPPbPbCANDWISE="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018An
 FONLLDATINPUT="pp_Bplus_5p03TeV_y2p4"
 FONLLOUTPUTFILE="ROOTfiles/fonllOutput_pp_Bplus_5p03TeV_y2p4.root"
 FONLLOUTPUTFILEREWEIGHT="ROOTfiles/fonllOutput_pp_Bplus_5p03TeV_y2p4_reweightBin.root"
+
+
+
+NLODATINPUT="NLO"
+NLOOUTPUTFILE="ROOTfiles/nloOutput_pp_Bplus_5p03TeV_y2p4.root"
+NLOOUTPUTFILEREWEIGHT="ROOTfiles/nloOutput_pp_Bplus_5p03TeV_y2p4_reweightBin.root"
+
 OUTPUTFILERAA="ROOTfiles/outputRAA.root"
 
 
@@ -205,6 +217,13 @@ NPROOFIT_PP="1"
 #NPROOFIT_PP="1.238105*TMath::Gaus(Bmass,5.067665,0.015902)/(sqrt(2*3.14159)*0.015902)+30.054860*TMath::Erf((Bmass-5.142158)/-0.114983)+30.054860+10.468093*(0.390932*TMath::Gaus(Bmass,5.375549,0.166548)/(sqrt(2*3.14159)*0.166548)+(1-0.390932)*TMath::Gaus(Bmass,5.375549,0.040095)/(sqrt(2*3.14159)*0.040095))"
 
 
+
+
+if [ $DOANALYSISPP_NLO -eq 1 ]; then      
+g++ Bplusdsigmadpt.cc $(root-config --cflags --libs) -g -o Bplusdsigmadpt.exe 
+./Bplusdsigmadpt.exe "$NLODATINPUT" "$NLOOUTPUTFILE" "$LABELPP"
+rm Bplusdsigmadpt.exe
+fi 
 
 
 
@@ -270,7 +289,7 @@ SELGENPbPbACCPbPb="TMath::Abs(Gy)<2.4&&abs(GpdgId)==531&&GisSignal>0&&((TMath::A
 
 #BASECUTPbPb="TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.77-1.8*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.8))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.77-1.8*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.8))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015"
 
-BASECUTPbPb="(hiBin < 181) && Btrk1Pt > 1.0 && Btrk2Pt > 1.0 && Bchi2cl > 0.05 && BsvpvDistance/BsvpvDisErr > 2.2 && Bpt > 5 && abs(Btrk1Eta-0.0) < 2.4  && abs(Btrk2Eta-0.0) < 2.4 && (TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.77-1.89*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.5))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.77-1.89*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.5))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015) && (abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter) && (Btrk1PixelHit + Btrk1StripHit > 10) && (Btrk2PixelHit + Btrk2StripHit > 10) && (Btrk1PtErr/Btrk1Pt < 0.1)&& (Btrk2PtErr/Btrk2Pt < 0.1) && Btrk1Chi2ndf/(Btrk1nStripLayer+Btrk1nPixelLayer) < 0.18 && Btrk2Chi2ndf/(Btrk2nStripLayer+Btrk2nPixelLayer) < 0.18"
+BASECUTPbPb="(hiBin < 181) && Btrk1Pt > 1.0 && Btrk2Pt > 1.0 && Bchi2cl > 0.05 && BsvpvDistance/BsvpvDisErr > 2.2 && Bpt > 5 && abs(Btrk1Eta-0.0) < 2.4  && abs(Btrk2Eta-0.0) < 2.4 && (TMath::Abs(By)<2.4&&TMath::Abs(Bmumumass-3.096916)<0.15&&((abs(Bmu1eta)<1.2&&Bmu1pt>3.5)||(abs(Bmu1eta)>1.2&&abs(Bmu1eta)<2.1&&Bmu1pt>(5.47-1.89*abs(Bmu1eta)))||(abs(Bmu1eta)>2.1&&abs(Bmu1eta)<2.4&&Bmu1pt>1.5))&&((abs(Bmu2eta)<1.2&&Bmu2pt>3.5)||(abs(Bmu2eta)>1.2&&abs(Bmu2eta)<2.1&&Bmu2pt>(5.47-1.89*abs(Bmu2eta)))||(abs(Bmu2eta)>2.1&&abs(Bmu2eta)<2.4&&Bmu2pt>1.5))&&Bmu1TMOneStationTight&&Bmu2TMOneStationTight&&Bmu1InPixelLayer>0&&(Bmu1InPixelLayer+Bmu1InStripLayer)>5&&Bmu2InPixelLayer>0&&(Bmu2InPixelLayer+Bmu2InStripLayer)>5&&Bmu1dxyPV<0.3&&Bmu2dxyPV<0.3&&Bmu1dzPV<20&&Bmu2dzPV<20&&Bmu1isTrackerMuon&&Bmu2isTrackerMuon&&Bmu1isGlobalMuon&&Bmu2isGlobalMuon&&Btrk1highPurity&&Btrk2highPurity&&abs(Btrk1Eta)<2.4&&abs(Btrk2Eta)<2.4&&Btrk1Pt>1.&&Btrk2Pt>1.&&abs(Btktkmass-1.019455)<0.015) && (abs(PVz)<15&&pclusterCompatibilityFilter&&pprimaryVertexFilter) && (Btrk1PixelHit + Btrk1StripHit > 10) && (Btrk2PixelHit + Btrk2StripHit > 10) && (Btrk1PtErr/Btrk1Pt < 0.1)&& (Btrk2PtErr/Btrk2Pt < 0.1) && Btrk1Chi2ndf/(Btrk1nStripLayer+Btrk1nPixelLayer) < 0.18 && Btrk2Chi2ndf/(Btrk2nStripLayer+Btrk2nPixelLayer) < 0.18"
 
 
 #CUTPbPb=${BASECUTPbPb}"&&((Bpt>7&&Bpt<15&&BDTStage1_pt7to15>0.213755)||(Bpt>15&&Bpt<50&&BDTStage1_pt15to50>0.254413))"
@@ -356,11 +375,28 @@ if [ $DOANALYSISPbPb_REWEIGHTBPT -eq 1 ]; then
 g++ Bplusdsigmadpt.cc $(root-config --cflags --libs) -g -o Bplusdsigmadpt.exe 
 ./Bplusdsigmadpt.exe "$FONLLDATINPUT"  "$FONLLOUTPUTFILEREWEIGHT" "$LABELPP" 1
 g++ ReweightBpt.C $(root-config --cflags --libs) -g -o ReweightBpt.exe
-./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILEREWEIGHT"
+./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILEREWEIGHT" "FONLL"
 #./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILE"
 rm ReweightBpt.exe
 #PVZ
 fi
+
+
+
+if [ $DOANALYSISPbPb_REWEIGHTBPT_NLO -eq 1 ]; then      
+
+#BPT	
+g++ Bplusdsigmadpt.cc $(root-config --cflags --libs) -g -o Bplusdsigmadpt.exe 
+./Bplusdsigmadpt.exe "$NLODATINPUT"  "$NLOOUTPUTFILEREWEIGHT" "$LABELPP" 1
+g++ ReweightBpt.C $(root-config --cflags --libs) -g -o ReweightBpt.exe
+./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$NLOOUTPUTFILEREWEIGHT" "NLO"
+#./ReweightBpt.exe "$INPUTMCPbPbCANDWISE" "$FONLLOUTPUTFILE"
+rm ReweightBpt.exe
+#PVZ
+fi
+
+
+
 
 if [ $DOANALYSISPbPb_REWEIGHTPVZ -eq 1 ]; then   
 g++ ReweightPVz.C $(root-config --cflags --libs) -g -o ReweightPVz.exe

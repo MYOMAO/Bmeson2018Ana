@@ -65,14 +65,28 @@ TCut weightPVz_PbPb = "(0.08*exp(-0.5*((PVz-0.44)/5.12)**2))/(0.08*exp(-0.5*((PV
 //TCut weightBgenpt_PbPb =  "507.849416/(Bgenpt*Bgenpt*Bgenpt)-48.774826/(Bgenpt*Bgenpt)+0.775102";
 
 
-TCut weightGpt_PbPb =  "(6.204300-0.568847*Gpt)*TMath::Exp(-0.230556*Gpt) + 0.783898";
-TCut weightBgenpt_PbPb =  "(6.204300-0.568847*Bgenpt)*TMath::Exp(-0.230556*Bgenpt) + 0.783898";
+//TCut weightGpt_PbPb_NLO =  "258.273745/(Gpt*Gpt*Gpt)-0.008201*Gpt+0.453737";
+//TCut weightBgenpt_PbPb_NLO =  "258.273745/(Bgenpt*Bgenpt*Bgenpt)-0.008201*Bgenpt+0.453737";
+
+
+TCut weightGpt_PbPb = "(5.786639 - 0.517519*Gpt)*TMath::Exp(-0.226562 * Gpt) + 0.763430";
+TCut weightBgenpt_PbPb = "(5.786639 - 0.517519*Bgenpt)*TMath::Exp(-0.226562 * Bgenpt) + 0.763430";
+
+//TCut weightGpt_PbPb_NLO = "(4.840099 - 0.441483*Gpt)*TMath::Exp(-0.187098 * Gpt) + 0.751903";
+//TCut weightBgenpt_PbPb_NLO = "(4.840099 - 0.441483*Bgenpt)*TMath::Exp(-0.187098 * Bgenpt) + 0.751903";
+
+TCut weightGpt_PbPb_NLO= "(6.499818 - 0.464781*Gpt)*TMath::Exp(-0.241271 * Gpt) + 0.606720 + 0.003671 * Gpt";
+TCut weightBgenpt_PbPb_NLO= "(6.499818 - 0.464781*Bgenpt)*TMath::Exp(-0.241271 * Bgenpt) + 0.606720 + 0.003671 * Bgenpt";
+
+
+//TCut weightGpt_PbPb =  "(6.204300-0.568847*Gpt)*TMath::Exp(-0.230556*Gpt) + 0.783898";
+//TCut weightBgenpt_PbPb =  "(6.204300-0.568847*Bgenpt)*TMath::Exp(-0.230556*Bgenpt) + 0.783898";
 //TCut weightGpt_PbPb  ="0.742383+22.873473/(Gpt*Gpt)";
 //TCut weightBgenpt_PbPb  ="0.742383+22.873473/(Bgenpt*Bgenpt)";
 TCut weightHiBin_PbPb = "CentWeight";
-//TCut weightPVz_PbPb = "(0.163562 * TMath::Exp(- 0.021039 * (PVz - 0.426587)*(PVz - 0.426587)))/(0.159629 * TMath::Exp(- 0.020014 * (PVz - 0.589381)*(PVz - 0.589381)))";
+TCut weightPVz_PbPb = "(0.163562 * TMath::Exp(- 0.021039 * (PVz - 0.426587)*(PVz - 0.426587)))/(0.159629 * TMath::Exp(- 0.020014 * (PVz - 0.589381)*(PVz - 0.589381)))";
 
-TCut weightPVz_PbPb ="(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
+//TCut weightPVz_PbPb ="(TMath::Gaus(PVz,0.427450,4.873825)/(sqrt(2*3.14159)*4.873825))/(TMath::Gaus(PVz,0.909938,4.970989)/(sqrt(2*3.14159)*4.970989))";
 
 
 TString weightgen_pp = "pthatweight*"+TString(weightGpt_pp);
@@ -89,7 +103,10 @@ TString weightBtk2eta="(0.953683 + 0.127024*abs(Btrk2Eta) + -0.0581856*abs(Btrk2
 
 const int nBinsCent=2;
 double ptBinsCent[nBinsCent+1] = {0 * 2, 30 * 2, 90 *2};
-double TAA[nBinsCent] = {15.41,1.405};
+//double TAA[nBinsCent] = {15.41,1.405};
+double TAA[nBinsCent]={15.41,1.705};
+double TAAErr[nBinsCent]={0.30,0.055};
+
 double npart[nBinsCent] = {270.7,46.81};
 //https://twiki.cern.ch/twiki/pub/CMS/HiCentrality2016/AN-15-080_temp_20160802.pdf
 //https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideHeavyIonCentrality?rev=100#Ncoll_Npart_5_TeV

@@ -25,7 +25,7 @@ void SkimBntuple(){
 		label = "PbPb";
 		//inputmc = "/data/HeavyFlavourRun2/MC2015/Bntuple/PbPb/Bntuple20160816_Bpt7svpv5p5Bpt10svpv3p5_BfinderMC_PbPb_Pythia8_BuToJpsiK_TuneCUEP8M1_20160816_bPt5jpsiPt0tkPt0p8_Bp_pthatweight_JingBDT.root";
 	//inputmc = "/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/BsRAA2015RunII/PthatService/output/BsPthat10Redo.root";
-	inputmc="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official/MC_Bs_PbPb_TMVA_BDT_PbPb.root";
+	inputmc="/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/Samples/FinalAnaSamples/PrivateMC-Data-Official-SemiFinal/MC_Bs_PbPb_TMVA_BDT_PbPb.root";
 	}
     TFile* infMC = new TFile(inputmc.Data());
     TTree* ntphi = (TTree*)infMC->Get("Bfinder/ntphi");
@@ -82,12 +82,13 @@ cout << " Total = " << nevents_total << endl;
 				//weight = pthatweight*(pow(10,-0.107832+0.010248*Gpt[g]+Gpt[g]*Gpt[g]*0.000079+Gpt[g]*Gpt[g]*Gpt[g]*-0.000003+Gpt[g]*Gpt[g]*Gpt[g]*Gpt[g]*-0.000000+Gpt[g]*Gpt[g]*Gpt[g]*Gpt[g]*Gpt[g]*0.000000));
 				//weight = 1;
 			//	weight = pthatweight*(0.329452*TMath::Exp(-0.019321*Gpt[g])+41.766452/(Gpt[g]*Gpt[g] -0.003756 * Gpt[g] + 0.000029*0.000029));
-				weight = pthatweight*(507.849416/(Gpt[g]*Gpt[g]*Gpt[g])-48.774826/(Gpt[g]*Gpt[g])+0.775102);
+			//	weight = pthatweight*(507.849416/(Gpt[g]*Gpt[g]*Gpt[g])-48.774826/(Gpt[g]*Gpt[g])+0.775102);
+				weight =  pthatweight*(5.786639 - 0.517519*Gpt[g])*TMath::Exp(-0.226562 * Gpt[g]) + 0.763430;
 				}		
 				wAll += weight;
 
 				//	if( TMath::Abs(Gy[g])<2.4 && abs(GpdgId[g])==531 && GisSignal[g]>0 && ((TMath::Abs(Gmu1eta[g])<1.2 && Gmu1pt[g]>3.5) || (TMath::Abs(Gmu1eta[g])>1.2 && TMath::Abs(Gmu1eta[g])<2.1 && Gmu1pt[g]>(5.77-1.8*TMath::Abs(Gmu1eta[g]))) || (TMath::Abs(Gmu1eta[g])>2.1 && TMath::Abs(Gmu1eta[g])<2.4 && Gmu1pt[g]>1.8)) && ((TMath::Abs(Gmu2eta[g])<1.2 && Gmu2pt[g]>3.5) || (TMath::Abs(Gmu2eta[g])>1.2 && TMath::Abs(Gmu2eta[g])<2.1 && Gmu2pt[g]>(5.77-1.8*TMath::Abs(Gmu2eta[g]))) || (TMath::Abs(Gmu2eta[g])>2.1 && TMath::Abs(Gmu2eta[g])<2.4 && Gmu2pt[g]>1.8)) && Gtk1pt[g]>0.7 && Gtk2pt[g]>0.7 && TMath::Abs(Gtk1eta[g])<2.4 && TMath::Abs(Gtk2eta[g])<2.4)
-if(TMath::Abs(Gy[g])<2.4 && abs(GpdgId[g])==531 && GisSignal[g]>0 && ((TMath::Abs(Gmu1eta[g])<1.2 && Gmu1pt[g]>3.5) || (TMath::Abs(Gmu1eta[g])>1.2 && TMath::Abs(Gmu1eta[g])<2.1 && Gmu1pt[g]>(5.77-1.8*TMath::Abs(Gmu1eta[g]))) || (TMath::Abs(Gmu1eta[g])>2.1 && TMath::Abs(Gmu1eta[g])<2.4 && Gmu1pt[g]>1.8)) && ((TMath::Abs(Gmu2eta[g])<1.2 && Gmu2pt[g]>3.5) || (TMath::Abs(Gmu2eta[g])>1.2 && TMath::Abs(Gmu2eta[g])<2.1 && Gmu2pt[g]>(5.77-1.8*TMath::Abs(Gmu2eta[g]))) || (TMath::Abs(Gmu2eta[g])>2.1 && TMath::Abs(Gmu2eta[g])<2.4 && Gmu2pt[g]>1.8)) && Gtk1pt[g]>1.5 && Gtk2pt[g]>1.5 && TMath::Abs(Gtk1eta[g])<2.4 && TMath::Abs(Gtk2eta[g])<2.4)
+if(TMath::Abs(Gy[g])<2.4 && abs(GpdgId[g])==531 && GisSignal[g]>0 && ((TMath::Abs(Gmu1eta[g])<1.2 && Gmu1pt[g]>3.5) || (TMath::Abs(Gmu1eta[g])>1.2 && TMath::Abs(Gmu1eta[g])<2.1 && Gmu1pt[g]>(5.47-1.89*TMath::Abs(Gmu1eta[g]))) || (TMath::Abs(Gmu1eta[g])>2.1 && TMath::Abs(Gmu1eta[g])<2.4 && Gmu1pt[g]>1.5)) && ((TMath::Abs(Gmu2eta[g])<1.2 && Gmu2pt[g]>3.5) || (TMath::Abs(Gmu2eta[g])>1.2 && TMath::Abs(Gmu2eta[g])<2.1 && Gmu2pt[g]>(5.47-1.89*TMath::Abs(Gmu2eta[g]))) || (TMath::Abs(Gmu2eta[g])>2.1 && TMath::Abs(Gmu2eta[g])<2.4 && Gmu2pt[g]>1.5)) && Gtk1pt[g]>0.9 && Gtk2pt[g]>0.9 && TMath::Abs(Gtk1eta[g])<2.4 && TMath::Abs(Gtk2eta[g])<2.4)
 					{
 					passAcc = 1;
 					wPass += weight;

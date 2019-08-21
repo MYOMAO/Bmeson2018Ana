@@ -22,8 +22,10 @@ using std::cout;
 using std::endl;
 
 
-void ReweightBpt(TString inputMC,TString inputFONLL){
+void ReweightBpt(TString inputMC,TString inputFONLL, TString MethodLabel){
 
+	
+	
 	gStyle->SetOptStat(0); 
 	TCanvas * c = new TCanvas("c","c",1800,600);
 	c->Divide(3,1);
@@ -84,9 +86,9 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 
 
 
-	GptFONLL->GetYaxis()->SetTitleOffset(1.1);
-	GptFONLL->GetXaxis()->SetTitle("FONLL p_{T} (GeV)");
-	GptFONLL->GetYaxis()->SetTitle("FONLL_pp, #entries ");
+	GptFONLL->GetYaxis()->SetTitleOffset(1.4);
+	GptFONLL->GetXaxis()->SetTitle(Form("%s p_{T} (GeV)",MethodLabel.Data()));
+	GptFONLL->GetYaxis()->SetTitle(Form("%s_pp, #entries ",MethodLabel.Data()));
 	GptFONLL->Sumw2();
 	GptFONLL->Scale(1.0/GptFONLL->Integral());
 	GptFONLL->SetMarkerStyle(20);
@@ -98,23 +100,47 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 
 
 	TH1D * BptRatio = (TH1D *) GptFONLL->Clone("BptRatio");
-	BptRatio->GetYaxis()->SetTitleOffset(1.1); 
+	BptRatio->GetYaxis()->SetTitleOffset(1.3); 
 	BptRatio->Divide(GptMC);
 	c->cd(3);
 
 
-	TF1 * f1 = new TF1("f1","[0]/(x*x*x)-[1]/(x*x) + [2]",5,105);
 
+	TF1 *f1;
+
+	//if(MethodLabel == "FONLL") f1 = new TF1("f1","[0]/(x*x*x)-[1]/(x*x) + [2]",5,120);
+
+	//if(MethodLabel == "NLO") f1 = new TF1("f1","[0]/(x*x*x)+ [1] * x + [2]",5,120);
+
+	
+	if(MethodLabel =="FONLL") f1 =  new TF1("f1"," ([0]-[1]*x)*TMath::Exp(-[2]*x) + [3]",5,300);
+	
+	if(MethodLabel =="NLO") f1 =  new TF1("f1"," ([0]-[1]*x)*TMath::Exp(-[2]*x) + [3] + [4] *x ",5,300);
+	
+	
+	f1->SetParLimits(0,0,100);
+	f1->SetParLimits(1,0,100);
+	f1->SetParLimits(2,-100,0);
+	f1->SetParLimits(3,0,1.0);
+	if(MethodLabel =="NLO") 	f1->SetParLimits(4,0,0.1);
+
+	//TF1 * f1 = new TF1("f1","([0]-[1]*x)*TMath::Exp(-[2]*x)+[3]",5,105);
+
+	f1->SetParLimits(2,0,10);
+	f1->SetParLimits(1,0,100);
 
 
 	BptRatio->Fit(f1,"R");
 	//BptRatio->Fit(f1,"L q m","",5,105);
 
 	BptRatio->GetXaxis()->SetTitle("B_{s}^{0} p_{T}");
-	BptRatio->GetYaxis()->SetTitle("FONLL_pp/PYTHIA");
+	BptRatio->GetYaxis()->SetTitle(Form("%s_pp/PYTHIA",MethodLabel.Data()));
 	BptRatio->SetMarkerStyle(20);
 	BptRatio->SetMarkerColor(kBlack);
 	BptRatio->SetMarkerSize(1);
+	BptRatio->SetMinimum(0);
+	BptRatio->SetMaximum(2.5);
+
 	BptRatio->Draw("ep");
 
 	float Chi2 =  f1->GetChisquare();
@@ -141,16 +167,23 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	//
 //	TString BptReweightFunc =  Form("%f+%f/(Bpt*Bpt)",f1->GetParameter(0),f1->GetParameter(1));
 	//TString BptReweightFunc = Form("%f*TMath::Exp(-%f*Bpt)+%f/(Bpt*Bpt+ %f * Bpt + %f*%f)",f1->GetParameter(3),f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(4),f1->GetParameter(2),f1->GetParameter(2));
-	TString BptReweightFunc = Form("%f/(x*x*x)-%f/(x*x)+%f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2));
+	TString BptReweightFunc;
+
+	//if(MethodLabel == "FONLL") BptReweightFunc = Form("%f/(x*x*x)-%f/(x*x)+%f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2));
+	//if(MethodLabel == "NLO") BptReweightFunc = Form("%f/(x*x*x)-%f*x+%f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2));
+
+	if(MethodLabel == "FONLL") BptReweightFunc = Form("(%f - %f*x)*TMath::Exp(-%f * x) + %f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(3));
+	if(MethodLabel == "NLO") BptReweightFunc = Form("(%f - %f*x)*TMath::Exp(-%f * x) + %f + %f * x",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(3),f1->GetParameter(4));
+//	TString BptReweightFunc = Form("(%f-%f*x)*TMath::Exp(-%f*x)+%f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(3));
 
 	cout << "Bpt Func = " << BptReweightFunc.Data() << endl;
 
-	c->SaveAs("plotReweight/BptReweigt.png");
-	c->SaveAs("plotReweight/BptReweigt.pdf");
+	c->SaveAs(Form("plotReweight/BptReweigt%s.png",MethodLabel.Data()));
+	c->SaveAs(Form("plotReweight/BptReweigt%s.pdf",MethodLabel.Data()));
 
 
 	ofstream foutResults(Form("ResultFile/ReweightBpt.tex"));
-	foutResults	<< "Functional Form: [0] + [1]/x*x)" << endl;
+	foutResults	<< "([0]-x)*TMath::Exp(-[1]*x)+[2]" << endl;
 	foutResults	<< "Fitting Results: " << BptReweightFunc.Data() << endl;
 	foutResults << "Paramater 0 = " << f1->GetParameter(0) << endl;
 	foutResults << "Paramater 0 Error = " << f1->GetParError(0) << endl;
@@ -158,9 +191,10 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 	foutResults << "Paramater 1 Error = " << f1->GetParError(1) << endl;
 	foutResults << "Paramater 2 = " << f1->GetParameter(2) << endl;
 	foutResults << "Paramater 2 Error = " << f1->GetParError(2) << endl;
-/*
+
 	foutResults << "Paramater 3 = " << f1->GetParameter(3) << endl;
 	foutResults << "Paramater 3 Error = " << f1->GetParError(3) << endl;
+/*
 	foutResults << "Paramater 4 = " << f1->GetParameter(4) << endl;
 	foutResults << "Paramater 4 Error = " << f1->GetParError(4) << endl;
 */
@@ -169,14 +203,14 @@ void ReweightBpt(TString inputMC,TString inputFONLL){
 
 int main(int argc, char *argv[])
 {
-	if((argc !=3))
+	if((argc !=4))
 	{
 		std::cout << "Wrong number of inputs" << std::endl;
 		return 1;
 	}
 
-	if(argc == 3)
-		ReweightBpt(argv[1],argv[2]);
+	if(argc == 4)
+		ReweightBpt(argv[1],argv[2],argv[3]);
 	return 0;
 }
 
