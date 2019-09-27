@@ -4,7 +4,7 @@
 //const int nBins=1;
 //double ptBins[nBins+1]={20,50};
 //const int nBins=3;
-//double ptBins[nBins+1] = {7,15,20,50};
+//double ptBins[nBins+1] = {5,15,20,50};
 const int nBins=4;
 double ptBins[nBins+1] = {5,10,15,20,50};
 //const int nBins=1;
@@ -12,6 +12,11 @@ double ptBins[nBins+1] = {5,10,15,20,50};
 
 //const int nBins=1;
 //double ptBins[nBins+1] = {20,50};
+
+//const int nBins=3;
+//double ptBins[nBins+1] = {5,15,20,50};
+
+
 const int nBinsInc=1;
 double ptBinsInc[nBinsInc+1] = {7,50};
 const int nBins750=3;
@@ -25,15 +30,45 @@ double ptBins1050[nBins1050+1] = {10,15,20,30,50};
 const int nBins1250=4;
 double ptBins1250[nBins1250+1] = {12,15,20,30,50};
 
-const int nBinsFine=43;
-double ptBinsFine[nBinsFine+1]={7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
+//const int nBinsFine=43;
+//double ptBinsFine[nBinsFine+1]={7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
+
+
+const int nBinsFine=45;
+double ptBinsFine[nBinsFine+1]={5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
+
+
+const int nBinshi=1;
+double Binshi[nBinshi+1] = {0.*2,90.*2};
+const int nBins_full=1;
+double ptBins_full[nBins_full+1] = {5,50};
+double hiBins_full[nBins_full+1] = {0,90.*2};
+const int nBins_bp = 8;
+double ptBins_bp[nBins_bp+1] = {5,7,10,15,20,30,40,50,60};
 
 //const int nBinsReweight=8;
 //double ptBinsReweight[nBinsReweight+1] = {5,10,15,25,40,60,120,200,300};
 
 
-const int nBinsReweight=6;
-double ptBinsReweight[nBinsReweight+1] = {5,10,15,25,40,60,120};
+//const int nBinsReweight=6;
+//double ptBinsReweight[nBinsReweight+1] = {5,10,15,25,40,60,120};
+
+//const int nBinsReweight=4;
+//double ptBinsReweight[nBinsReweight+1] = {8,12,16,23,50};
+
+
+//const int nBinsReweight=19;
+//double ptBinsReweight[nBinsReweight+1] = {5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90, 95, 100};
+
+
+const int nBinsReweight=45;
+double ptBinsReweight[nBinsReweight+1]={5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50};
+
+
+
+//const int nBinsReweight=4;
+//double ptBinsReweight[nBinsReweight+1] = {5,10,15,20,50};
+
 
 
 //const int nBinsReweight=35;
@@ -96,10 +131,88 @@ TCut weightBgenpt_PbPb_NLO= "(6.499818 - 0.464781*Bgenpt)*TMath::Exp(-0.241271 *
 
 
 
+//Four Different B pT Spectra for Bs PbPb//
+
+//Nominal PP//
+
+TCut weightGpt_PbPb_NominalPP= "(8.009626)*TMath::Exp(-0.407221 * Gpt) + 0.648527";
+TCut weightBgenpt_PbPb_NominalPP= "(8.009626)*TMath::Exp(-0.407221 * Bgenpt) + 0.648527";
+
+
+
+//Variation PP//
+
+TCut weightGpt_PbPb_VariationPP= "(10.308964)*TMath::Exp(-0.447991 * Gpt) + 0.656951";
+TCut weightBgenpt_PbPb_VariationPP= "(10.308964)*TMath::Exp(-0.447991 * Bgenpt) + 0.656951";
+
+
+//Nominal TAMU//
+
+
+TCut weightGpt_PbPb_NominalTAMU= "(16.803153)*TMath::Exp(-0.410200 * Gpt) + 0.275632";
+TCut weightBgenpt_PbPb_NominalTAMU= "(16.803153)*TMath::Exp(-0.410200 * Bgenpt) + 0.275632";
+
+//Variation TAMU//
+
+TCut weightGpt_PbPb_VariationTAMU= "(18.946260)*TMath::Exp(-0.428834 * Gpt) + 0.280481";
+TCut weightBgenpt_PbPb_VariationTAMU= "(18.946260)*TMath::Exp(-0.428834 * Bgenpt) + 0.280481";
+
+//20% TAMU + 80% Nominal//
+
+TCut weightGpt_PbPb_TAMUPP= "(10.316328)*TMath::Exp(-0.411365 * Gpt) + 0.559750";
+TCut weightBgenpt_PbPb_TAMUPP= "(10.316328)*TMath::Exp(-0.411365 * Bgenpt) + 0.559750";
+
+
+//Weight Data Driven//
+
+TCut weightGpt_PbPb_DataCentral= "0.721594 + 0.017661 * Gpt";
+TCut weightBgenpt_PbPb_DataCentral= "0.721594 + 0.017661 * Bgenpt";
+
+//Weight Data Driven + 1 Sigma//
+
+TCut weightGpt_PbPb_Data1PS= "0.721594 + 0.029704 * Gpt";
+TCut weightBgenpt_PbPb_Data1PS= "0.721594 + 0.029704 * Bgenpt";
+
+
+//Weight Data Driven - 1 Sigma//
+
+TCut weightGpt_PbPb_Data1MS= "0.721594 + 0.005618 * Gpt";
+TCut weightBgenpt_PbPb_Data1MS= "0.721594 + 0.005618 * Bgenpt";
+
+
 //TCut weightGpt_PbPb_NLO =  "275.287699/(Gpt*Gpt*Gpt)-0.194259*TMath::Power(Gpt,1/3)+0.094913";
 //TCut weightBgenpt_PbPb_NLO =  "275.287699/(Bgenpt*Bgenpt*Bgenpt)-0.194259*TMath::Power(Bgenpt,1/3)+0.094913";
 
 
+//Weight Linear//
+
+TCut weightGpt_PbPb_Linear= "0.850412 + 0.009982 * Gpt";
+TCut weightBgenpt_PbPb_Linear= "0.850412 + 0.009982 * Bgenpt";
+
+//Weight Quadratic//
+
+TCut weightGpt_PbPb_Quadratic= "1.093947 -0.016091 * Gpt + 0.000559 * Gpt * Gpt";
+TCut weightBgenpt_PbPb_Quadratic= "1.093947 -0.016091 * Bgenpt + 0.000559 * Bgenpt * Bgenpt";
+
+
+//Weight LInverse//
+
+
+TCut weightGpt_PbPb_LInverse= "7.187263 / Gpt + 0.029820*Gpt";
+TCut weightBgenpt_PbPb_LInverse= "7.187263 / Bgenpt + 0.029820*Bgenpt";
+
+
+//Weight LSqrt//
+
+
+TCut weightGpt_PbPb_LSqrt= "1.844009 + 0.058935 * Gpt - 0.454120 * sqrt(Gpt)";
+TCut weightBgenpt_PbPb_LSqrt= "1.844009 + 0.058935 * Bgenpt - 0.454120 * sqrt(Bgenpt)";
+
+//Weight LLog//
+
+
+TCut weightGpt_PbPb_LLog= "1.810010 + 0.033953 * Gpt - 0.499745 * log(Gpt)";
+TCut weightBgenpt_PbPb_LLog = "1.810010 + 0.033953 * Bgenpt - 0.499745 * log(Bgenpt)";
 
 
 //TCut weightGpt_PbPb = "0.329452*TMath::Exp(-0.019321*Gpt)+41.766452/(Gpt*Gpt -0.003756 * Gpt + 0.000029*0.000029)";
@@ -119,7 +232,9 @@ TString weightmc_PbPb = "pthatweight*"+TString(weightBgenpt_PbPb)+"*"+TString(we
 
 TString weightgen="1";
 TString weightmc="1";
-TString weightdata="1";
+//TString weightdata="1";
+TString weightdata = "(1/0.144708+TMath::Exp(-1.035696*(Bpt-15.321432))+TMath::Exp(-0.204131*(Bpt-30.289313)))";
+
 TString weightGtk1eta="(1.08472 + -0.282757*abs(Gtk1eta) + 0.146944*abs(Gtk1eta)*abs(Gtk1eta))";
 TString weightGtk2eta="(0.953683 + 0.127024*abs(Gtk2eta) + -0.0581856*abs(Gtk2eta)*abs(Gtk2eta))";
 TString weightBtk1eta="(1.08472 + -0.282757*abs(Btrk1Eta) + 0.146944*abs(Btrk1Eta)*abs(Btrk1Eta))";
@@ -151,7 +266,10 @@ Double_t BRchain=3.118974e-5; //Bs->JpsiPhi = 0.107%, Jpsi->mumu = 5.961%, Phi->
 
 double sf_pp[2] = {145556.43/137477.84, 161234.79/158888.15, };
 //double sf_pbpb[2] = {10784.59/10554.81, 28120.78/28645.82, };
-double sf_pbpb[4] = {1.0859,1.1442,1.1249,1.0646};
+//double sf_pbpb[4] = {1.0859,1.1442,1.1249,1.0646};
+
+double sf_pbpb[4] = {1.0947,1.1433,1.1200,1.0606};
+
 
 
 double sf_pp_750[3] = {145556.43/137477.84, 82656.10/80783.33, 78578.69/78104.83, };

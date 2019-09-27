@@ -27,6 +27,7 @@ void CrossSectionRatio(TString inputFONLL="ROOTfiles/output_inclusiveDd0meson_5T
 	TH1F* hPtSigma = (TH1F*)file->Get("hPt");
 	if(doDataCor != 1) hPtSigma->Divide(hEff);
 	hPtSigma->Scale(1./(2*6.274*BRchain));
+	//hPtSigma->Scale(1./(2*lumi*BRchain));	
 	hPtSigma->SetName("hPtSigma");
 
 	int _nBins = hPtSigma->GetNbinsX();
@@ -44,6 +45,14 @@ void CrossSectionRatio(TString inputFONLL="ROOTfiles/output_inclusiveDd0meson_5T
 	Double_t yratiocrossFONLL[_nBins], yratiocrossFONLLstat[_nBins], yratiocrossFONLLsysthigh[_nBins], yratiocrossFONLLsystlow[_nBins];
 	Double_t yFONLLrelunclow[_nBins], yFONLLrelunchigh[_nBins], yunity[_nBins];
 
+	double GloU = normalizationUncertaintyForPbPb(1);
+	double GloD =  normalizationUncertaintyForPbPb(0);
+	double Glo =  (GloU + GloD)/200;
+
+	ofstream outxsec("xSec_bs_pt.txt");
+	outxsec << "ptmin" << "   " << "ptmax" << "   " <<  "xsec" << "   " << "statUncert" << "   " << "systUncert" << "   " <<  "glbUncert" << endl;
+
+
 	for(int i=0;i<_nBins;i++)
 	{
 		gaeBplusReference->GetPoint(i,xr[i],yFONLL[i]);
@@ -59,6 +68,9 @@ void CrossSectionRatio(TString inputFONLL="ROOTfiles/output_inclusiveDd0meson_5T
 		printf("xsec value: %f\n", ycross[i]);
 		printf("stat err: %f\n", ycrossstat[i]/ycross[i]);
         printf("sys  err: %f\n", systematic);
+
+		outxsec << _ptBins[i] << "   " << _ptBins[i+1] << "   " << ycross[i] << "   " << ycrossstat[i]/ycross[i] << "   " << systematic << "   " << Glo << endl;
+		
 
 		ycrosssysthigh[i]= hPtSigma->GetBinContent(i+1)*systematic;
 		ycrosssystlow[i]= hPtSigma->GetBinContent(i+1)*systematic;

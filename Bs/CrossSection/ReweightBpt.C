@@ -117,6 +117,8 @@ void ReweightBpt(TString inputMC,TString inputFONLL, TString MethodLabel){
 	
 	if(MethodLabel =="NLO") f1 =  new TF1("f1"," ([0]-[1]*x)*TMath::Exp(-[2]*x) + [3] + [4] *x ",5,300);
 	
+	if(MethodLabel == "DATAEXP") f1 =  new TF1("f1"," ([0]-[1]*x)*TMath::Exp(-[2]*x) + [3] + [4] *x ",5,300);
+
 	
 	f1->SetParLimits(0,0,100);
 	f1->SetParLimits(1,0,100);
@@ -174,6 +176,9 @@ void ReweightBpt(TString inputMC,TString inputFONLL, TString MethodLabel){
 
 	if(MethodLabel == "FONLL") BptReweightFunc = Form("(%f - %f*x)*TMath::Exp(-%f * x) + %f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(3));
 	if(MethodLabel == "NLO") BptReweightFunc = Form("(%f - %f*x)*TMath::Exp(-%f * x) + %f + %f * x",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(3),f1->GetParameter(4));
+	if(MethodLabel == "DATAEXP") BptReweightFunc = Form("(%f - %f*x)*TMath::Exp(-%f * x) + %f + %f * x",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(3),f1->GetParameter(4));
+
+
 //	TString BptReweightFunc = Form("(%f-%f*x)*TMath::Exp(-%f*x)+%f",f1->GetParameter(0),f1->GetParameter(1),f1->GetParameter(2),f1->GetParameter(3));
 
 	cout << "Bpt Func = " << BptReweightFunc.Data() << endl;

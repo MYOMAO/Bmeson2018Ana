@@ -15,11 +15,11 @@ double rangemin[nVar] = {3.05,1.013};
 double rangemax[nVar] = {3.15,1.028};
 
 
-int _nBins = nBins;
-double *_ptBins = ptBins;
+//int _nBins = nBins;
+//double *_ptBins = ptBins;
 
-//int _nBins = nBinsY;
-//double *_ptBins = ptBinsY;
+int _nBins = nBinsY;
+double *_ptBins = ptBinsY;
 
 
 void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TString varExp = "", TString trgselection = "",  TString trgselectionmc = "", TString cut = "", TString cutBefore = "", TString cutmcgen = "", int isMC = 0, Double_t luminosity = 1., int doweight = 0, TString collsyst = "", TString outputfile = "", TString outplotf = "", TString npfit = "", int doDataCor = 0, Float_t centmin = 0., Float_t centmax = 100.)
@@ -68,6 +68,9 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 		cout << "Trigger MC = " << trgselectionmc.Data() << endl;
 
 	}
+	cout << "cut data = " << cut.Data() << endl;
+	cout << "cut Before data = " << cutBefore.Data() << endl;
+
 	cout << "Pass 0" << endl; 
 
 
@@ -145,10 +148,10 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
     if(usePbPb) _isPbPb = "PbPb";
     TString _postfix = "";
     if(weightdata!="1") _postfix = "_EFFCOR";
-//	varExp="abs(By)";
-  //  TString _prefix = "By";
-	varExp="Bpt";
-	TString _prefix = "Bpt";
+	varExp="abs(By)";
+    TString _prefix = "By";
+	//varExp="Bpt";
+	//TString _prefix = "Bpt";
 
 
 	TFile * fout = new TFile(Form("ROOTfiles/Phi-J_%s_%s.root",_prefix.Data(),collisionsystem.Data()),"RECREATE");
@@ -174,7 +177,7 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 
 		
 			_count++;
-		
+			/*
 			hBefore  = new TH1D(Form("hBefore%d_%d",i,v),  "", vbins[v], vbinmin[v], vbinmax[v]);
 			hMCBefore = new TH1D(Form("hMCBefore%d_%d",i,v),"", vbins[v], vbinmin[v], vbinmax[v]);
 		
@@ -240,8 +243,8 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 		    tex4->Draw();
 		    tex5->Draw();
 	        c->SaveAs(Form("%s%s/%s_%s_%d_%s_Before.pdf",outplotf.Data(),_prefix.Data(),"mc",_isPbPb.Data(),i,vname[v].c_str()));
-
-
+			*/
+			
 
 			
 			h   = new TH1D(Form("h%d_%d",i,v),  "", vbins[v], vbinmin[v], vbinmax[v]);

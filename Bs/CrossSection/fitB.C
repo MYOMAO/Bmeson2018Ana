@@ -80,6 +80,7 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 		nt->AddFriend("BDT_pt_5_10");
 		nt->AddFriend("BDT_pt_10_15");	
 		nt->AddFriend("BDT_pt_20_50");		
+		nt->AddFriend("Recalculated");
 		/*
 		   nt->AddFriend("BDT_pt_15_20");
 		   nt->AddFriend("BDT_pt_7_15");
@@ -116,7 +117,9 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 		ntMC->AddFriend("BDT_pt_15_20");
 		ntMC->AddFriend("BDT_pt_5_10");
 		ntMC->AddFriend("BDT_pt_10_15");	
-		ntMC->AddFriend("BDT_pt_20_50");	
+		ntMC->AddFriend("BDT_pt_20_50");
+		ntMC->AddFriend("CentWeightTree");
+		ntMC->AddFriend("Recalculated");
 		/*
 		   ntMC->AddFriend("BDT_pt_15_20");
 		   ntMC->AddFriend("BDT_pt_7_15");
@@ -148,6 +151,7 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 		weightgen = weightgen_PbPb;
 		//weightmc = weightmc_PbPb;
 		if(doweight == 0 ) weightmc = "1"; 
+		if(doweight == 2) weightmc = weightmc_PbPb;
 		if(doweight == 1) weightmc = "pthatweight";
 	}
 
@@ -166,11 +170,11 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 	const int NCentBin = 1;
 	int CentMinBin[NCentBin] ={0};
 	int CentMaxBin[NCentBin] ={180};
-
+	TString TotalCut;
 	cout << "Pass 4" << endl;
 
-	int doPhi = 1;
-	int doStat = 1;
+	int doPhi = 0;
+	int doStat = 0;
 	for(int i=0;i<_nBins;i++)
 	{
 		_count++;
@@ -182,9 +186,13 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 				h = new TH1D(Form("h%d",_count),"",nbinsmasshisto,minhisto,maxhisto);
 				hMCSignal = new TH1D(Form("hMCSignal%d",_count),"",nbinsmasshisto,minhisto,maxhisto);
 				cout << "Pass 4.5" << endl;
-				if(isMC==1) ntMC->Project(Form("h%d",_count),"Bmass",Form("%s*(%s&&%s>%f&&%s<%f && hiBin <= %d && hiBin >= %d && Bgen == 23333)*(1/%s)",weightmc.Data(),seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],CentMaxBin[j],CentMinBin[j],weightdata.Data()));
+				TotalCut =  Form("(%s&&%s>%f&&%s<%f && hiBin <= %d && hiBin >= %d)", seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],CentMaxBin[j],CentMinBin[j]);
+				cout << "weightdata = " << weightdata.Data();
 
-				else        nt->Project(Form("h%d",_count),"Bmass",   Form("(%s&&%s>%f&&%s<%f && hiBin <= %d && hiBin >= %d)*(1/%s)", seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],CentMaxBin[j],CentMinBin[j],weightdata.Data()));
+				if(isMC==1) ntMC->Project(Form("h%d",_count),"Bmass",Form("%s*(%s&&%s>%f&&%s<%f && hiBin <= %d && hiBin >= %d && Bgen == 23333)*(1/%s)",weightmc.Data(),seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],CentMaxBin[j],CentMinBin[j],weightdata.Data()));
+			//	else        nt->Project(Form("h%d",_count),"Bmass",   Form("(%s&&%s>%f&&%s<%f && hiBin <= %d && hiBin >= %d)*(1/%s)", seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],CentMaxBin[j],CentMinBin[j],weightdata.Data()));
+				else        nt->Project(Form("h%d",_count),"Bmass", (TCut(weightdata.Data()))*(TCut(TotalCut.Data())));
+				cout << "hData Total Bro = " << h->Integral() <<endl;
 				cout << "Pass 4.7" << endl;
 				//	ntMC->Project(Form("hMCSignal%d",_count),"Bmass",Form("%s*(%s&&%s>%f&&%s<%f)",weightmc.Data(),Form("%s&&Bgen==23333",selmc.Data()),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1]));
 				if(doStat == 1){
@@ -313,7 +321,7 @@ void fitB(int usePbPb = 0, int fitOnSaved = 0, TString inputdata = "", TString i
 			double yieldErr = f->Integral(minhisto,maxhisto)/binwidthmass*f->GetParError(0)/f->GetParameter(0);
 			printf("yield: %f, yieldErr: %f\n", yield, yieldErr);
 			yieldErr = yieldErr*_ErrCor;
-			if(fitOnSaved == 0){
+			if(fitOnSaved == 2){
 				TH1D* htest = new TH1D(Form("htest%d",_count),"",nbinsmasshisto,minhisto,maxhisto);
 				TString sideband = "(abs(Bmass-5.367)>0.2&&abs(Bmass-5.367)<0.3";
 				nt->Project(Form("htest%d",_count),"Bmass",Form("%s&&%s&&%s>%f&&%s<%f)*(1/%s)",sideband.Data(),seldata.Data(),varExp.Data(),_ptBins[i],varExp.Data(),_ptBins[i+1],weightdata.Data()));

@@ -28,6 +28,9 @@ int customizedOpt = 0; //1: remove pt weight, 2: do tk eta weihting
 
 void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString selmcgenacceptance="", TString cut_recoonly="", TString cut="", TString _varExp = "", TString _varGenExp = "", TString label="", TString outputfile="", TString outplotf="", int PbPbweight=0, Float_t centmin=0., Float_t centmax=100.)
 {    
+	int dofine = 1;
+
+
 	TString varExp = _varExp;
 	TString varGenExp = _varGenExp;
 	std::string str = _varExp.Data();
@@ -92,6 +95,9 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		cut_recoonly=cut_recoonly+Form("&&hiBin>=%f&&hiBin<=%f ",hiBinMin,hiBinMax);
 	}
 
+
+
+
 	printf("############## input parameters\n");
 	std::cout<<"selmcgen = "<<selmcgen<<std::endl;
 	std::cout<<"selmcgenacceptance = "<<selmcgenacceptance<<std::endl;
@@ -114,18 +120,19 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 	ntMC->AddFriend("hltanalysis/HltTree");
 	ntMC->AddFriend("hiEvtAnalyzer/HiTree");
 	ntMC->AddFriend("skimanalysis/HltTree");
-//	ntMC->AddFriend("BDT");
+	//	ntMC->AddFriend("BDT");
 	ntMC->AddFriend("CentWeightTree");
 
-	
+
 	ntMC->AddFriend("BDT_pt_15_20");
 	ntMC->AddFriend("BDT_pt_10_15");
 	ntMC->AddFriend("BDT_pt_20_50");
 	ntMC->AddFriend("BDT_pt_5_10");
-	
+
 	ntMC->AddFriend("Bfinder/ntGen");
 	ntGen->AddFriend("hiEvtAnalyzer/HiTree");
 	ntGen->AddFriend("Bfinder/ntphi");
+
 
 	//ntMC->AddFriend(ntGen);
 	//ntMC->AddFriend("ntSkim");
@@ -161,6 +168,94 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		weightHiBin = weightHiBin_PbPb;
 		weightPVz = weightPVz_PbPb;
 	}
+	if(PbPbweight==3) {
+		weightGpt = weightGpt_PbPb_NominalPP;
+		weightBgenpt = weightBgenpt_PbPb_NominalPP;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==4) {
+		weightGpt = weightGpt_PbPb_VariationPP;
+		weightBgenpt = weightBgenpt_PbPb_VariationPP;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==5) {
+		weightGpt = weightGpt_PbPb_NominalTAMU;
+		weightBgenpt = weightBgenpt_PbPb_NominalTAMU;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==6) {
+		weightGpt = weightGpt_PbPb_VariationTAMU;
+		weightBgenpt = weightBgenpt_PbPb_VariationTAMU;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==7) {
+		weightGpt = weightGpt_PbPb_TAMUPP;
+		weightBgenpt = weightBgenpt_PbPb_TAMUPP;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==8) {
+		weightGpt = weightGpt_PbPb_DataCentral;
+		weightBgenpt = weightBgenpt_PbPb_DataCentral;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==9) {
+		weightGpt = weightGpt_PbPb_Data1PS;
+		weightBgenpt = weightBgenpt_PbPb_Data1PS;;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==10) {
+		weightGpt = weightGpt_PbPb_Data1MS;
+		weightBgenpt = weightBgenpt_PbPb_Data1MS;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==11) {
+		weightGpt = weightGpt_PbPb_Linear;
+		weightBgenpt = weightBgenpt_PbPb_Linear;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==12) {
+		weightGpt = weightGpt_PbPb_Quadratic;
+		weightBgenpt = weightBgenpt_PbPb_Quadratic;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==13) {
+		weightGpt = weightGpt_PbPb_LInverse;
+		weightBgenpt = weightBgenpt_PbPb_LInverse;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==14) {
+		weightGpt = weightGpt_PbPb_LSqrt;
+		weightBgenpt = weightBgenpt_PbPb_LSqrt;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==15) {
+		weightGpt = weightGpt_PbPb_LLog;
+		weightBgenpt = weightBgenpt_PbPb_LLog;
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==16) {
+		weightGpt = "1";
+		weightBgenpt = "1";
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+
+
+
+
 
 
 	if(customizedOpt == 1) { weightGpt = "1"; weightBgenpt = "1"; }
@@ -173,10 +268,27 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 	TH1D* hPtGenWeighted = new TH1D("hPtGenWeighted","",_nBins,_ptBins);
 	TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",_nBins,_ptBins);
 	TH1D* hPtGenAccWeighted = new TH1D("hPtGenAccWeighted","",_nBins,_ptBins);
+
 	ntMC->Project("hPtMC",varExp.Data(),
 			TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
 	ntMC->Project("hPtMCrecoonly",varExp.Data(),
 			TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut_recoonly.Data())&&"(Bgen==23333)"));
+
+	//adding fine eff correction//
+
+
+	//	ntMC->Project("hPtMC",varExp.Data(),TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*TCut(Form("%s && Bgen==23333", cut.Data())));
+	//	ntMC->Project("hPtMCrecoonly",varExp.Data(),TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*TCut(Form("%s && Bgen==23333", cut.Data())));
+
+
+	//weightGpt = "1.844009 + 0.058935 * Bgenpt - 0.454120 * sqrt(Gpt)";
+	//weightBgenpt = "1.844009 + 0.058935 * Bgenpt - 0.454120 * sqrt(Bgenpt)";
+
+	//	ntMC->Project("hPtMC","Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
+	//  ntMC->Project("hPtMCrecoonly","Bpt",TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut_recoonly.Data())&&"(Bgen==23333)"));
+
+
+
 	ntGen->Project("hPtGen",varGenExp.Data(),
 			TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgen.Data())));
 	ntGen->Project("hPtGenWeighted",varGenExp.Data(),
@@ -191,13 +303,231 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 	ntMC->Project("hPthat","pthat","1");
 	ntMC->Project("hPthatweight","pthat",TCut("1"));
 
+
+	if(dofine == 1){
+		cout << "Working on Fine" << endl;
+
+
+
+
+
+		/*
+		   TH1D* hPtMCFine = new TH1D("hPtMCFine","",46,5,50);
+		   TH1D* hPtGenWeightedFine = new TH1D("hPtGenWeightedFine","",46,5,50);
+		   TH1D* hPtMCrecoonlyFine  = new TH1D("hPtMCrecoonlyFine","",46,5,50);
+		   TH1D* hPtGenFine  = new TH1D("hPtGenFine","",46,5,50);
+		   TH1D* hPtGenAccFine  = new TH1D("hPtGenAccFine","",46,5,50);
+		   TH1D* hPtGenAccWeightedFine  = new TH1D("hPtGenAccWeightedFine","",46,5,50);
+		   */
+
+		TH1D* hPtMCFine;
+		TH1D* hPtGenWeightedFine;
+		TH1D* hPtMCrecoonlyFine;
+		TH1D* hPtGenFine;
+		TH1D* hPtGenAccFine;
+		TH1D* hPtGenAccWeightedFine;
+
+
+		if(centmin == 0 && centmax == 90){
+
+			hPtMCFine = new TH1D("hPtMCFine","",200,5,50);
+			hPtGenWeightedFine = new TH1D("hPtGenWeightedFine","",200,5,50);
+			hPtMCrecoonlyFine  = new TH1D("hPtMCrecoonlyFine","",200,5,50);
+			hPtGenFine  = new TH1D("hPtGenFine","",200,5,50);
+			hPtGenAccFine  = new TH1D("hPtGenAccFine","",200,5,50);
+			hPtGenAccWeightedFine  = new TH1D("hPtGenAccWeightedFine","",200,5,50);
+
+		}
+		else{
+
+			hPtMCFine = new TH1D("hPtMCFine","",60,5,50);
+			hPtGenWeightedFine = new TH1D("hPtGenWeightedFine","",60,5,50);
+			hPtMCrecoonlyFine  = new TH1D("hPtMCrecoonlyFine","",60,5,50);
+			hPtGenFine  = new TH1D("hPtGenFine","",60,5,50);
+			hPtGenAccFine  = new TH1D("hPtGenAccFine","",60,5,50);
+			hPtGenAccWeightedFine  = new TH1D("hPtGenAccWeightedFine","",60,5,50);
+
+		}
+
+
+		divideBinWidth(hPtMCFine);
+		divideBinWidth(hPtMCrecoonlyFine);
+		divideBinWidth(hPtGenFine);
+		divideBinWidth(hPtGenWeightedFine);
+		divideBinWidth(hPtGenAccFine);
+		divideBinWidth(hPtGenAccWeightedFine);
+
+		ntMC->Project("hPtMCFine",varExp.Data(), TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
+		ntGen->Project("hPtGenWeightedFine",varGenExp.Data(),TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
+
+
+		cout << "selmcgen = " << selmcgen.Data() << endl;
+		cout << "Total  hPtMCFine = " << hPtMCFine->Integral() << endl;
+		cout << "Total  hPtGenWeightedFine = " << hPtGenWeightedFine->Integral() << endl;
+
+		ntGen->Project("hPtGenFine",varGenExp.Data(), TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgen.Data())));
+		ntGen->Project("hPtGenWeightedFine",varGenExp.Data(),TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
+		ntGen->Project("hPtGenAccFine",varGenExp.Data(),	TCut(weighpthat)*TCut(weightGpt)*(TCut(selmcgenacceptance.Data())));
+		ntGen->Project("hPtGenAccWeightedFine",varGenExp.Data(),TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgenacceptance.Data())));
+
+
+		hPtMCFine->Sumw2();
+		hPtMCrecoonlyFine->Sumw2();
+		hPtGenFine->Sumw2();
+		hPtGenAccFine->Sumw2();	gStyle->SetPadRightMargin(cRightMargin);
+		hPtGenAccWeightedFine->Sumw2();
+		//Acceptance
+		TH1D* hEffAccFine = (TH1D*)hPtGenAccFine->Clone("hEffAccFine");
+		hEffAccFine->Sumw2();
+		hEffAccFine->Divide(hEffAccFine,hPtGenFine,1,1,"b");
+		//Selection
+		TH1D* hEffSelectionFine = (TH1D*)hPtMCFine->Clone("hEffSelectionFine");
+		hEffSelectionFine->Sumw2();
+		hEffSelectionFine->Divide(hEffSelectionFine,hPtGenAccWeightedFine,1,1,"b");
+
+
+
+
+
+		TH1D* hEffFineInv = (TH1D * ) hPtGenWeightedFine->Clone("hEffFineInv");
+		hEffFineInv->Sumw2();
+		hPtMCFine->Sumw2();
+		hEffFineInv->Divide(hPtMCFine);
+
+		TH1D* hEffFine = (TH1D * ) hPtMCFine->Clone("hEffFine");
+		hEffFine->Sumw2();
+		hPtGenWeightedFine->Sumw2();
+		hEffFine->Divide(hPtGenWeightedFine);
+
+
+		//TH2D * EffBptByMC = new TH2D("EffBptByMC","EffBptByMC",45,5,50,48,-2.4,2.4);
+		//TH2D * EffBptByGen = new TH2D("EffBptByGen","EffBptByGen",45,5,50,48,-2.4,2.4);
+
+		TH2D * EffBptByMC; 
+		TH2D * EffBptByGen;
+		if( centmin == 0 && centmax == 90){
+			EffBptByMC	= new TH2D("EffBptByMC","EffBptByMC",90,5,50,96,-2.4,2.4);
+			EffBptByGen  = new TH2D("EffBptByGen","EffBptByGen",90,5,50,96,-2.4,2.4);
+		}
+		else{
+			EffBptByMC = new TH2D("EffBptByMC","EffBptByMC",45,5,50,48,-2.4,2.4);
+			EffBptByGen = new TH2D("EffBptByGen","EffBptByGen",45,5,50,48,-2.4,2.4);
+		}
+
+		cout << "EffBptByMC X Bins =  " << EffBptByMC->GetNbinsX() << endl;
+
+		ntMC->Project("EffBptByMC","By:Bpt", TCut(weighpthat)*TCut(weightBgenpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(cut.Data())&&"(Bgen==23333)"));
+		ntGen->Project("EffBptByGen","Gy:Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
+
+
+
+		TH2D * EffBptBy = (TH2D *) EffBptByMC->Clone("EffBptBy");
+		EffBptByMC->Sumw2();
+		EffBptByGen->Sumw2();
+		EffBptBy->Divide(EffBptByGen);
+
+		EffBptBy->GetXaxis()->SetTitle("B_{s} p_{T} (GeV/c)");
+		EffBptBy->GetYaxis()->SetTitle("B_{s} y");
+		EffBptBy->GetYaxis()->SetTitleOffset(1.5);
+
+
+		EffBptBy->GetXaxis()->CenterTitle();
+		EffBptBy->GetYaxis()->CenterTitle();
+
+
+
+		TH2D * EffBptByInv = (TH2D *) EffBptByGen->Clone("EffBptByInv");
+
+		EffBptByInv->Sumw2();
+		EffBptByMC->Sumw2();
+		EffBptByInv->Divide(EffBptByMC);
+
+		EffBptByInv->GetXaxis()->SetTitle("B_{s} p_{T} (GeV/c)");
+		EffBptByInv->GetYaxis()->SetTitle("B_{s} y");
+		EffBptByInv->GetYaxis()->SetTitleOffset(1.5);
+
+
+		EffBptByInv->GetXaxis()->CenterTitle();
+		EffBptByInv->GetYaxis()->CenterTitle();
+
+		double EffRatioErr;
+
+		TH2D * EffBptByInvErr = (TH2D *) EffBptByInv->Clone("EffBptByInvErr");
+		EffBptByInvErr->Reset();
+		EffBptByInvErr->GetZaxis()->SetTitle("1/eff Error ");
+
+		for(int k = 0; k < EffBptByInv->GetNbinsX();k++){
+
+			for(int l = 0; l < EffBptByInv->GetNbinsY();l++){
+
+				EffRatioErr = EffBptByInv->GetBinError(k+1,l+1);
+
+				EffBptByInvErr->SetBinContent(k+1,l+1,EffRatioErr);
+			}
+		}
+
+
+
+		TH2D * EffBptByInvErrFrac = (TH2D *) EffBptByInvErr->Clone("EffBptByInvErrFrac");
+		EffBptByInvErrFrac->Divide(EffBptByInv);
+		EffBptByInvErrFrac->GetZaxis()->SetTitle("1/eff Fractional Error ");
+
+
+
+
+
+
+		TCanvas * c2 = new TCanvas("c2","c2",600,600);
+		c2->cd();
+		EffBptBy->Draw("COLZ");
+		c2->SaveAs(Form("ByBpt_%.0f_%.0f.png",centmin,centmax));
+
+
+		EffBptByInvErrFrac->Draw("COLZ");
+		c2->SaveAs(Form("ByBptInvErrFrac_%.0f_%.0f.png",centmin,centmax));
+
+
+		c2->SetLogz();
+
+
+		EffBptByInvErr->Draw("COLZ");
+		c2->SaveAs(Form("ByBptInvErr_%.0f_%.0f.png",centmin,centmax));
+
+
+
+
+
+
+		EffBptByInv->Draw("COLZ");
+		c2->SaveAs(Form("ByBptInv_%.0f_%.0f.png",centmin,centmax));
+
+
+
+		TFile * foutFine = new TFile(Form("ROOTfiles/EffFine_%.0f_%.0f.root",centmin,centmax),"RECREATE");
+		foutFine->cd();
+		hPtMCFine->Write();
+		hPtGenWeightedFine->Write();
+		hEffFine->Write();
+		hEffAccFine->Write();
+		hEffSelectionFine->Write();
+		hEffFineInv->Write();
+		EffBptByGen->Write();
+		EffBptByMC->Write();
+		EffBptBy->Write();
+		EffBptByInv->Write();
+		EffBptByInvErr->Write();
+		EffBptByInvErrFrac->Write();
+		foutFine->Close();
+
+	}
+
+
 	////// tag & probe scaling factor
 	for(int i = 0; i < _nBins; i++){printf("before muon sf: %.2f, ", hPtMC->GetBinContent(i+1));}printf("\n");//check entries
 	for(int i = 0; i < _nBins; i++){
-		if(label == "pp"){
+		if(label == "pp")
 			hPtMC->SetBinContent(i+1, hPtMC->GetBinContent(i+1)*_sf_pp[i]);
-			hPtMCrecoonly->SetBinContent(i+1, hPtMCrecoonly->GetBinContent(i+1)*_sf_pp[i]);
-		}
+		hPtMCrecoonly->SetBinContent(i+1, hPtMCrecoonly->GetBinContent(i+1)*_sf_pp[i]);
 		if(label == "PbPb"){
 			hPtMC->SetBinContent(i+1, hPtMC->GetBinContent(i+1)*_sf_pbpb[i]);
 			hPtMCrecoonly->SetBinContent(i+1, hPtMCrecoonly->GetBinContent(i+1)*_sf_pbpb[i]);
@@ -266,9 +596,9 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 	canvasEff->cd(2);
 	hemptyEff->Draw();
 	hEff->Draw("same");
-	
+
 	for(int i = 0; i < _nBins; i++){		
-		cout << _ptBins[i] <<  "< pT < " <<  _ptBins[i+1]  <<  "    Efficiency =  " <<  hEff->GetBinContent(i) << "    Efficiency Error = " << hEff->GetBinError(i) << endl;
+		cout << _ptBins[i] <<  "< pT < " <<  _ptBins[i+1]  <<  "    Efficiency =  " <<  hEff->GetBinContent(i+1) << "    Efficiency Error = " << hEff->GetBinError(i+1) << endl;
 	}
 
 	canvasEff->SaveAs(Form("%s/canvasEff_study%s.pdf",outplotf.Data(),Form(label.Data())));
