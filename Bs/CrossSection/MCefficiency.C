@@ -326,26 +326,28 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		TH1D* hPtGenFine;
 		TH1D* hPtGenAccFine;
 		TH1D* hPtGenAccWeightedFine;
-
+		int NFineBins;
 
 		if(centmin == 0 && centmax == 90){
+			NFineBins = 200;
 
-			hPtMCFine = new TH1D("hPtMCFine","",200,5,50);
-			hPtGenWeightedFine = new TH1D("hPtGenWeightedFine","",200,5,50);
-			hPtMCrecoonlyFine  = new TH1D("hPtMCrecoonlyFine","",200,5,50);
-			hPtGenFine  = new TH1D("hPtGenFine","",200,5,50);
-			hPtGenAccFine  = new TH1D("hPtGenAccFine","",200,5,50);
-			hPtGenAccWeightedFine  = new TH1D("hPtGenAccWeightedFine","",200,5,50);
+			hPtMCFine = new TH1D("hPtMCFine","",NFineBins,5,50);
+			hPtGenWeightedFine = new TH1D("hPtGenWeightedFine","",NFineBins,5,50);
+			hPtMCrecoonlyFine  = new TH1D("hPtMCrecoonlyFine","",NFineBins,5,50);
+			hPtGenFine  = new TH1D("hPtGenFine","",NFineBins,5,50);
+			hPtGenAccFine  = new TH1D("hPtGenAccFine","",NFineBins,5,50);
+			hPtGenAccWeightedFine  = new TH1D("hPtGenAccWeightedFine","",NFineBins,5,50);
 
 		}
 		else{
+			NFineBins = 90;
 
-			hPtMCFine = new TH1D("hPtMCFine","",60,5,50);
-			hPtGenWeightedFine = new TH1D("hPtGenWeightedFine","",60,5,50);
-			hPtMCrecoonlyFine  = new TH1D("hPtMCrecoonlyFine","",60,5,50);
-			hPtGenFine  = new TH1D("hPtGenFine","",60,5,50);
-			hPtGenAccFine  = new TH1D("hPtGenAccFine","",60,5,50);
-			hPtGenAccWeightedFine  = new TH1D("hPtGenAccWeightedFine","",60,5,50);
+			hPtMCFine = new TH1D("hPtMCFine","",NFineBins,5,50);
+			hPtGenWeightedFine = new TH1D("hPtGenWeightedFine","",NFineBins,5,50);
+			hPtMCrecoonlyFine  = new TH1D("hPtMCrecoonlyFine","",NFineBins,5,50);
+			hPtGenFine  = new TH1D("hPtGenFine","",NFineBins,5,50);
+			hPtGenAccFine  = new TH1D("hPtGenAccFine","",NFineBins,5,50);
+			hPtGenAccWeightedFine  = new TH1D("hPtGenAccWeightedFine","",NFineBins,5,50);
 
 		}
 
