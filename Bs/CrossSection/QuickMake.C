@@ -64,5 +64,4 @@ void QuickMake(){
 	fout2->Close();
 
 
-
 }

@@ -90,6 +90,7 @@ void GenerateCorrYield(int BinOption){
 
 
 	double Binwidth[3] = {10,5,30};
+//	double Binwidth[4] = {5,5,5,30};
 
 	//TString TypeName[NType] ={"NOMINALPP","VARIATIONPP","NOMINALTAMU","VARIATIONTAMU","LINEAR","QUADRATIC","LINVERSE","LSQRT","LLOG"};
 	//TString outfile[NType] ={"ROOTfiles/FilesCorr/CorrYieldNOMINALPP.root","ROOTfiles/FilesCorr/CorrYieldVARIATIONPP.root","ROOTfiles/FilesCorr/CorrYieldNOMINALTAMU.root","ROOTfiles/FilesCorr/CorrYieldVARIATIONTAMU.root","ROOTfiles/FilesCorr/CorrYieldLINEAR.root","ROOTfiles/FilesCorr/CorrYieldQUADRATIC.root","ROOTfiles/FilesCorr/CorrYieldLINVERSE.root","ROOTfiles/FilesCorr/CorrYieldLSQRT.root","ROOTfiles/FilesCorr/CorrYieldLLOG.root"};

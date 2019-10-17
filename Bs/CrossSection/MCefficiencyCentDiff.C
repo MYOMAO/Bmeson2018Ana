@@ -28,7 +28,7 @@ int customizedOpt = 0; //1: remove pt weight, 2: do tk eta weihting
 
 void MCefficiencyCentDiff(int isPbPb=0, TString inputmc="", TString selmcgen="", TString selmcgenacceptance="", TString cut_recoonly="", TString cut="", TString _varExp = "", TString _varGenExp = "", TString label="", TString outputfile="", TString outplotf="", int PbPbweight=0, Float_t centmin=0., Float_t centmax=100.)
 {    
-	int dofine = 1;
+	int dofine = 0;
 	TString varExp = _varExp;
 	TString varGenExp = _varGenExp;
 	std::string str = _varExp.Data();
@@ -71,7 +71,7 @@ void MCefficiencyCentDiff(int isPbPb=0, TString inputmc="", TString selmcgen="",
 
 	str = label.Data();
 	found = str.find("Fine");
-	if (found!=std::string::npos){
+	if (found!=std::string::npos){MCefficiencyCentDiff.C
 		_nBins = nBinsFine;
 		_ptBins = ptBinsFine;
 	}

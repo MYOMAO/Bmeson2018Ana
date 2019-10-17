@@ -34,8 +34,8 @@ void BsOverBPlus(){
 	TFile * finBs = new TFile(BsName.Data());
 	TFile * finBPlus = new TFile(BPlusName.Data());
 
-	TGraphAsymmErrors * BsCross = (TGraphAsymmErrors *) finBs->Get("gaeCrossSyst");
-	TGraphAsymmErrors * BPlusCross = (TGraphAsymmErrors *) finBPlus->Get("gaeCrossSyst");
+	//TGraphAsymmErrors * BsCross = (TGraphAsymmErrors *) finBs->Get("gaeCrossSyst");
+	//TGraphAsymmErrors * BPlusCross = (TGraphAsymmErrors *) finBPlus->Get("gaeCrossSyst");
 
 	TH1D * hBPlusCross=(TH1D*)finBPlus->Get("hPtSigma");
 	TH1D * hBsCross=(TH1D*)finBs->Get("hPtSigma");
@@ -44,10 +44,64 @@ void BsOverBPlus(){
 	double BsCorr[nBins];
 	double BPCorr[nBins];
 
+	double TnPErrBsUp[nBins] ={0.20,0.0934,0.0601,0.0605};
+	double TnPErrBsDown[nBins] ={0.142,0.0808,0.0568,0.0573};
+
+	double TnPErrBPUp[nBins] ={0.1039,0.0699,0.0590,0.0584};
+	double TnPErrBPDown[nBins] ={0.0874,0.0651,0.0554,0.0559};
+
+	double BsUp[nBins];
+	double BsDown[nBins];
+
+
+	double BPUp[nBins];
+	double BPDown[nBins];
+
+	double BsBPUp[nBins];
+	double BsBPDown[nBins];
+
+	double BsBPUpSyst[nBins];
+	double BsBPDownSyst[nBins];
+
+	double BsBPCenter[nBins];
+
+
+	for(int i = 0; i < nBins; i++){
+
+		BsUp[i]	= hBsCross->GetBinContent(i+1) * (1 + TnPErrBsUp[i]);
+		BPUp[i]	= hBPlusCross->GetBinContent(i+1) * (1 + TnPErrBPUp[i]);
+		BsDown[i]	= hBsCross->GetBinContent(i+1) * (1 - TnPErrBsDown[i]);
+		BPDown[i]	= hBPlusCross->GetBinContent(i+1) * (1 - TnPErrBPDown[i]);
+
+		BsBPUp[i] = BsUp[i]/BPUp[i];
+		BsBPDown[i] = BsDown[i]/BPDown[i];
+
+	//	cout << "TNP UP: " << "  Bs = " <<  BsUp[i] << "  BP =   " << BPUp[i]  <<  "   Bs/B+ = " << BsBPUp[i]   << endl;
+//		cout << "TNP Down: " << "  Bs = " <<  BsDown[i] << "  BP =   " << BPDown[i]  <<  "   Bs/B+ = " << BsBPDown[i]   << endl;
+
+	}
+
+
+
 
 	hBsCross->Divide(hBPlusCross);
 	hBsCross->SetMaximum(1.2);
 	hBsCross->SetMinimum(0.0);
+
+
+
+	for(int i = 0; i < nBins; i++){
+
+		BsBPCenter[i] = hBsCross->GetBinContent(i+1);
+
+		BsBPUpSyst[i] = abs(BsBPUp[i] - BsBPCenter[i])/BsBPCenter[i];
+		BsBPDownSyst[i] = abs(BsBPDown[i] - BsBPCenter[i])/BsBPCenter[i];
+
+		cout << "TNP UP Final: " << 	BsBPUpSyst[i] << endl;
+		cout << "TNP Down Final: " << BsBPDownSyst[i]  << endl;
+
+	}
+
 
 
 	hBsCross->SetLineWidth(3);
@@ -77,10 +131,10 @@ void BsOverBPlus(){
 
 
 
+	/*
 
 	for(int i =0; i < nBins; i++){
-
-		BsCross->GetPoint(i,xBs,yBs);
+			BsCross->GetPoint(i,xBs,yBs);
 		BPlusCross->GetPoint(i,xBPlus,yBPlus);
 		yBsErrU = BsCross->GetErrorYhigh(i);
 		yBsErrD = BsCross->GetErrorYlow(i);
@@ -94,8 +148,10 @@ void BsOverBPlus(){
 		RatioErrU[i] = Ratio[i]*TMath::Sqrt((yBsErrU/yBs)*(yBsErrU/yBs) + (yBlusErrU/yBPlus)*(yBlusErrU/yBPlus) );
 		RatioErrD[i] = Ratio[i]*TMath::Sqrt((yBsErrD/yBs)*(yBsErrD/yBs) + (yBlusErrD/yBPlus)*(yBlusErrD/yBPlus) );
 	}
+	*/
 
-	TGraphAsymmErrors* BstoBPlus = new TGraphAsymmErrors(nBins,xr,Ratio,xrlow,xrhigh,RatioErrD,RatioErrU);
+
+//	TGraphAsymmErrors* BstoBPlus = new TGraphAsymmErrors(nBins,xr,Ratio,xrlow,xrhigh,RatioErrD,RatioErrU);
 
 
 	TCanvas *c = new TCanvas("c","c",600,600);
@@ -113,36 +169,36 @@ void BsOverBPlus(){
 
 		cout << "Ratio = " << 	hBsCross->GetBinContent(i+1) << endl;
 		cout << "Ratio Error = " << 	hBsCross->GetBinError(i+1) << endl;
-
+		cout << "Ratio Frac Error = " << hBsCross->GetBinError(i+1)/hBsCross->GetBinContent(i+1) << endl;
 	}
 
 
 	hBsCross->Draw("ep");
 
 
-	double SystErr[nBins];
+	double SystErrUp[nBins];
+	double SystErrDown[nBins];
 
 	//Bs//
 	double SystErrBs[nBins];
 	double TrackingErrBs[nBins] ={0.10,0.10,0.10,0.10};
-	double SelErrBs[nBins] ={0.0893,0.115,0.143,0.0649};
-	double PTErrBs[nBins] ={0.0615,0.0282,0.0071,0.0146};
+	double SelErrBs[nBins] ={0.378,0.0479,0.0441,0.1044};
+	double PTErrBs[nBins] ={0.0017,0.00013,0.00008,0.00093};
 	double AccErrBs[nBins] ={0.0046,0.0343,0.0468,0.0425};
 	double PDFBErrBs[nBins] ={0,0.0272,0.0156,0.0329};
 	double PDFSErrBs[nBins] ={0.0862,0.0262,0.0099,0.00177};
-	double TnPErrBs[nBins] ={0.0122,0.0758,0.0590,0.0562};
+	double MCStatBs[nBins] ={0.288,0.0626,0.0317,0.0349};
 
 
 	//BPlus//
 	double SystErrBP[nBins];
 	double TrackingErrBP[nBins] ={0.05,0.05,0.05,0.05};
-	double SelErrBP[nBins] ={0.0497,0.0317,0.0246,0.0063};
-	double PTErrBP[nBins] ={0.0095,0.0064,0.0004,0.0019};
-	double AccErrBP[nBins] ={0.0007,0.0006,0.0018,0.0038};
+	double SelErrBP[nBins] ={0.0567,0.153,0.0361,0.0172};
+	double PTErrBP[nBins] ={0.00128,0.00206,0.0000,0.00010};
+	double AccErrBP[nBins] ={0.0001,0.00047,0.00026,0.00055};
 	double PDFBErrBP[nBins] ={0.0,0.0,0.0,0.0};
-	double PDFSErrBP[nBins] ={0.0643,0.0308,0.0265,0.0319};
-	double TnPErrBP[nBins] ={0.09665,0.06635,0.0564,0.05685};
-
+	double PDFSErrBP[nBins] ={0.0446,0.0273,0.0280,0.0257};
+	double MCStatBP[nBins] ={0.1486,0.0375,0.0220,0.0151};
 
 
 	double TrackingErrBsBP[nBins] ={0.05,0.05,0.05,0.05};
@@ -150,11 +206,15 @@ void BsOverBPlus(){
 
 	for(int i = 0; i < nBins; i++){
 
-		SystErrBs[i] =  sqrt(SelErrBs[i] *SelErrBs[i] + PTErrBs[i] * PTErrBs[i] + AccErrBs[i]* AccErrBs[i] + PDFBErrBs[i]* PDFBErrBs[i] + PDFSErrBs[i]* PDFSErrBs[i] + TnPErrBs[i]* TnPErrBs[i]);
-		SystErrBP[i] =  sqrt(SelErrBP[i] *SelErrBP[i] + PTErrBP[i] * PTErrBP[i] + AccErrBP[i]* AccErrBP[i] + PDFBErrBP[i]* PDFBErrBP[i] + PDFSErrBP[i]* PDFSErrBP[i] + TnPErrBP[i]* TnPErrBP[i]);
+		SystErrBs[i] =  sqrt(SelErrBs[i] *SelErrBs[i] + PTErrBs[i] * PTErrBs[i] + AccErrBs[i]* AccErrBs[i] + PDFBErrBs[i]* PDFBErrBs[i] + PDFSErrBs[i]* PDFSErrBs[i] + MCStatBs[i] * MCStatBs[i]);
+		SystErrBP[i] =  sqrt(SelErrBP[i] *SelErrBP[i] + PTErrBP[i] * PTErrBP[i] + AccErrBP[i]* AccErrBP[i] + PDFBErrBP[i]* PDFBErrBP[i] + PDFSErrBP[i]* PDFSErrBP[i]  + MCStatBP[i] * MCStatBP[i]);
 
-		SystErr[i] = sqrt(SystErrBs[i]* SystErrBs[i] + SystErrBP[i] * SystErrBP[i] + TrackingErrBsBP[i] * TrackingErrBsBP[i]);
-		cout << "i = "  << i  << "    SystErr = "  << SystErr[i] << endl;
+		SystErrUp[i] = sqrt(SystErrBs[i]* SystErrBs[i] + SystErrBP[i] * SystErrBP[i] + TrackingErrBsBP[i] * TrackingErrBsBP[i] + BsBPUpSyst[i] * BsBPUpSyst[i]);
+
+		SystErrDown[i] = sqrt(SystErrBs[i]* SystErrBs[i] + SystErrBP[i] * SystErrBP[i] + TrackingErrBsBP[i] * TrackingErrBsBP[i] + BsBPDownSyst[i] * BsBPDownSyst[i]);
+
+		
+		cout << "i = "  << i  << "    SystErrUp = "  << SystErrUp[i] << "  SystErrDown =  " << SystErrDown[i] << endl;
 
 	}
 
@@ -171,25 +231,29 @@ void BsOverBPlus(){
 	double MyXlow[nBins] = {2.5,2.5,2.5,15};
 	double MyXhigh[nBins] = {2.5,2.5,2.5,15};
 
-
 	for(int i = 0; i < nBins; i++){
 		Y[i] = hBsCross->GetBinContent(i+1);
 		YErr[i] = hBsCross->GetBinError(i+1);
 		X[i] = (ptBins[i]+ptBins[i+1])/2;
-		YErrorHigh[i] =  hBsCross->GetBinContent(i+1)*SystErr[i];
-		YErrorLow[i] =  hBsCross->GetBinContent(i+1)*SystErr[i];
+		YErrorHigh[i] =  hBsCross->GetBinContent(i+1)*SystErrUp[i];
+		YErrorLow[i] =  hBsCross->GetBinContent(i+1)*SystErrDown[i];
 
 	}
 
 
 
-	ofstream outratio("ratio_pt.txt");
-	outratio << "ptmin" << "   " << "ptmax" << "   " <<  "xsec" << "   " << "statUncert" << "   " << "systUncert" << "   " <<  "glbUncert" << endl;
+
+
+	ofstream outratio("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/HIN-19-011Final/ratio_pt.txt");
+	outratio << "ptmin" << "   " << "ptmax" << "   " <<  "xsec" << "   " << "statUncert" << "   " << "systUncert Up "  << "   " << "systUncert Down "  << "   " <<  "glbUncert" << endl;
 
 	for(int i = 0; i < nBins; i++){
-		outratio << ptBins[i] << "   " << ptBins[i+1] << "   " << Y[i] << "   " <<YErr[i]/Y[i] << "   " << SystErr[i]  << "   " << 0 << endl;
+		outratio << ptBins[i] << "   " << ptBins[i+1] << "   " << Y[i] << "   " <<YErr[i]/Y[i] << "   " << SystErrUp[i] << "   " << SystErrDown[i] << "   " << 0 << endl;
 
 	}
+
+
+
 
 
 	TGraphAsymmErrors* MyCrossSyst = new TGraphAsymmErrors(nBins,X,Y,MyXlow,MyXhigh,YErrorLow,YErrorHigh);
@@ -279,7 +343,7 @@ void BsOverBPlus(){
 	leg->SetTextFont(42);
 	leg->SetFillStyle(0);
 	leg->AddEntry(hBsCross,"Data Points","pl");
-	leg->AddEntry(MyCrossSyst,"Systematics Uncertainties","l");
+	leg->AddEntry(MyCrossSyst,"Systematic Uncertainties","l");
 	leg->AddEntry(FragBand,"f_{s}/f_{u} in vacuum","l");
 	leg->Draw("same");
 
