@@ -365,7 +365,7 @@ void roofitB(int doubly = 0, TString tree = "ntphi", int full = 1, int usePbPb =
 		outputw->import(*dsMC);
 		outputw->import(*dh);
 		outputw->import(*dhMC);
-		std::cout<<"import "<<std::endl;
+		std::cout<<"import "<<std::endl; 
 	    //}
 			/*if(fitOnSaved == 1){
 				drawOpt = 1;
@@ -557,7 +557,7 @@ void roofitB(int doubly = 0, TString tree = "ntphi", int full = 1, int usePbPb =
 				RooRealVar* fitYield_back = static_cast<RooRealVar*>(f_back->floatParsFinal().at(f_back->floatParsFinal().index(Form("nsig%d",_count))));
 				back_variation.push_back(fitYield_back->getVal());
 				back_err.push_back(abs(((yield-fitYield_back->getVal())/yield)*100));
-				if(abs(((yield-fitYield_back->getVal())/yield)*100)>max_back) max_back=abs(((yield-fitYield_back->getVal())/yield)*100);
+				if(abs(((yield-fitYield_back->getVal())/yield)*100)>max_back)  bifurcated gaussianmax_back=abs(((yield-fitYield_back->getVal())/yield)*100);
 
 			}
 

@@ -208,7 +208,18 @@ void Quick2DMap(){
 	TCanvas * c = new TCanvas("c","c",600,600);
 	c->cd();
 	c->SetLogz();
+	
+	EffBptByInv1->Draw("COLZ");
+	c->SaveAs("Eff2DMap/SingleBsApp/Eff2D_0_90.png");
 
+	hEffSelectionFine1->Draw("COLZ");
+	c->SaveAs("Eff2DMap/SingleBsApp/Sel2D_0_90.png");
+	
+	
+	hEffAcc2DFine1->Draw("COLZ");
+	c->SaveAs("Eff2DMap/SingleBsApp/Acc2D_0_90.png");
+
+	
 
 
 	//Corrected//

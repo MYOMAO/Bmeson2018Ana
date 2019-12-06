@@ -111,12 +111,20 @@ void FitWidths(){
 
 
 			TLatex* tex;
-			tex = new TLatex(0.48,0.85,Form("%.0f < |y| < %.0f",_ptBins[i],_ptBins[i+1]));
+			tex = new TLatex(0.48,0.85,Form("%.1f < |y| < %.1f",_ptBins[i],_ptBins[i+1]));
 			tex->SetNDC();
 			tex->SetTextFont(42);
 			tex->SetTextSize(0.045);
 			tex->SetLineWidth(2);
 			tex->Draw("SAME");
+
+
+		    TLatex* tex3 = new TLatex(0.20, 0.8,"Data");
+		    TLatex* tex4 = new TLatex(0.20, 0.6,"PbPb");
+			
+
+			tex3->Draw("SAME");
+			tex4->Draw("SAME");
 
 
 			c->SaveAs(Form("plotSthBy/Fit%d_%d.png",i,j));

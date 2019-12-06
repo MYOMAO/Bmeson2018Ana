@@ -254,7 +254,25 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		weightHiBin = weightHiBin_PbPb;
 		weightPVz = weightPVz_PbPb;
 	}
-
+	if(PbPbweight==17) {
+		weightGpt = "1";
+		weightBgenpt = "1";
+		weightHiBin = weightHiBin_PbPb;
+		weightPVz = weightPVz_PbPb;
+	}
+	if(PbPbweight==18) {
+		weightGpt = "1";
+		weightBgenpt = "1";
+		weightHiBin = "1";
+		weightPVz = "1";
+		weighpthat = "1";
+	}
+	if(PbPbweight==19) {
+		weightGpt = "1";
+		weightBgenpt = "1";
+		weightHiBin = "1";
+		weightPVz = "1";
+	}
 
 	TCut BEffInvBDTWeighted = "BEffInvBDTWeighted";
 
@@ -354,7 +372,7 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 
 		//		const int yBinN = 1;
 		//		double yBinning[yBinN+1] = {0.0, 2.4};
-		int Rebin = 1;
+		int Rebin = 0;
 
 		double LowBinWidth;
 
@@ -424,6 +442,17 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 
 
 
+
+		TH1D * hPtMCFineNW = new TH1D("hPtMCFineNW","",BptBin,BptBinning);
+		TH1D * hPtGenWeightedFineNW = new TH1D("hPtGenWeightedFineNW","",BptBin,BptBinning);
+
+
+
+		ntMC->Project("hPtMCFineNW",varExp.Data(), (TCut(cut.Data())&&"(Bgen==23333)"));
+		ntGen->Project("hPtGenWeightedFineNW",varGenExp.Data(),(TCut(selmcgen.Data())));
+
+		
+		cout << "RECO = " << hPtMCFineNW->Integral() << "    GEN =  " << hPtGenWeightedFineNW->Integral() << endl;
 
 
 
@@ -737,6 +766,9 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		TString FolderName;	
 
 		if(Rebin == 0){
+			if(PbPbweight == 19 ) FolderName = "Original";		
+			if(PbPbweight == 18 ) FolderName = "NoPthat";	
+			if(PbPbweight == 17 ) FolderName = "NoWightCut";
 			if(PbPbweight == 16 ) FolderName = "NoWeight";
 			if(PbPbweight == 1) FolderName = "FONLL";
 			if(PbPbweight == 11) FolderName = "Linear";

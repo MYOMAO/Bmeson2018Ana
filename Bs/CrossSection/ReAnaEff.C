@@ -36,7 +36,7 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 	if(Weight == 13) WeightName = "LInverse";
 	if(Weight == 14) WeightName = "LSqrt";
 	if(Weight == 15) WeightName = "LLog";
-
+	if(Weight == 0) WeightName = "NoTnP";
 
 	gStyle->SetOptTitle(0);
 	gStyle->SetOptStat(0);
@@ -168,11 +168,12 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 
 
 	if(NBins == 1){
+	
 
 		if(drop == 0 && CentMin == 0) ptbinsvec.push_back(7.0);
 		if(drop == 0 && CentMin == 30) ptbinsvec.push_back(9.0);
 
-		if(drop == 1)  ptbinsvec.push_back(10.0);
+		if(drop == 1)  ptbinsvec.push_back(10.5);
 
 		ptbinsvec.push_back(50);
 		//	if(drop == 0 && CentMin == 0)	corrfactvec.push_back(1.08798);
@@ -279,6 +280,8 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 							SumCountsEff[k] = SumCountsEff[k] + BEff[j];
 							SumCountsEffErr[k] = SumCountsEffErr[k] + BEffErr[j] * BEffErr[j];
 							Counts[k] = Counts[k] + 1;
+
+
 						}
 					}
 
@@ -300,6 +303,8 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 							SumCountsErrDown[k] = SumCountsErrUp[k] + BEffInvErrDown[j] * BEffInvErrDown[j];
 
 							Counts[k] = Counts[k] + 1;
+
+							//cout << "Candidate: " << "   Bpt = " << BptNew[j] << "   Efficiency =  " << BEffInv[j] << "   Efficiency Error  = " << BEffInvErr[j] << endl;
 						}
 					}
 					if(DoTwoD == 2){
@@ -442,6 +447,13 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 		//cout << "Counts = " << Counts[i] << endl;
 		cout << "Count =  " <<  Counts[i] << "   NewEff = " << NewEff[i] << "     NewEffErr = " << NewEffErr[i] << endl;
 		cout << "Count =  " <<  Counts[i] << "   NewEffSyst = " << NewEffSyst[i] << "     NewEffSystErr = " << NewEffSystErr[i] << endl;
+		
+		cout << "-----------------------------------------------------------------------------------------------" << endl;
+
+		cout << "   NewEff = " << NewEff[i] << "     NewEffErr = " << NewEffErr[i] << "  Fractional = " << NewEffErr[i]/NewEff[i] << endl;
+
+
+		cout << "-----------------------------------------------------------------------------------------------" << endl;
 
 	}
 
@@ -673,6 +685,11 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 
 		if(NBins == 3)	RawYield = new TFile(Form("RawYields/%d-%d/yields_Bs_binned_cent_2nd_pt_3bins.root",CentMin,CentMax));
 		if(NBins == 4)	RawYield = new TFile(Form("RawYields/%d-%d/yields_Bs_binned_cent_2nd_pt.root",CentMin,CentMax));
+
+		if(ptbinsvec[0] == 10.6) RawYield = new TFile(Form("RawYields/%d-%d/yields_Bs_pt10p650_cent30-90.root",CentMin,CentMax));
+		if(ptbinsvec[0] == 12) RawYield = new TFile(Form("RawYields/%d-%d/yields_Bs_pt1250_cent30-90.root",CentMin,CentMax));
+
+		if(ptbinsvec[0] == 10.5) RawYield = new TFile(Form("RawYields/%d-%d/yields_Bs_pt10p550_cent30-90.root",CentMin,CentMax));
 		//if(NBins == 4)	RawYield = new TFile(Form("RawYields/%d-%d/yields_Bs_pt5-50_cent30-90.root",CentMin,CentMax));
 	}
 
@@ -812,7 +829,7 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 			Correction[i] = 1;
 		}
 
-		double ptBinsNew[NBins + 1]={6,10,15,20,50};
+		double ptBinsNew[NBins + 1]={7,10,15,20,50};
 
 
 		TH1D * CorrDiffHis = new TH1D("hPtSigma","",NBins,ptBinsNew);

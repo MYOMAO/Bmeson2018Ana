@@ -14,6 +14,7 @@
 #include <iostream>
 #include <fstream>
 #include "parameters.h"
+#include "tdrstyle.C"
 using namespace std;
 
 using std::cout;
@@ -23,6 +24,12 @@ using std::endl;
 //TString BsName, TString BPlusName
 
 void Bs4Bins(){
+
+	
+	gSystem->Load("tdrstyle.C");
+
+	setTDRStyle();
+	
 
 	gStyle->SetOptTitle(0);
 	gStyle->SetOptStat(0);
@@ -101,10 +108,15 @@ void Bs4Bins(){
 
 	hBsCross->GetXaxis()->CenterTitle();
 	hBsCross->GetYaxis()->CenterTitle();
-	hBsCross->GetYaxis()->SetTitleOffset(1.0);
+	hBsCross->GetYaxis()->SetTitleOffset(1.5);
 
 	hBsCross->GetXaxis()->SetTitle("p_{T} (GeV/c)");
-	hBsCross->GetYaxis()->SetTitle("#frac{1}{T_{AA}} #frac{dN}{dp_{T}} ( pb GeV^{-1}c)");
+	hBsCross->GetYaxis()->SetTitle("#frac{1}{T_{AA}  N_{MB}} #frac{dN}{dp_{T}} ( pb GeV^{-1}c)");
+
+	double NMB = 11.1;
+
+	hBsCross->Scale(1.0/NMB);
+
 
 
 	for(int i =0; i < nBins; i++){
@@ -117,13 +129,8 @@ void Bs4Bins(){
 
 
 	hBsCross->SetMinimum(1000);
-	hBsCross->SetMaximum(10000000);
-
-	double NMB = 11.1;
-
-	hBsCross->Scale(1.0/NMB);
+	hBsCross->SetMaximum(100000000);
 	hBsCross->Draw("ep");
-
 
 	double SystErrUp[nBins];
 	double SystErrDown[nBins];
@@ -132,7 +139,9 @@ void Bs4Bins(){
 	double TrackingErrBs[nBins] ={0.10,0.10,0.10,0.10};
 	double SelErrBs[nBins] ={0.378,0.0479,0.0441,0.1044};
 	double PTErrBs[nBins] ={0.0017,0.00013,0.00008,0.00093};
-	double AccErrBs[nBins] ={0.0046,0.0343,0.0468,0.0425};
+	//double AccErrBs[nBins] ={0.0046,0.0343,0.0468,0.0425};
+	double AccErrBs[nBins] ={0.000,0.00,0.00,0.00};
+
 	double PDFBErrBs[nBins] ={0,0.0272,0.0156,0.0329};
 	double PDFSErrBs[nBins] ={0.0862,0.0262,0.0099,0.00177};
 	double TnPErrBsUp[nBins] ={0.20,0.0934,0.0601,0.0605};
@@ -151,7 +160,6 @@ void Bs4Bins(){
 		cout << "i = "  << i  << "    SystErrUp = "  << SystErrUp[i]  <<  "    SystErrDown = "  << SystErrDown[i] << endl;
 
 	}
-
 
 	double Y[nBins];
 
@@ -173,13 +181,14 @@ void Bs4Bins(){
 		YErrorLow[i] =  hBsCross->GetBinContent(i+1)*SystErrDown[i];
 
 	}
+	
+	double ptBinsSave[5]={7,10,15,20,50};
 
-
-	ofstream outratio("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/HIN-19-011Final/ratio_pt.txt");
-	outratio << "ptmin" << "   " << "ptmax" << "   " <<  "xsec" << "   " << "statUncert" << "   " << "SystUncert Up" <<  "   " << "SystUncert Down"  << "   " <<  "glbUncert" << endl;
+	ofstream outratio("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/HIN-19-011Final/corryield_pt_Bs.txt");
+	outratio << "ptmin" << "   " << "ptmax" << "   " <<  "xsec" << "   " << "statUncert" << "   " << "SystUncert Up" <<  "   " << "SystUncert Down"  << "   "  <<  "glbUncert Up " << "   " <<  "glbUncert Down" << endl;
 
 	for(int i = 0; i < nBins; i++){
-		outratio << ptBins[i] << "   " << ptBins[i+1] << "   " << Y[i] << "   " <<YErr[i]/Y[i] << "   " << SystErrUp[i]  << "   " << SystErrDown[i] << "   "  << 0 << endl;
+		outratio << ptBinsSave[i] << "   " << ptBinsSave[i+1] << "   " << Y[i] << "   " <<YErr[i]/Y[i] << "   " << SystErrUp[i]  << "   " << SystErrDown[i] << "   "  <<  0.0798 << "   " << 0.0793 << endl;
 
 	}
 
@@ -196,8 +205,7 @@ void Bs4Bins(){
 
 
 
-
-	TLatex* texlumi = new TLatex(0.96,0.95,"1.5 nb^{-1} (PbPb) 5.02 TeV");
+	TLatex* texlumi = new TLatex(0.96,0.97,"1.7 nb^{-1} (PbPb) 5.02 TeV");
 	texlumi->SetNDC();
 	texlumi->SetTextAlign(32);
 	texlumi->SetTextFont(42);
@@ -206,7 +214,7 @@ void Bs4Bins(){
 	texlumi->Draw("SAME");
 
 
-	TLatex* texcms = new TLatex(0.21,0.88,"CMS");
+	TLatex* texcms = new TLatex(0.72,0.88,"CMS");
 	texcms->SetNDC();
 	texcms->SetTextAlign(13);
 	texcms->SetTextFont(62);//61
@@ -222,14 +230,14 @@ void Bs4Bins(){
 	texcent->SetLineWidth(2);
 	texcent->Draw("SAME");
 
-	TLatex *texY = new TLatex(0.11,0.70," 10 GeV/c < B p_{T} < 50 GeV/c and B |y| < 2.4");
+	TLatex *texY = new TLatex(0.17,0.43," 10 GeV/c < B p_{T} < 50 GeV/c and B |y| < 2.4");
 	texY->SetNDC();
 	texY->SetTextFont(42);
 	texY->SetTextSize(0.04);
 	texY->SetLineWidth(2);
 	texY->Draw("SAME");
 
-	TLatex *texY2 = new TLatex(0.11,0.60," 7 GeV/c < B p_{T} < 10 GeV/c and 1.5 < B |y| < 2.4");
+	TLatex *texY2 = new TLatex(0.17,0.33," 7 GeV/c < B p_{T} < 10 GeV/c and 1.5 < B |y| < 2.4");
 	texY2->SetNDC();
 	texY2->SetTextFont(42);
 	texY2->SetTextSize(0.04);

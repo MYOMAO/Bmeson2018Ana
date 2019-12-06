@@ -22,12 +22,18 @@ using std::endl;
 
 //TString BsName, TString BPlusName
 
-void BsOverBPlus(){
+void BsOverBPlus(int TNP){
+
 
 	gStyle->SetOptTitle(0);
 	gStyle->SetOptStat(0);
-	TString BsName = "BsBP/CrossSectionPbPbBs.root";
-	TString	BPlusName = "BsBP/CrossSectionPbPbBPlus.root";
+	TString BsName; 
+	if(TNP == 1) BsName = "BsBP/CrossSectionPbPbBs.root";
+	if(TNP == 0) BsName = "BsBP/CrossSectionPbPbBsNoTnP.root";
+
+	TString	BPlusName;
+	if(TNP == 1) BPlusName = "BsBP/CrossSectionPbPbBPlus.root";
+	if(TNP == 0) BPlusName = "BsBP/CrossSectionPbPbBPlusNoTnP.root";
 
 
 
@@ -184,7 +190,9 @@ void BsOverBPlus(){
 	double TrackingErrBs[nBins] ={0.10,0.10,0.10,0.10};
 	double SelErrBs[nBins] ={0.378,0.0479,0.0441,0.1044};
 	double PTErrBs[nBins] ={0.0017,0.00013,0.00008,0.00093};
-	double AccErrBs[nBins] ={0.0046,0.0343,0.0468,0.0425};
+//	double AccErrBs[nBins] ={0.0046,0.0343,0.0468,0.0425};
+	double AccErrBs[nBins] ={0.000,0.00,0.00,0.00};
+
 	double PDFBErrBs[nBins] ={0,0.0272,0.0156,0.0329};
 	double PDFSErrBs[nBins] ={0.0862,0.0262,0.0099,0.00177};
 	double MCStatBs[nBins] ={0.288,0.0626,0.0317,0.0349};
@@ -195,7 +203,9 @@ void BsOverBPlus(){
 	double TrackingErrBP[nBins] ={0.05,0.05,0.05,0.05};
 	double SelErrBP[nBins] ={0.0567,0.153,0.0361,0.0172};
 	double PTErrBP[nBins] ={0.00128,0.00206,0.0000,0.00010};
-	double AccErrBP[nBins] ={0.0001,0.00047,0.00026,0.00055};
+//	double AccErrBP[nBins] ={0.0001,0.00047,0.00026,0.00055};
+	double AccErrBP[nBins] ={0.0000,0.0000,0.0000,0.00000};
+
 	double PDFBErrBP[nBins] ={0.0,0.0,0.0,0.0};
 	double PDFSErrBP[nBins] ={0.0446,0.0273,0.0280,0.0257};
 	double MCStatBP[nBins] ={0.1486,0.0375,0.0220,0.0151};
@@ -242,13 +252,17 @@ void BsOverBPlus(){
 
 
 
+	double	glbUncert = TMath::Sqrt(2.8*2.8 + 7.6*7.6)/100;
 
+
+
+	double ptBinsSave[5]={7,10,15,20,50};
 
 	ofstream outratio("/export/d00/scratch/zzshi/CMSSW_7_5_8_patch3/Merge/2018Ana/HIN-19-011Final/ratio_pt.txt");
-	outratio << "ptmin" << "   " << "ptmax" << "   " <<  "xsec" << "   " << "statUncert" << "   " << "systUncert Up "  << "   " << "systUncert Down "  << "   " <<  "glbUncert" << endl;
+	outratio << "ptmin" << "   " << "ptmax" << "   " <<  "xsec" << "   " << "statUncert" << "   " << "systUncert Up "  << "   " << "systUncert Down "  << "   " <<  "glbUncert Up " << "   " <<  "glbUncert Down" << endl;
 
 	for(int i = 0; i < nBins; i++){
-		outratio << ptBins[i] << "   " << ptBins[i+1] << "   " << Y[i] << "   " <<YErr[i]/Y[i] << "   " << SystErrUp[i] << "   " << SystErrDown[i] << "   " << 0 << endl;
+		outratio << ptBinsSave[i] << "   " << ptBinsSave[i+1] << "   " << Y[i] << "   " <<YErr[i]/Y[i] << "   " << SystErrUp[i] << "   " << SystErrDown[i] << "   " << glbUncert  << "   " << glbUncert << endl;
 
 	}
 
@@ -269,7 +283,7 @@ void BsOverBPlus(){
 
 
 
-	TLatex* texlumi = new TLatex(0.96,0.95,"1.5 nb^{-1} (PbPb) 5.02 TeV");
+	TLatex* texlumi = new TLatex(0.96,0.95,"1.7 nb^{-1} (PbPb) 5.02 TeV");
 	texlumi->SetNDC();
 	texlumi->SetTextAlign(32);
 	texlumi->SetTextFont(42);
@@ -278,7 +292,7 @@ void BsOverBPlus(){
 	texlumi->Draw("SAME");
 
 
-	TLatex* texcms = new TLatex(0.21,0.88,"CMS");
+	TLatex* texcms = new TLatex(0.17,0.88,"CMS");
 	texcms->SetNDC();
 	texcms->SetTextAlign(13);
 	texcms->SetTextFont(62);//61
@@ -287,19 +301,29 @@ void BsOverBPlus(){
 	texcms->Draw("SAME");
 
 
-	TLatex* texcent = new TLatex(0.62,0.78,"Cent. 0-90%");
+	TLatex* texcent = new TLatex(0.50,0.62,"Cent. 0-90%");
 	texcent->SetNDC();
 	texcent->SetTextFont(42);
-	texcent->SetTextSize(0.05);
+	texcent->SetTextSize(0.04);
 	texcent->SetLineWidth(2);
 	texcent->Draw("SAME");
 
-	TLatex *texY = new TLatex(0.21,0.79,"|y| < 2.4");
+	TLatex *texY = new TLatex(0.21,0.79,"7 GeV/c < B p_{T} < 50 GeV/c and B |y| < 2.4");
 	texY->SetNDC();
 	texY->SetTextFont(42);
-	texY->SetTextSize(0.05);
+	texY->SetTextSize(0.04);
 	texY->SetLineWidth(2);
 	texY->Draw("SAME");
+
+
+	TLatex *texY2 = new TLatex(0.21,0.70,"7 GeV/c < B p_{T} < 10 GeV/c and B |y| > 1.5");
+	texY2->SetNDC();
+	texY2->SetTextFont(42);
+	texY2->SetTextSize(0.04);
+	texY2->SetLineWidth(2);
+	texY2->Draw("SAME");
+
+
 
 	/*
 	   TLine *line = new TLine(ptBins[0],10.5/40.5,ptBins[nBins],10.5/40.5);
@@ -337,17 +361,66 @@ void BsOverBPlus(){
 	FragBand->Draw("5same");  
 
 
-	TLegend* leg = new TLegend(0.40,0.38,0.76,0.68,NULL,"brNDC");
+	TLegend* leg = new TLegend(0.40,0.38,0.76,0.58,NULL,"brNDC");
 	leg->SetBorderSize(0);
 	leg->SetTextSize(0.04);
 	leg->SetTextFont(42);
 	leg->SetFillStyle(0);
 	leg->AddEntry(hBsCross,"Data Points","pl");
-	leg->AddEntry(MyCrossSyst,"Systematic Uncertainties","l");
+	leg->AddEntry(MyCrossSyst,"Syst. Uncert.","l");
 	leg->AddEntry(FragBand,"f_{s}/f_{u} in vacuum","l");
 	leg->Draw("same");
 
-	c->SaveAs("BstoBPlus.pdf");
+	if(TNP == 1)	c->SaveAs("BstoBPlusPt.pdf");
+	if(TNP == 0)	c->SaveAs("BstoBPlusPtNoTnP.pdf");
+
+	//Following is including TAMU//
+
+
+	std::ifstream TAMUBsBP("TAMUPT.dat");
+
+	const int NBinsTAMU = 150; 
+	double TAMUBsBPPt[NBinsTAMU];
+	double TAMUBsBPPtErr[NBinsTAMU];
+	
+	double TAMUBsBPRatio[NBinsTAMU];
+	double TAMUBsBPRatioErr[NBinsTAMU];
+
+	for(int i = 0; i < NBinsTAMU; i++){
+
+	TAMUBsBP >> TAMUBsBPPt[i] >> TAMUBsBPRatio[i];
+	
+	}
+
+	for(int i = 0; i < NBinsTAMU; i++){
+
+		TAMUBsBPPtErr[i] = 0.1;
+		TAMUBsBPRatioErr[i] = 0.01;
+		cout  << "TAMUBsBPPt[i] = "  <<  TAMUBsBPPt[i] << "     TAMUBsBPRatio[i] = " <<  TAMUBsBPRatio[i] << endl;
+	
+	}
+
+
+
+
+	TGraphErrors* TAMUTheory = new TGraphErrors(NBinsTAMU,TAMUBsBPPt,TAMUBsBPRatio,TAMUBsBPPtErr,TAMUBsBPRatioErr);
+	TAMUTheory->SetName("TAMUTheory");
+	TAMUTheory->SetMarkerStyle(20);
+	TAMUTheory->SetMarkerSize(0.0);
+	TAMUTheory->SetFillColor(kOrange+3);
+	TAMUTheory->SetFillStyle(3002); 
+	TAMUTheory->SetLineColor(kOrange);
+	TAMUTheory->SetLineWidth(2.5);
+	TAMUTheory->Draw("5same");  
+	hBsCross->Draw("epSAME");
+
+	leg->AddEntry(TAMUTheory,"TAMU 0 - 100%","l");
+	leg->Draw("SAME");
+
+	if(TNP == 1)	c->SaveAs("BstoBPlusPtTAMU.pdf");
+	if(TNP == 0)	c->SaveAs("BstoBPlusPtNoTnPTAMU.pdf");
+
+
 
 
 }

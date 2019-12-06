@@ -78,6 +78,10 @@ void ManualCut(int CentMin, int CentMax, int IsMC, int Shape, int TwoShot){
 
 	if(CentMin == 0 && CentMax == 30) func = new TF1("func","1/0.131733+TMath::Exp(-1.051514*(x-15.468517))+TMath::Exp(-0.204272*(x-31.002324))",5,50);
 
+//	if(CentMin == 30 && CentMax == 40) func = new TF1("func","1/0.131733+TMath::Exp(-1.051514*(x-15.468517))+TMath::Exp(-0.204272*(x-31.002324))",5,50);
+//	if(CentMin == 40 && CentMax == 90) func = new TF1("func","1/0.131733+TMath::Exp(-1.051514*(x-15.468517))+TMath::Exp(-0.204272*(x-31.002324))",5,50);
+
+
 	if(CentMin == 30 && CentMax == 90) func = new TF1("func","1/0.204307+TMath::Exp(-1.041731*(x-14.608514))+TMath::Exp(-0.206513*(x-27.599694))",5,50);
 
 
@@ -461,7 +465,7 @@ void ManualCut(int CentMin, int CentMax, int IsMC, int Shape, int TwoShot){
 		lumiNew = lumi;
 		evtNew = evt;
 
-		double lowstBDTCut;
+		double lowstBDTCut = 0.32;
 
 
 

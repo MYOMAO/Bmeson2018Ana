@@ -24,7 +24,7 @@ using std::endl;
 
 void QuickDraw(){
 
-	gStyle->SetOptTitle(0);
+//gStyle->SetOptTitle(0);
 	gStyle->SetOptStat(0);
 
 
@@ -118,7 +118,7 @@ void QuickDraw(){
 	TH1D * h030 = (TH1D * ) Eff030->Get("hEffFineInv");
 	h030->GetXaxis()->SetTitle("B_{s} p_{T} (GeV/c)");
 	h030->GetYaxis()->SetTitle("1/(eff x acc)");
-	h030->SetTitle("Centrality 0 - 90%");
+	h030->SetTitle("Centrality 0 - 30%");
 
 	h030->GetYaxis()->SetTitleOffset(1.3);	
 	h030->GetXaxis()->CenterTitle();
@@ -148,7 +148,7 @@ void QuickDraw(){
 	TH1D * h3090 = (TH1D * ) Eff3090->Get("hEffFineInv");
 	h3090->GetXaxis()->SetTitle("B_{s} p_{T} (GeV/c)");
 	h3090->GetYaxis()->SetTitle("1/(eff x acc)");
-	h3090->SetTitle("Centrality 0 - 90%");
+	h3090->SetTitle("Centrality 30 - 90%");
 
 	h3090->GetYaxis()->SetTitleOffset(1.3);	
 	h3090->GetXaxis()->CenterTitle();

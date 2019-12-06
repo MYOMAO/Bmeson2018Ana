@@ -1,25 +1,25 @@
 #include "fitB.h"
 using namespace std;
 
-const int nVar = 2;
-string vexp[nVar] = {"Bmumumass", "Btktkmass"};
-string vname[nVar] = {"Bmumumass", "Btktkmass"};
-string vxaxis[nVar] = {"mumu mass (GeV)", "KK mass (GeV)"};
-int vbins[nVar] = {40, 30};
+const int nVar = 6;
+string vexp[nVar] = {"Bmumumass", "Btktkmass","Bmumupt","Bmumueta","Bmumuphi","Bmass"};
+string vname[nVar] = {"Bmumumass", "Btktkmass","Bmumupt","Bmumueta","Bmumuphi","Bmass"};
+string vxaxis[nVar] = {"mumu mass (GeV/c^{2})", "KK mass (GeV/c^{2})","mumu p_{T} (GeV/c)","mumu |#eta|","mumu #phi","B_{s} Mass (GeV/c^{2})"};
+int vbins[nVar] = {40, 30,40,40,40,50};
 //float vbinmin[nVar] = {2.9, 0.98};
 //float vbinmax[nVar] = {3.4, 1.08};
-float vbinmin[nVar] = {3.0, 1.00};
-float vbinmax[nVar] = {3.2, 1.04};
+float vbinmin[nVar] = {3.0, 1.00,0,0,-3.14,5.0};
+float vbinmax[nVar] = {3.2, 1.04,20,2.5,3.14,6.0};
 
-double rangemin[nVar] = {3.05,1.013};
-double rangemax[nVar] = {3.15,1.028};
+double rangemin[nVar] = {3.05,1.013,1,1,1,1};
+double rangemax[nVar] = {3.15,1.028,2,2,2,2};
 
 
-//int _nBins = nBins;
-//double *_ptBins = ptBins;
+int _nBins = nBins;
+double *_ptBins = ptBins;
 
-int _nBins = nBinsY;
-double *_ptBins = ptBinsY;
+//int _nBins = nBinsY;
+//double *_ptBins = ptBinsY;
 
 
 void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TString varExp = "", TString trgselection = "",  TString trgselectionmc = "", TString cut = "", TString cutBefore = "", TString cutmcgen = "", int isMC = 0, Double_t luminosity = 1., int doweight = 0, TString collsyst = "", TString outputfile = "", TString outplotf = "", TString npfit = "", int doDataCor = 0, Float_t centmin = 0., Float_t centmax = 100.)
@@ -148,10 +148,10 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
     if(usePbPb) _isPbPb = "PbPb";
     TString _postfix = "";
     if(weightdata!="1") _postfix = "_EFFCOR";
-	varExp="abs(By)";
-    TString _prefix = "By";
-	//varExp="Bpt";
-	//TString _prefix = "Bpt";
+	//varExp="abs(By)";
+    //TString _prefix = "By";
+	varExp="Bpt";
+	TString _prefix = "Bpt";
 
 
 	TFile * fout = new TFile(Form("ROOTfiles/Phi-J_%s_%s.root",_prefix.Data(),collisionsystem.Data()),"RECREATE");
@@ -161,7 +161,8 @@ void plotSth(int usePbPb = 0, TString inputdata = "", TString inputmc = "", TStr
 	{
 		TCanvas* c= new TCanvas(Form("c%d",i),"",600,600);
 	    TLatex* tex1 = new TLatex(0.518,0.82,Form("%.1f < %s < %.1f",_ptBins[i],varExp.Data(),_ptBins[i+1]));
-	    TLatex* tex2 = new TLatex(0.735,0.75,"|y| < 2.4");
+		if(varExp == "Bpt") tex1 = new TLatex(0.3,0.82,Form("%.1f GeV/c < %s < %.1f GeV/c",_ptBins[i],varExp.Data(),_ptBins[i+1]));
+		TLatex* tex2 = new TLatex(0.735,0.75,"|y| < 2.4");
 	    TLatex* tex3 = new TLatex(0.25, 0.8,"Data");
 	    TLatex* tex4 = new TLatex(0.25, 0.8,"MC");
 	    TLatex* tex5 = new TLatex(0.25, 0.7,(usePbPb)? "PbPb" : "pp");
