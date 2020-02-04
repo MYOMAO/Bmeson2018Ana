@@ -1,6 +1,6 @@
 #include "TAxis.h"
 #include "uti.h"
-#include "parameters.h"
+#include "parametersNew.h"
 #include "RooWorkspace.h"
 #include "RooGlobalFunc.h"
 #include "RooRealVar.h"
@@ -24,7 +24,7 @@
 #include <fstream>
 #include <string>
 #include <iomanip>
-
+#include "RooMCStudy.h"
 
 using namespace RooFit;
 using namespace std;
@@ -55,13 +55,13 @@ Float_t hiBinMin,hiBinMax,centMin,centMax;
 Int_t _count=0;
 RooWorkspace* inputw = new RooWorkspace();
 RooWorkspace* outputw = new RooWorkspace("w");
-
+RooWorkspace* w_val= new RooWorkspace("w_vl");
 
 
 RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanvas* cMC, RooDataSet* ds, RooDataSet* dsMC, RooDataHist* dh, RooDataHist* dhMC, RooRealVar* mass, RooPlot* &outframe, Double_t ptmin, Double_t ptmax, int isMC, bool isPbPb, Float_t centmin, Float_t centmax, TString npfit)
 {
 	cout<<"total data: "<<ds->numEntries()<<endl;
-	TH1* h = dh->createHistogram("Bmass");
+	TH1* h = dh->createHistogram("BmassNew");
 	h->Sumw2(kFALSE);
 	h->SetBinErrorOption(TH1::kPoisson);
 	h->SetMarkerSize(1.55);
@@ -73,7 +73,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 	frameMC->SetTitle("");
 	//frameMC->SetXTitle("m_{B} (GeV/c^{2})");
 	if(tree=="ntKp")frameMC->SetXTitle("m_{J/#psi(#mu#muK^{#pm})} (GeV/c^{2})");
-	if(tree=="ntphi")frameMC->SetXTitle("m_{J/#psi(#mu#mu)#it{#phi}(KK)} (GeV/c^{2})");
+	if(tree=="EffInfoTreeFit")frameMC->SetXTitle("m_{J/#psi(#mu#mu)#it{#phi}(KK)} (GeV/c^{2})");
 	frameMC->SetYTitle("Events / (20 MeV/c^{2})");
 	frameMC->GetXaxis()->CenterTitle();
 	frameMC->GetYaxis()->CenterTitle();
@@ -98,7 +98,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 
 	cMC->cd();
 	double init_mean = 0;
-	if(tree=="ntphi") init_mean = BSUBS_MASS;
+	if(tree=="EffInfoTreeFit") init_mean = BSUBS_MASS;
 	if(tree=="ntKp") init_mean = BP_MASS;
 
 	RooRealVar meanMC(Form("meanMC%d_%s",_count,pdf.Data()),"",init_mean,5.,6.) ;
@@ -210,10 +210,10 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 
 
 	double mass_peak = 0;
-	if(tree=="ntphi") mass_peak = BSUBS_MASS;
+	if(tree=="EffInfoTreeFit") mass_peak = BSUBS_MASS;
 	if(tree=="ntKp") mass_peak = BP_MASS;
 
-	double n_signal_initial = ds->sumEntries(TString::Format("abs(Bmass-%g)<0.05",mass_peak)) - ds->sumEntries(TString::Format("abs(Bmass-%g)<0.10&&abs(Bmass-%g)>0.05",mass_peak,mass_peak));
+	double n_signal_initial = ds->sumEntries(TString::Format("abs(BmassNew-%g)<0.05",mass_peak)) - ds->sumEntries(TString::Format("abs(BmassNew-%g)<0.10&&abs(BmassNew-%g)>0.05",mass_peak,mass_peak));
 	if(n_signal_initial<0)
 		n_signal_initial=1;
 
@@ -235,10 +235,10 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 
 
 	//RooRealVar c2(Form("c2%d",_count),"",1.,0.,5.) ;
-	RooGenericPdf sig1_gen(Form("sig1_gen%d",_count),"", Form("exp(-0.5*(((Bmass-mean%d)*(Bmass-mean%d))/((c1%d*sigma1%d)*(c1%d*sigma1%d))))",_count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma1, c1));
-	RooGenericPdf sig2_gen(Form("sig2_gen%d",_count),"", Form("exp(-0.5*(((Bmass-mean%d)*(Bmass-mean%d))/((c1%d*sigma2%d)*(c1%d*sigma2%d))))", _count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma2, c1));
-	//  RooGenericPdf sig1(Form("sig1%d",_count),"", Form("(1/(c1%d*sigma1%d*sqrt(2*pi)))*exp(-0.5*(((Bmass-mean%d)*(Bmass-mean%d))/((c1%d*sigma1%d)*(c1%d*sigma1%d))))",_count, _count, _count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma1, c1));
-	// RooGenericPdf sig2(Form("sig2%d",_count),"", Form("(1/(c1%d*sigma2%d*sqrt(2*pi)))*exp(-0.5*(((Bmass-mean%d)*(Bmass-mean%d))/((c1%d*sigma2%d)*(c1%d*sigma2%d))))", _count, _count, _count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma2, c1));
+	RooGenericPdf sig1_gen(Form("sig1_gen%d",_count),"", Form("exp(-0.5*(((BmassNew-mean%d)*(BmassNew-mean%d))/((c1%d*sigma1%d)*(c1%d*sigma1%d))))",_count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma1, c1));
+	RooGenericPdf sig2_gen(Form("sig2_gen%d",_count),"", Form("exp(-0.5*(((BmassNew-mean%d)*(BmassNew-mean%d))/((c1%d*sigma2%d)*(c1%d*sigma2%d))))", _count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma2, c1));
+	//  RooGenericPdf sig1(Form("sig1%d",_count),"", Form("(1/(c1%d*sigma1%d*sqrt(2*pi)))*exp(-0.5*(((BmassNew-mean%d)*(BmassNew-mean%d))/((c1%d*sigma1%d)*(c1%d*sigma1%d))))",_count, _count, _count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma1, c1));
+	// RooGenericPdf sig2(Form("sig2%d",_count),"", Form("(1/(c1%d*sigma2%d*sqrt(2*pi)))*exp(-0.5*(((BmassNew-mean%d)*(BmassNew-mean%d))/((c1%d*sigma2%d)*(c1%d*sigma2%d))))", _count, _count, _count, _count, _count, _count, _count, _count), RooArgSet(*mass, mean, sigma2, c1));
 	RooRealVar sig1frac(Form("sig1frac%d",_count),"",sig1fracMC.getVal(),0.,1.);
 	RooRealVar sig2frac(Form("sig2frac%d",_count),"",sig2fracMC.getVal(),0.,1.);
 	RooAddPdf* sig;
@@ -262,7 +262,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 	// RooPolynomial bkg(Form("bkg%d",_count),"",*mass,a0);//linear
 	//  RooPolynomial bkg(Form("bkg%d",_count),"",*mass,RooArgSet(a0,a1));//linear
 	RooGenericPdf peakbg(Form("peakbg%d",_count),"",Form("(%s)",npfit.Data()),RooArgSet(*mass));
-	RooRealVar nsig(Form("nsig%d",_count),"",n_signal_initial,0.,ds->sumEntries());
+	RooRealVar nsig(Form("nsig%d",_count),"",n_signal_initial,-1,ds->sumEntries()*3);
 	RooRealVar nbkg(Form("nbkg%d",_count),"",n_combinatorial_initial,0.,ds->sumEntries());
 	//	RooRealVar nbkg(Form("nbkg%d",_count),"",n_combinatorial_initial,0.,200);
 	std::cout<<"sumEntries: "<<ds->sumEntries()<<std::endl;
@@ -332,7 +332,26 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 
 	}
 
+
+	/*
+	// test removing bakcground
+	//  RooRealVar* lambda =  (w->var(Form("lambda%d", _count)));
+	//  RooRealVar* nbkg   =  (w->var(Form("nbkg%d", _count)));
+	lambda.setConstant();
+	nbkg.setVal(0.);
+	nbkg.setConstant();
+
+
+	RooFitResult* fitResult = model->fitTo(*ds,Save(), Minos() , Extended(kTRUE),Range(5.3,5.45));
+	*/
+
+//	cout << "nbkg->getVal() = " << nbkg.getVal() << endl;
+
 	RooFitResult* fitResult = model->fitTo(*ds,Save(), Minos() , Extended(kTRUE));
+
+	w_val->import(*model);
+	w_val->import(nsig);
+
 
 	RooAbsReal* nll = model->createNLL(*ds);
 	double log_likelihood= nll->getVal();
@@ -362,7 +381,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 
 	std::cout<<"GETS hERE?"<<std::endl;
 	//ds->plotOn(frame,Name(Form("ds%d",_count)),Binning(nbinsmasshisto),MarkerSize(1.55),MarkerStyle(20),LineColor(1),LineWidth(4));
-	if(tree=="ntphi")frame->SetMaximum(nsig.getVal()*1.2);
+	if(tree=="EffInfoTreeFit")frame->SetMaximum(nsig.getVal()*1.2);
 	if(tree=="ntKp")frame->SetMaximum(nsig.getVal()*0.9);
 	//	frame->SetMaximum((h->GetBinContent(h->GetMaximumBin())+h->GetBinError(h->GetMaximumBin()))*1.8);
 	model->paramOn(frame,Layout(0.65, x_2, y_1-0.06), Format("NEU",AutoPrecision(3)));
@@ -376,7 +395,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 	//  frame->GetXaxis()->SetTitle("m_{J/#psi(#mu#amu)#it{#phi}(KK)} (GeV/c^{2})");
 	//  frame->SetXTitle("mass lol");
 	if(tree=="ntKp")frame->SetXTitle("m_{J/#psi(#mu#mu)K^{#pm}} (GeV/c^{2})");
-	if(tree=="ntphi")frame->SetXTitle("m_{J/#psi(#mu#mu)#it{#phi}(KK)} (GeV/c^{2})");
+	if(tree=="EffInfoTreeFit")frame->SetXTitle("m_{J/#psi(#mu#mu)#it{#phi}(KK)} (GeV/c^{2})");
 	//  frame->SetXTitle("m_{J/#psi(#mu#mu)#it{#phi}(KK)} (GeV/c^{2})");
 	/*pull_plot->SetTitleFont(42, "X");
 	  pull_plot->SetTitleOffset(1.3, "X");  
@@ -537,7 +556,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 	texsup->SetTextSize(0.05);
 	texsup->SetLineWidth(2);
 	TLatex* texB;
-	if(tree=="ntphi") texB = new TLatex(0.21,0.8,"B^{0}_{s}");
+	if(tree=="EffInfoTreeFit") texB = new TLatex(0.21,0.8,"B^{0}_{s}");
 	if(tree=="ntKp") texB = new TLatex(0.21,0.8,"B^{#pm}");
 	if(drawSup) texB = new TLatex(0.45,0.84,"B^{0}_{s}");
 	texB->SetNDC();
@@ -624,6 +643,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 	outframe = frame;
 	outputw->import(*model);
 	return fitResult;
+
 }
 
 void clean0(TH1D* h)
@@ -726,3 +746,279 @@ void latex_table(std::string filename, int n_col, int n_lin, std::vector<std::st
 	system(("pdflatex " + filename + "_check.tex").c_str());
 	system(("open " + filename + "_check.pdf").c_str());
 }
+
+/*
+   void validate_fit(RooWorkspace* w, int particle, TString ModName, TString SigName)
+   {
+
+   std::cout << "Now Perform Check on Fit" << std::endl;
+
+
+
+   RooRealVar Bmass = *(w->var("BmassNew"));
+//RooAbsPdf* model  = w->pdf("model");
+RooAbsPdf* model  = w->pdf(ModName.Data());
+
+
+vector<RooRealVar> params;
+//	params.push_back(*(w->var("n_signal")));
+
+std::cout << "Work Here Before Name" << std::endl;
+
+params.push_back(*(w->var(SigName.Data())));
+
+const int params_size = params.size();
+
+
+
+
+std::cout << "Work Here Before ROOMC" << std::endl;
+
+
+RooMCStudy* mcstudy = new RooMCStudy(*model, Bmass, Binned(kTRUE), Silence(), Extended(), FitOptions(Save(kTRUE), PrintEvalErrors(0)));
+
+mcstudy->generateAndFit(5000);
+
+std::cout << "Work Here Before VEc" << std::endl;
+
+
+vector<RooPlot*> framesPull, framesParam;
+
+for(int i = 0; i < params_size; ++i)
+{
+framesPull.push_back(mcstudy->plotPull(params.at(i),FrameBins(200),FrameRange(-5,5)));
+framesPull[i]->SetTitle("");
+framesParam.push_back(mcstudy->plotParam(params.at(i),FrameBins(50)));
+framesParam[i]->SetTitle("");
+}
+
+vector<TGraph*> his;
+
+for(int i = 0; i < params_size; ++i){
+his.push_back(static_cast<TGraph*>(framesPull.at(i)->getObject(0)));
+}
+
+gStyle->SetOptFit(0111);
+
+TCanvas* c_pull = new TCanvas("pulls", "pulls", 900, 800);
+
+gPad->SetLeftMargin(0.15);
+
+for(int i = 0; i < params_size; ++i){
+c_pull->cd();
+his[i]->SetTitle("");
+his[i]->Draw();
+c_pull->Update();
+his[i]->Fit("gaus","","",-5,5);
+his[i]->GetFunction("gaus")->SetLineColor(4);
+his[i]->GetFunction("gaus")->SetLineWidth(5);
+his[i]->GetXaxis()->SetTitle("Pull");
+his[i]->GetYaxis()->SetTitle("Toy MCs");
+his[i]->Draw("same");
+}
+
+TCanvas* c_params = new TCanvas("params", "params", 900, 800);
+
+for(int i = 0; i < params_size; ++i){
+	c_params->cd();
+	framesParam.at(i)->GetYaxis()->SetTitleOffset(1.4);
+	framesParam.at(i)->Draw();
+}
+
+if(particle == 0){
+	c_pull->SaveAs("./results/Bu/pulls/pulls_poisson_Bu.pdf");
+	c_pull->SaveAs("./results/Bu/pulls/pulls_poisson_Bu.gif");
+	c_params->SaveAs("./results/Bu/pulls/pulls_params_poisson_Bu.pdf");
+	c_params->SaveAs("./results/Bu/pulls/pulls_params_poisson_Bu.gif");
+}else if(particle == 1){
+	c_pull->SaveAs("./results/Bs/pulls/pulls_poisson_Bs.pdf");
+	c_pull->SaveAs("./results/Bs/pulls/pulls_poisson_Bs.gif");
+	c_params->SaveAs("./results/Bs/pulls/pulls_params_poisson_Bs.pdf");
+	c_params->SaveAs("./results/Bs/pulls/pulls_params_poisson_Bs.gif");
+}
+
+}
+*/
+
+
+
+void validate_fit(RooWorkspace* w, TString tree, TString variable, int full)
+{
+	std::cout << "Now Perform Check on Fit" << std::endl;
+	RooRealVar Bmass = *(w->var("BmassNew"));
+	RooAbsPdf* model  = w->pdf(Form("model%d",_count));
+	//RooDataSet* data = (RooDataSet*) w->data("data");
+
+	//model->fitTo(*data);
+
+	vector<RooRealVar> params;
+	params.push_back(*(w->var(Form("nsig%d",_count))));
+
+
+
+
+	/*
+	//Retrieving Parameters//
+
+	RooRealVar* lambda =  (w->var(Form("lambda%d", _count)));
+	RooRealVar* nbkg   =  (w->var(Form("nbkg%d", _count)));
+	RooRealVar * mean  = (w->var(Form("mean%d", _count)));
+	RooRealVar * sigma1  = (w->var(Form("sigma1%d", _count)));
+	RooRealVar * sigma2  = (w->var(Form("sigma2%d", _count)));
+	//	RooRealVar * c1  = (w->var(Form("c1%d", _count)));
+	RooRealVar * sig1frac = (w->var(Form("sig1frac%d", _count)));
+
+
+
+
+	lambda->setVal(lambda->getVal());
+	nbkg->setVal(nbkg->getVal());
+	mean->setVal(mean->getVal());
+	sigma1->setVal(sigma1->getVal());
+	sigma2->setVal(sigma2->getVal());
+	//	c1->setVal(c1->getVal());
+	sig1frac->setVal(sig1frac->getVal());
+	*/
+
+
+
+
+	
+	// test removing bakcground
+	RooRealVar* lambda =  (w->var(Form("lambda%d", _count)));
+	RooRealVar* nbkg   =  (w->var(Form("nbkg%d", _count)));
+
+//	double step = 0.002;
+
+
+//	double nkgdValue = 51.15;
+//	double lambdaValue = -2.0236;
+
+	double nkgdValue = nbkg->getVal();
+	double lambdaValue = lambda->getVal();
+
+	
+	nbkg->setVal(nkgdValue);
+	lambda->setVal(lambdaValue);
+
+
+
+	double n_signal_init = params[0].getVal();
+
+	cout << "N_signal initial value: " << n_signal_init << endl;
+
+
+	int params_size = params.size();
+
+	cout << "params_size " << params_size << endl;
+
+	RooMCStudy* mcstudy = new RooMCStudy(*model, Bmass,  Extended(), FitOptions(Save(kTRUE), PrintEvalErrors(0)));
+
+	mcstudy->generateAndFit(5000);
+
+	vector<RooPlot*> framesPull, framesParam, framesError;
+
+	for(int i = 0; i < params_size; ++i)
+	{
+		framesPull.push_back(mcstudy->plotPull(params.at(i),FrameBins(200),FrameRange(-5,5)));
+		framesPull[i]->SetTitle("");
+		framesParam.push_back(mcstudy->plotParam(params.at(i),FrameBins(200)));
+		framesParam[i]->SetTitle("");
+		framesError.push_back(mcstudy->plotError(params.at(i),FrameBins(50)));
+		framesError[i]->SetTitle("");
+	}
+
+	vector<TGraph*> h1;
+	vector<TGraph*> h2;
+	vector<TGraph*> h3;
+
+	for(int i = 0; i < params_size; ++i){
+		h1.push_back(static_cast<TGraph*>(framesPull.at(i)->getObject(0)));
+		h2.push_back(static_cast<TGraph*>(framesParam.at(i)->getObject(0)));
+
+	}
+
+	gStyle->SetOptFit(0111);
+
+	TCanvas* c_pull = new TCanvas("pulls", "pulls", 900, 800);
+
+	gPad->SetLeftMargin(0.15);
+
+	for(int i = 0; i < params_size; ++i){
+		c_pull->cd();
+		h1[i]->SetTitle("");
+		h1[i]->Draw();
+		c_pull->Update();
+		h1[i]->Fit("gaus","","",-5,5);
+		h1[i]->GetFunction("gaus")->SetLineColor(4);
+		h1[i]->GetFunction("gaus")->SetLineWidth(5);
+		h1[i]->GetXaxis()->SetTitle("Pull");
+		h1[i]->GetYaxis()->SetTitle("");
+		h1[i]->Draw("APsame");
+	}
+
+
+	TCanvas* c_params = new TCanvas("params", "params", 900, 800);
+	for(int i = 0; i < params_size; ++i){
+		c_params->cd();
+		framesParam.at(i)->GetYaxis()->SetTitle("Toy MCs");
+		framesParam.at(i)->GetYaxis()->SetTitleOffset(1.4);
+		framesParam.at(i)->Draw();
+	}
+
+
+	/*TCanvas* c_params = new TCanvas("params", "params", 900, 800);
+
+	  for(int i = 0; i < params_size; ++i){
+	  c_params->cd();
+	  h2[i]->SetTitle("");
+	  h2[i]->Draw();
+	  c_params->Update();
+	  if(particle == 0){h2[i]->Fit("gaus","","",900,1200);}
+	  else if(particle == 1){h2[i]->Fit("gaus","","",60, 120);}
+	  h2[i]->GetFunction("gaus")->SetLineColor(4);
+	  h2[i]->GetFunction("gaus")->SetLineWidth(5);
+	//h2[i]->GetXaxis()->SetTitle();
+	h2[i]->GetYaxis()->SetTitle("Toy MCs");
+	h2[i]->Draw("same");
+	}*/
+
+
+
+	TCanvas* c_errors = new TCanvas("errors", "errors", 900, 800);
+	gPad->SetLeftMargin(0.15);
+	for(int i = 0; i < params_size; ++i){
+		c_errors->cd();
+		framesError.at(i)->GetYaxis()->SetTitle("Toy MCs");
+		framesError.at(i)->GetYaxis()->SetTitleOffset(1.4);
+		framesError.at(i)->Draw();
+	}
+
+
+	if(tree=="ntKp"){
+		//c_pull->SaveAs("./mcstudy/pulls_poisson_Bu.pdf");
+		c_pull->SaveAs(Form("new/pull_signal_full%d_%s_%d_%s.png",full,variable.Data(),_count,tree.Data()));
+		c_params->SaveAs(Form("new/params_signal_full%d_%s_%d_%s.png",full,variable.Data(),_count,tree.Data()));
+		c_errors->SaveAs(Form("new/error_signal_full%d_%s_%d_%s.png",full,variable.Data(),_count,tree.Data()));
+		//c_errors->SaveAs("./results/Bu/pulls/pulls_error.gif");
+	}
+	else if(tree=="EffInfoTreeFit"){
+		c_pull->SaveAs(Form("new/pull_signal_full%d_%s_%d_Bs.png",full,variable.Data(),_count));
+		//c_pull->SaveAs("./mcstudy/pulls_poisson_Bs.pdf");
+		c_params->SaveAs(Form("new/param_signal_full%d_%s_%d_Bs.png",full,variable.Data(),_count));
+		c_errors->SaveAs(Form("new/error_signal_full%d_%s_%d_Bs.png",full,variable.Data(),_count));
+		//c_errors->SaveAs("./results/Bs/pulls/pulls_error.gif");
+	}
+	/*
+	else if(tree=="EffInfoTreeFit"){
+		c_pull->SaveAs(Form("new/StepScan/pull/pull_signal_full%d_%s_%d_%d_Bs.png",full,variable.Data(),_count,NTrial));
+		//c_pull->SaveAs("./mcstudy/pulls_poisson_Bs.pdf");
+		c_params->SaveAs(Form("new/StepScan/param/param_signal_full%d_%s_%d_%d_Bs.png",full,variable.Data(),_count,NTrial));
+		c_errors->SaveAs(Form("new/StepScan/error/error_signal_full%d_%s_%d_%d_Bs.png",full,variable.Data(),_count,NTrial));
+		//c_errors->SaveAs("./results/Bs/pulls/pulls_error.gif");
+	}
+	*/
+}
+
+
+
