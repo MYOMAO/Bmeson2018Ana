@@ -114,7 +114,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 
 	RooAddPdf* sigMC;
 
-	if((variation=="" && pdf=="") || variation== "background"|| (variation=="signal" &&(pdf=="fixed" || pdf=="scal" || pdf=="merr" || pdf == "perr"|| pdf=="scal+" || pdf== "scal-"))) sigMC = new RooAddPdf(Form("sigMC%d_%s",_count,pdf.Data()),"",RooArgList(sig1MC,sig2MC),sig1fracMC);
+	if((variation=="" && pdf=="") || (variation=="sigonly" && pdf=="") || variation== "background"|| (variation=="signal" &&(pdf=="fixed" || pdf=="scal" || pdf=="merr" || pdf == "perr"|| pdf=="scal+" || pdf== "scal-"))) sigMC = new RooAddPdf(Form("sigMC%d_%s",_count,pdf.Data()),"",RooArgList(sig1MC,sig2MC),sig1fracMC);
 	if(variation=="signal" && pdf=="3gauss") sigMC = new RooAddPdf(Form("sigMC%d_%s",_count, pdf.Data()), "", RooArgList(sig1MC, sig2MC, sig3MC), RooArgList(sig1fracMC, sig2fracMC));
 
 	RooRealVar a0MC(Form("a0MC%d",_count),"",0,0,1e6);
@@ -244,7 +244,7 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 	RooAddPdf* sig;
 
 	if(variation=="signal" && (pdf=="scal"|| pdf==""|| pdf=="scal-"|| pdf=="scal+")) sig = new RooAddPdf(Form("sig%d",_count),"",RooArgList(sig1_gen,sig2_gen),sig1frac);
-	if((variation=="" && pdf=="") || variation== "background"|| (variation=="signal" && (pdf=="1gauss"|| pdf=="fixed" || pdf=="merr" || pdf == "perr"))) sig = new RooAddPdf(Form("sig%d",_count),"",RooArgList(sig1,sig2),sig1frac);
+	if((variation=="" && pdf=="") || (variation=="sigonly" && pdf=="")  || variation== "background"|| (variation=="signal" && (pdf=="1gauss"|| pdf=="fixed" || pdf=="merr" || pdf == "perr"))) sig = new RooAddPdf(Form("sig%d",_count),"",RooArgList(sig1,sig2),sig1frac);
 	if(variation=="signal" && pdf=="3gauss") sig = new RooAddPdf(Form("sig%d",_count), "", RooArgList(sig1, sig2, sig3), RooArgList(sig1frac, sig2frac));
 	//RooRealVar a0(Form("a0%d",_count),"a0",0.1,0.,1.);
 	//RooRealVar a1(Form("a1%d",_count),"a1",0.1,0.,1.);
@@ -283,6 +283,8 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 	if(variation=="" && pdf=="") model = new RooAddPdf(Form("model%d",_count),"",RooArgList(*sig,bkg),RooArgList(nsig,nbkg));
 	if(npfit != "1" && variation=="" && pdf=="") model = new RooAddPdf(Form("model%d",_count),"",RooArgList(bkg,*sig,peakbg),RooArgList(nbkg,nsig,npeakbg));
 	if(variation=="background" && pdf=="1st") model = new RooAddPdf(Form("model%d",_count),"",RooArgList(*sig,bkg_1st),RooArgList(nsig,nbkg));
+	//if(variation=="sigonly" && pdf=="") model = new RooAddPdf(Form("model%d",_count),"",RooArgList(*sig),RooArgList(nsig)); //added signal only//
+//	if(variation=="" && pdf=="")  model = new RooAddPdf(Form("model%d",_count),"",RooArgList(*sig),RooArgList(nsig));
 
 	if(npfit != "1" && variation=="background" && pdf=="1st") model = new RooAddPdf(Form("model%d",_count),"",RooArgList(bkg_1st,*sig,peakbg),RooArgList(nbkg,nsig,npeakbg));
 	if(variation=="background" && pdf=="2nd") model = new RooAddPdf(Form("model%d",_count),"",RooArgList(*sig,bkg_2nd),RooArgList(nsig,nbkg));
@@ -348,9 +350,13 @@ RooFitResult *fit(TString variation, TString pdf,TString tree, TCanvas* c, TCanv
 //	cout << "nbkg->getVal() = " << nbkg.getVal() << endl;
 
 	RooFitResult* fitResult = model->fitTo(*ds,Save(), Minos() , Extended(kTRUE));
+	//RooFitResult* fitResult = model->fitTo(*ds,Save(), Minos() , Extended(kTRUE),Range(5.34,5.40));
 
 	w_val->import(*model);
 	w_val->import(nsig);
+
+	cout << "nbkg->getVal() = " << nbkg.getVal() << endl;
+	cout << "nbkg->getVal() = " << npeakbg.getVal() << endl;
 
 
 	RooAbsReal* nll = model->createNLL(*ds);
@@ -894,11 +900,15 @@ void validate_fit(RooWorkspace* w, TString tree, TString variable, int full)
 //	double nkgdValue = 51.15;
 //	double lambdaValue = -2.0236;
 
+
+	cout << "BRO lambda = " << lambda->getVal() << endl;
+	cout << "BRIS back = " << nbkg->getVal() << endl;
+
 	double nkgdValue = nbkg->getVal();
 	double lambdaValue = lambda->getVal();
 
-	
-	nbkg->setVal(nkgdValue);
+
+	nbkg->setVal(50);
 	lambda->setVal(lambdaValue);
 
 
