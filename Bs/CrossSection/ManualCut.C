@@ -439,7 +439,16 @@ void ManualCut(int CentMin, int CentMax, int IsMC, int Shape, int TwoShot){
 	double BDTSystemWeight;
 
 
+	//Copy a new tree//
+	
+	cout << "Copying Fit Tree for Framework" << endl;  
 
+	TTree* EffInfoTree_NewFit;
+	EffInfoTree_NewFit = EffInfoTree->CloneTree(0);
+	EffInfoTree_NewFit->SetObject("EffInfoTreeFit","EffInfoTreeFit");
+
+
+	//Done Copying//
 	
 	for(int i = 0; i < NEvents; i++){
 
@@ -635,8 +644,10 @@ void ManualCut(int CentMin, int CentMax, int IsMC, int Shape, int TwoShot){
 		BsizeNew = BSizeCount;
 		hiBinNew = hiBin;
 		if(BsizeNew > 0) EffInfoTree->Fill();
+		if(BsizeNew > 0) EffInfoTree_NewFit->Fill();
+	
 	}
-
+	
 	fout->Write();
 	fout->Close();
 

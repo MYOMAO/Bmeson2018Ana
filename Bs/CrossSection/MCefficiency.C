@@ -569,6 +569,47 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		ntGen->Project("EffBptByGen","TMath::Abs(Gy):Gpt",TCut(weighpthat)*TCut(weightGpt)*TCut(weightHiBin)*TCut(weightPVz)*(TCut(selmcgen.Data())));
 
 
+		TString FolderName;	
+
+		if(Rebin == 0){
+			if(PbPbweight == 19 ) FolderName = "Original";		
+			if(PbPbweight == 18 ) FolderName = "NoPthat";	
+			if(PbPbweight == 17 ) FolderName = "NoWightCut";
+			if(PbPbweight == 16 ) FolderName = "NoWeight";
+			if(PbPbweight == 1) FolderName = "FONLL";
+			if(PbPbweight == 11) FolderName = "Linear";
+			if(PbPbweight == 12) FolderName = "Quadratic";
+			if(PbPbweight == 13) FolderName = "LInverse";
+			if(PbPbweight == 14) FolderName = "LSqrt";
+			if(PbPbweight == 15) FolderName = "LLog";
+		}
+
+
+
+		if(Rebin == 1){
+			if(PbPbweight == 16 ) FolderName = "Rebin/NoWeight";
+			if(PbPbweight == 1) FolderName = "Rebin/FONLL";
+			if(PbPbweight == 11) FolderName = "Rebin/Linear";
+			if(PbPbweight == 12) FolderName = "Rebin/Quadratic";
+			if(PbPbweight == 13) FolderName = "Rebin/LInverse";
+			if(PbPbweight == 14) FolderName = "Rebin/LSqrt";
+			if(PbPbweight == 15) FolderName = "Rebin/LLog";
+		}
+
+
+
+		TFile * foutFineTEff = new TFile(Form("CheckSystNuno/%s/EffFine_%.0f_%.0fTEff.root",FolderName.Data(),centmin,centmax),"RECREATE");
+		foutFineTEff->cd();
+
+		TEfficiency * EffBptByTEff = 0;
+		EffBptByTEff = new TEfficiency(*EffBptByMC,*EffBptByGen);
+		EffBptByTEff->SetName("EffBptByTEff");
+		EffBptByTEff->SetDirectory(gDirectory);
+		foutFineTEff->Write();
+		foutFineTEff->Close();
+
+
+
 		TH2D * EffBptByGenAccWeightedFine  = new TH2D("EffBptByGenAccWeightedFine","EffBptByGenAccWeightedFine",BptBin,BptBinning,yBinN,yBinning);
 
 
@@ -760,35 +801,12 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		c2->SaveAs(Form("ByBptInv_%.0f_%.0f.png",centmin,centmax));
 
 
+
+
+
+
 		EffBptByInvhyperfine->Draw("COLZ");
 		c2->SaveAs(Form("ByBptInvhyperfine_%.0f_%.0f.png",centmin,centmax));
-
-		TString FolderName;	
-
-		if(Rebin == 0){
-			if(PbPbweight == 19 ) FolderName = "Original";		
-			if(PbPbweight == 18 ) FolderName = "NoPthat";	
-			if(PbPbweight == 17 ) FolderName = "NoWightCut";
-			if(PbPbweight == 16 ) FolderName = "NoWeight";
-			if(PbPbweight == 1) FolderName = "FONLL";
-			if(PbPbweight == 11) FolderName = "Linear";
-			if(PbPbweight == 12) FolderName = "Quadratic";
-			if(PbPbweight == 13) FolderName = "LInverse";
-			if(PbPbweight == 14) FolderName = "LSqrt";
-			if(PbPbweight == 15) FolderName = "LLog";
-		}
-
-
-
-		if(Rebin == 1){
-			if(PbPbweight == 16 ) FolderName = "Rebin/NoWeight";
-			if(PbPbweight == 1) FolderName = "Rebin/FONLL";
-			if(PbPbweight == 11) FolderName = "Rebin/Linear";
-			if(PbPbweight == 12) FolderName = "Rebin/Quadratic";
-			if(PbPbweight == 13) FolderName = "Rebin/LInverse";
-			if(PbPbweight == 14) FolderName = "Rebin/LSqrt";
-			if(PbPbweight == 15) FolderName = "Rebin/LLog";
-		}
 
 		TFile * foutFine = new TFile(Form("CheckSystNuno/%s/EffFine_%.0f_%.0f.root",FolderName.Data(),centmin,centmax),"RECREATE");
 		foutFine->cd();
@@ -812,6 +830,7 @@ void MCefficiency(int isPbPb=0, TString inputmc="", TString selmcgen="", TString
 		EffBptByInvBDTWeighted->Write();
 		hEffSelectionFine->Write();
 		hEff2DInv2Shots->Write();
+
 
 
 		TH2D * CompRatio = (TH2D *) EffBptByInv->Clone("CompRatio");
