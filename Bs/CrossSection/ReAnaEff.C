@@ -173,7 +173,7 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 		if(drop == 0 && CentMin == 0) ptbinsvec.push_back(7.0);
 		if(drop == 0 && CentMin == 30) ptbinsvec.push_back(9.0);
 
-		if(drop == 1)  ptbinsvec.push_back(10.5);
+		if(drop == 1)  ptbinsvec.push_back(10.0);
 
 		ptbinsvec.push_back(50);
 		//	if(drop == 0 && CentMin == 0)	corrfactvec.push_back(1.08798);
@@ -454,6 +454,8 @@ void ReAnaEff(int CentMin, int CentMax,	const int NBins,	int DoTwoD, int NBptBin
 
 
 		cout << "-----------------------------------------------------------------------------------------------" << endl;
+		
+	    NewEffErr[i]  = 0; //Remove Error on Efficiency Corrections
 
 	}
 
